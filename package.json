@@ -24,7 +24,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "gatsby build && netlify-lamba build lambda-src",
+    "build": "gatsby build",
     "develop": "gatsby develop",
     "deploy": "npm run build && netlify deploy",
     "lambda-serve": "netlify-lambda serve lambda-src",
