@@ -24,15 +24,17 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "gatsby build",
+    "build": "gatsby build && netlify-lamba build lambda-src",
     "develop": "gatsby develop",
     "deploy": "npm run build && netlify deploy",
+    "lambda-serve": "netlify-lambda serve lambda-src",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint **/*.{js,jsx} --quiet"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.3",
+    "concurrently": "^3.6.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-config-prettier": "^2.9.0",
@@ -42,6 +44,7 @@
     "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-react": "^7.9.1",
     "firebase": "^5.1.0",
+    "netlify-lambda": "^0.4.0",
     "prettier": "^1.13.5"
   },
   "repository": {
