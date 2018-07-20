@@ -1,10 +1,21 @@
 backend:
-  name: test-repo
+  name: github
+  repo: JonathanHalpern/chiswick-rehearsal-room
 
 media_folder: static/assets
 public_folder: assets
 
 collections:
+  - name: "pages"
+    label: "Pages"
+    files:
+      - file: "src/pages/contact/contact.md"
+        label: "Contact"
+        name: "contact"
+        fields:
+          - {label: "Template Key", name: "templateKey", widget: "hidden", default: "contact-page"}
+          - {label: "Path", name: "path", widget: "hidden", default: "/contact"}
+          - {label: "Body", name: "body", widget: "markdown"}
   - name: blog
     label: Blog
     folder: blog
