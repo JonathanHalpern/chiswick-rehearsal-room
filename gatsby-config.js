@@ -7,16 +7,17 @@ module.exports = {
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-styled-components',
     {
-      resolve: 'gatsby-plugin-netlify-cms',
+      resolve: 'gatsby-source-filesystem',
       options: {
-        modulePath: `${__dirname}/src/cms/cms.js`,
+        path: `${__dirname}/src/pages`,
+        name: 'pages',
       },
     },
     {
       resolve: 'gatsby-source-filesystem',
       options: {
-        path: `${__dirname}/src/pages`,
-        name: 'pages',
+        path: `${__dirname}/static/img`,
+        name: 'images',
       },
     },
     {
@@ -71,5 +72,6 @@ module.exports = {
       },
     },
     'gatsby-plugin-offline',
+    'gatsby-plugin-netlify-cms',
   ],
 };
