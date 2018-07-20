@@ -1,14 +1,45 @@
 // ./gatsby-config.js
 module.exports = {
   siteMetadata: {
-    title: 'Polling App',
+    title: 'Chiswick Rehearsal Room',
   },
   plugins: [
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-styled-components',
     {
-      resolve: `gatsby-plugin-create-client-paths`,
-      options: { prefixes: [`/poll/*`] },
+      resolve: 'gatsby-source-filesystem',
+      options: {
+        path: `${__dirname}/src/pages`,
+        name: 'pages',
+      },
+    },
+    {
+      resolve: 'gatsby-transformer-remark',
+      options: {
+        plugins: [
+          {
+            resolve: 'gatsby-remark-relative-images',
+            options: {
+              name: 'images',
+            },
+          },
+          {
+            resolve: 'gatsby-remark-images',
+            options: {
+              maxWidth: 500,
+              showCaptions: false,
+              linkImagesToOriginal: false,
+            },
+          },
+          {
+            resolve: 'gatsby-remark-responsive-iframe',
+            options: {
+              wrapperStyle: 'margin-bottom: 1.0725rem',
+            },
+          },
+          'gatsby-remark-smartypants',
+        ],
+      },
     },
     {
       resolve: `gatsby-plugin-manifest`,
@@ -34,5 +65,6 @@ module.exports = {
       },
     },
     'gatsby-plugin-offline',
+    'gatsby-plugin-netlify-cms',
   ],
 };
