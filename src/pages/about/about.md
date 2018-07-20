@@ -1,5 +1,6 @@
 ---
-templateKey: contact-page
-path: /contact
+templateKey: about-page
+path: /about
 ---
-## Contact me now!
+
+# Some stuff

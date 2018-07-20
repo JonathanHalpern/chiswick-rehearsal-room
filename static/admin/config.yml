@@ -17,3 +17,27 @@ collections:
           - {label: "Path", name: "path", widget: "hidden", default: "/contact"}
           - {label: "Title", name: "title", widget: "string"}
           - {label: "Body", name: "body", widget: "markdown"}
+      - file: "src/pages/about/about.md"
+        label: "About"
+        name: "about"
+        fields:
+          - {label: "Template Key", name: "templateKey", widget: "hidden", default: "about-page"}
+          - {label: "Path", name: "path", widget: "hidden", default: "/about"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+      - file: "src/pages/location/location.md"
+        label: "Location"
+        name: "location"
+        fields:
+          - {label: "Template Key", name: "templateKey", widget: "hidden", default: "location-page"}
+          - {label: "Path", name: "path", widget: "hidden", default: "/location"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
+      - file: "src/pages/book/book.md"
+        label: "Book"
+        name: "book"
+        fields:
+          - {label: "Template Key", name: "templateKey", widget: "hidden", default: "book-page"}
+          - {label: "Path", name: "path", widget: "hidden", default: "/book"}
+          - {label: "Title", name: "title", widget: "string"}
+          - {label: "Body", name: "body", widget: "markdown"}
