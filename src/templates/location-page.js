@@ -9,8 +9,8 @@ export default ({ data }) =>
     </div>
   );
 
-export const contactPageQuery = graphql`
-  query ContactPage($path: String!) {
+export const locationPageQuery = graphql`
+  query LocationPage($path: String!) {
     markdownRemark(frontmatter: { path: { eq: $path } }) {
       html
       frontmatter {

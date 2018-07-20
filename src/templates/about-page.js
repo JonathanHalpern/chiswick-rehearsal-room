@@ -9,7 +9,7 @@ export default ({ data }) =>
     </div>
   );
 
-export const contactPageQuery = graphql`
+export const aboutPageQuery = graphql`
   query AboutPage($path: String!) {
     markdownRemark(frontmatter: { path: { eq: $path } }) {
       html
