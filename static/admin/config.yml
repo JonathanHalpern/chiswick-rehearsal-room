@@ -33,6 +33,11 @@ collections:
           - {label: "Path", name: "path", widget: "hidden", default: "/location"}
           - {label: "Title", name: "title", widget: "string"}
           - {label: "Body", name: "body", widget: "markdown"}
+          - label: "Map Locations"
+            name: "mapLocations"
+            widget: "list"
+            field:
+              - {label: Location, name: location, widget: string}
       - file: "src/pages/book/book.md"
         label: "Book"
         name: "book"
