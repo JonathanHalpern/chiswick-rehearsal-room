@@ -1,3 +1,5 @@
+/* global google */
+
 import React from 'react';
 
 import {
@@ -15,7 +17,7 @@ import {
   InfoWindow,
 } from 'react-google-maps';
 
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const { GOOGLE_MAPS_API_KEY } = process.env;
 
 const googleMapURL = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`;
 
@@ -26,7 +28,6 @@ const geocodePromise = ({ address, legend }) =>
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ address }, (results, status) => {
       if (status === 'OK') {
-        console.log(results);
         resolve({
           position: results[0].geometry.location,
           legend,
@@ -34,7 +35,9 @@ const geocodePromise = ({ address, legend }) =>
         });
       } else {
         reject(
-          `Geocode was not successful for the following reason: ${status}`,
+          new Error(
+            `Geocode was not successful for the following reason: ${status}`,
+          ),
         );
       }
     });
@@ -71,7 +74,7 @@ const handlers = withStateHandlers(
       markers: results,
       isLoading: false,
     }),
-    setOpenMarkerIndex: ({ openMarkerIndex }) => index => ({
+    setOpenMarkerIndex: () => index => ({
       openMarkerIndex: index,
     }),
   },
