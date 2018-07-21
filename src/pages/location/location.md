@@ -9,7 +9,7 @@ mapLocations:
     legend: The rehearsal room
   - address: 'Maggie and Rose Nursery, 1 Essex Place Square, London W4 5UJ'
     legend: Collect the keys here
-zoom: '18'
+defaultZoom: '18'
 ---
 First collect the keys from Maggie and Rose Nursery
 
