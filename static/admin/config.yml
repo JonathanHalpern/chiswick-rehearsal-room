@@ -36,8 +36,11 @@ collections:
           - label: "Map Locations"
             name: "mapLocations"
             widget: "list"
-            field:
-              - {label: Location, name: location, widget: string}
+            fields:
+              - {label: "Legend", name: "legend", widget: "string"}
+              - {label: "Address", name: "address", widget: "string"}
+          - {label: "Default Zoom", name: "zoom", widget: "number"}
+
       - file: "src/pages/book/book.md"
         label: "Book"
         name: "book"

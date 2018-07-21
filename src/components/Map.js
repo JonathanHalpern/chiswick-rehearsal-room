@@ -1,38 +1,37 @@
 import React from 'react';
 
-const {
+import {
   compose,
   withStateHandlers,
   lifecycle,
   renderComponent,
   branch,
-} = require('recompose');
-const {
+} from 'recompose';
+import {
   withScriptjs,
   withGoogleMap,
   GoogleMap,
   Marker,
   InfoWindow,
-} = require('react-google-maps');
+} from 'react-google-maps';
 
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 const googleMapURL = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`;
 
-const DEFAULT_ZOOM = 16;
+const DEFAULT_ZOOM = 17;
 
-const addresses = [
-  'Maggie and Rose Nursery, 1 Essex Place Square, London W4 5UJ',
-  'The Chiswick Rehearsal Room, Ground Floor, Wellington Place, Dolman Road, London W4 5PS',
-];
-
-const geocodePromise = address =>
+const geocodePromise = ({ address, legend }) =>
   new Promise((resolve, reject) => {
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ address }, (results, status) => {
       if (status === 'OK') {
         console.log(results);
-        resolve(results[0].geometry.location);
+        resolve({
+          position: results[0].geometry.location,
+          legend,
+          address,
+        });
       } else {
         reject(
           `Geocode was not successful for the following reason: ${status}`,
@@ -53,27 +52,27 @@ const withSpinnerWhileLoading = branch(isLoading, renderComponent(Spinner));
 
 const withData = lifecycle({
   componentWillMount() {
-    Promise.all(addresses.map(address => geocodePromise(address))).then(
-      results => {
-        this.props.setMarkers(results);
-      },
-    );
+    Promise.all(
+      this.props.mapLocations.map(mapLocation => geocodePromise(mapLocation)),
+    ).then(results => {
+      this.props.setMarkers(results);
+    });
   },
 });
 
 const handlers = withStateHandlers(
   () => ({
-    isOpen: false,
     isLoading: true,
     markers: [],
+    openMarkerIndex: 0,
   }),
   {
-    onToggleOpen: ({ isOpen }) => () => ({
-      isOpen: !isOpen,
-    }),
     setMarkers: () => results => ({
       markers: results,
       isLoading: false,
+    }),
+    setOpenMarkerIndex: ({ openMarkerIndex }) => index => ({
+      openMarkerIndex: index,
     }),
   },
 );
@@ -84,13 +83,21 @@ const MapWithAMakredInfoWindow = compose(
   withGoogleMap,
   withData,
   withSpinnerWhileLoading,
-)(({ markers, onToggleOpen, isOpen }) => (
-  <GoogleMap defaultZoom={DEFAULT_ZOOM} defaultCenter={markers[0]}>
-    {markers.map(marker => (
-      <Marker position={marker} onClick={onToggleOpen}>
-        {isOpen && (
-          <InfoWindow onCloseClick={onToggleOpen}>
-            <p>Hy</p>
+)(({ markers, openMarkerIndex, setOpenMarkerIndex }) => (
+  <GoogleMap defaultZoom={DEFAULT_ZOOM} defaultCenter={markers[0].position}>
+    {markers.map((marker, index) => (
+      <Marker
+        position={marker.position}
+        onClick={() => setOpenMarkerIndex(index)}
+        key={marker.legend}>
+        {openMarkerIndex === index && (
+          <InfoWindow
+            onCloseClick={() => setOpenMarkerIndex(markers.length)}
+            options={{ maxWidth: 200 }}>
+            <div>
+              <p>{marker.legend}</p>
+              <p>{marker.address}</p>
+            </div>
           </InfoWindow>
         )}
       </Marker>
@@ -98,12 +105,13 @@ const MapWithAMakredInfoWindow = compose(
   </GoogleMap>
 ));
 
-const Map = () => (
+const Map = ({ mapLocations }) => (
   <MapWithAMakredInfoWindow
     googleMapURL={googleMapURL}
     loadingElement={<div style={{ height: `100%` }} />}
     containerElement={<div style={{ height: `500px` }} />}
     mapElement={<div style={{ height: `100%` }} />}
+    mapLocations={mapLocations}
   />
 );
 
