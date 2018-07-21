@@ -9,7 +9,7 @@ mapLocations:
       The Chiswick Rehearsal Room, Ground Floor, Wellington Place, Dolman
       Road,     London W4 5PS
     legend: The rehearsal room
-defaultZoom: 20
+defaultZoom: 18
 ---
 First collect the keys from Maggie and Rose Nursery
 
