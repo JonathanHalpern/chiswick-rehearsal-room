@@ -21,8 +21,6 @@ const { GOOGLE_MAPS_API_KEY } = process.env;
 
 const googleMapURL = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&v=3.exp&libraries=geometry,drawing,places`;
 
-const DEFAULT_ZOOM = 17;
-
 const geocodePromise = ({ address, legend }) =>
   new Promise((resolve, reject) => {
     const geocoder = new google.maps.Geocoder();
@@ -86,8 +84,10 @@ const MapWithAMakredInfoWindow = compose(
   withGoogleMap,
   withData,
   withSpinnerWhileLoading,
-)(({ markers, openMarkerIndex, setOpenMarkerIndex }) => (
-  <GoogleMap defaultZoom={DEFAULT_ZOOM} defaultCenter={markers[0].position}>
+)(({ defaultZoom, markers, openMarkerIndex, setOpenMarkerIndex }) => (
+  <GoogleMap
+    defaultZoom={parseInt(defaultZoom, 10)}
+    defaultCenter={markers[0].position}>
     {markers.map((marker, index) => (
       <Marker
         position={marker.position}
@@ -108,13 +108,14 @@ const MapWithAMakredInfoWindow = compose(
   </GoogleMap>
 ));
 
-const Map = ({ mapLocations }) => (
+const Map = ({ mapLocations, defaultZoom }) => (
   <MapWithAMakredInfoWindow
     googleMapURL={googleMapURL}
     loadingElement={<div style={{ height: `100%` }} />}
     containerElement={<div style={{ height: `500px` }} />}
     mapElement={<div style={{ height: `100%` }} />}
     mapLocations={mapLocations}
+    defaultZoom={defaultZoom}
   />
 );
 

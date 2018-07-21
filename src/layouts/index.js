@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 
-// import Header from '../components/Header';
+import Header from '../components/Header';
 import './index.css';
 
 const Layout = ({ children, data }) => (
@@ -14,10 +14,10 @@ const Layout = ({ children, data }) => (
         { name: 'keywords', content: 'sample, something' },
       ]}
     />
-    {/* <Header
+    <Header
       siteTitle={data.site.siteMetadata.title}
       pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
-    /> */}
+    />
     <div
       style={{
         margin: '0 auto',
