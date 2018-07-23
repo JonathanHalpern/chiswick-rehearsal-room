@@ -5,7 +5,7 @@ export default ({ data }) => (
   <div>
     <h1>{data.markdownRemark.frontmatter.title}</h1>
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
-    <BookingContainer />
+    {typeof window !== 'undefined' && <BookingContainer />}
   </div>
 );
 

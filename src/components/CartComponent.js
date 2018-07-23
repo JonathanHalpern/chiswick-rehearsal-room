@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import paypal from 'paypal-checkout';
+
+let paypal;
+if (typeof window !== 'undefined') {
+  paypal = require('paypal-checkout');
+}
 
 const CartComponent = ({
   client,

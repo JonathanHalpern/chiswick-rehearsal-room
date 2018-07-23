@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import paypal from 'paypal-checkout';
 import CartComponent from './CartComponent';
+
+let paypal;
+if (typeof window !== 'undefined') {
+  paypal = require('paypal-checkout');
+}
 
 const { API, PAYPAL_SANDBOX_CLIENT_ID } = process.env;
 
@@ -9,18 +13,39 @@ const client = {
   production: 'production key',
 };
 
-const onCancel = () => {
-  console.log('cancelled');
-};
+const transactions = [
+  {
+    item_list: {
+      items: [
+        {
+          name: 'item',
+          sku: 'item',
+          price: '1.00',
+          currency: 'USD',
+          quantity: 1,
+        },
+      ],
+    },
+    amount: {
+      currency: 'USD',
+      total: '1.00',
+    },
+    description: 'This is the payment description.',
+  },
+];
 
 class BookingContainer extends Component {
   constructor(props) {
     super(props);
     this.payment = this.payment.bind(this);
     this.onAuthorize = this.onAuthorize.bind(this);
+    this.onCancel = this.onCancel.bind(this);
     this.state = {
       isProcessing: false,
-      isBookingComplete: false,
+      isConfirmed: false,
+      bookingDate: 'date',
+      startTime: 'start',
+      endTime: 'end',
     };
   }
 
@@ -35,7 +60,7 @@ class BookingContainer extends Component {
       .then(response => response.json())
       .then(response => {
         this.setState({
-          isBookingComplete: true,
+          isConfirmed: true,
           isProcessing: false,
         });
       })
@@ -50,7 +75,7 @@ class BookingContainer extends Component {
 
   payment() {
     this.setState({
-      isProcessing: false,
+      isProcessing: true,
     });
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
@@ -69,17 +94,18 @@ class BookingContainer extends Component {
   }
 
   render() {
-    const { isBookingComplete } = this.state;
+    const { isConfirmed, isProcessing } = this.state;
     return (
       <div>
-        {isBookingComplete ? (
+        {isProcessing && <p>Processing...</p>}
+        {isConfirmed ? (
           <p>Done</p>
         ) : (
           <CartComponent
             client={client}
             payment={this.payment}
             onAuthorize={this.onAuthorize}
-            onCancel={onCancel}
+            onCancel={this.onCancel}
             purchase="the room"
           />
         )}
