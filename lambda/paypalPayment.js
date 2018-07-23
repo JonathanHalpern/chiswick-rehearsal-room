@@ -3203,9 +3203,9 @@ paypal.configure({
 });
 
 // Name needs to be unique so just generating a random one
-const profile_name = Math.random().toString(36).substring(7);
 
 function handler(event, context, callback) {
+  const profile_name = Math.random().toString(36).substring(7);
   if (event.httpMethod !== 'POST' || !event.body) {
     callback(null, {
       statusCode: 200,
