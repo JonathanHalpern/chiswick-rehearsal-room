@@ -5,6 +5,7 @@ title: Book the room
 timeSlots:
   - endTime: '2'
     price: 23
+    start: '23:14'
     startTime: '1'
 ---
 
