@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import CartComponent from './CartComponent';
+import CalendarBooker from './CalendarBooker';
 
 let paypal;
 if (typeof window !== 'undefined') {
@@ -40,6 +41,7 @@ class BookingContainer extends Component {
     this.payment = this.payment.bind(this);
     this.onAuthorize = this.onAuthorize.bind(this);
     this.onCancel = this.onCancel.bind(this);
+    this.onSlotSelect = this.onSlotSelect.bind(this);
     this.state = {
       isProcessing: false,
       isConfirmed: false,
@@ -51,11 +53,13 @@ class BookingContainer extends Component {
   }
 
   onAuthorize(data) {
+    const { price } = this.state;
     fetch(`${API}/paypalProcess`, {
       method: 'post',
       body: JSON.stringify({
         paymentID: data.paymentID,
         payerID: data.payerID,
+        price,
       }),
     })
       .then(response => response.json())
@@ -72,6 +76,25 @@ class BookingContainer extends Component {
 
   onCancel(data) {
     console.log(data);
+  }
+
+  onSlotSelect(slot) {
+    switch (slot) {
+      case 1:
+        this.setState({
+          price: 30,
+        });
+        break;
+      case 2:
+        this.setState({
+          price: 60,
+        });
+        break;
+      default:
+        this.setState({
+          price: 0,
+        });
+    }
   }
 
   payment() {
@@ -102,21 +125,24 @@ class BookingContainer extends Component {
   }
 
   render() {
-    const { isConfirmed, isProcessing } = this.state;
+    const { isConfirmed, isProcessing, price } = this.state;
     return (
       <div>
-        {isProcessing && <p>Processing...</p>}
-        {isConfirmed ? (
-          <p>Done</p>
-        ) : (
-          <CartComponent
-            client={client}
-            payment={this.payment}
-            onAuthorize={this.onAuthorize}
-            onCancel={this.onCancel}
-            purchase="the room"
-          />
-        )}
+        <CalendarBooker onSlotSelect={this.onSlotSelect} />
+        <div>
+          {isProcessing && <p>Processing...</p>}
+          {isConfirmed ? (
+            <p>Done</p>
+          ) : (
+            <CartComponent
+              client={client}
+              payment={this.payment}
+              onAuthorize={this.onAuthorize}
+              onCancel={this.onCancel}
+              purchase={price}
+            />
+          )}
+        </div>
       </div>
     );
   }

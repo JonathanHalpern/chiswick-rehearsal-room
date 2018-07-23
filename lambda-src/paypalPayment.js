@@ -24,6 +24,8 @@ export function handler(event, context, callback) {
   const data = event.body;
   const { bookingDate, startTime, endTime, price } = JSON.parse(data);
 
+  console.log('price is', price);
+
   const create_web_profile_json = {
     name: profile_name,
     presentation: {
@@ -76,7 +78,10 @@ export function handler(event, context, callback) {
 
   paypal.webProfile.create(create_web_profile_json, (error, web_profile) => {
     if (error) {
-      throw error;
+      callback(null, {
+        statusCode: 500,
+        body: JSON.stringify(error),
+      });
     } else {
       // Set the id of the created payment experience in payment json
       const experience_profile_id = web_profile.id;
@@ -84,7 +89,10 @@ export function handler(event, context, callback) {
 
       paypal.payment.create(create_payment_json, (error, payment) => {
         if (error) {
-          throw error;
+          callback(null, {
+            statusCode: 500,
+            body: JSON.stringify(error),
+          });
         } else {
           console.log('Create Payment Response');
           console.log(payment);

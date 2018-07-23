@@ -3212,14 +3212,14 @@ function handler(event, context, callback) {
   }
 
   const data = event.body;
-  const { paymentID, payerID } = JSON.parse(data);
+  const { paymentID, payerID, price } = JSON.parse(data);
 
   const execute_payment_json = {
     payer_id: payerID,
     transactions: [{
       amount: {
-        currency: 'USD',
-        total: '1.00'
+        currency: 'GBP',
+        total: price
       }
     }]
   };
