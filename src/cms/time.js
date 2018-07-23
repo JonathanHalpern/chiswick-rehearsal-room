@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 
 // This is the editing component
 export class TimeControl extends Component {
@@ -21,20 +20,17 @@ export class TimeControl extends Component {
   }
 
   render() {
-    const { time } = this.state;
+    const { time, forId } = this.state;
     return (
-      <div>
-        <input
-          type="time"
-          id="appt-time"
-          name="appt-time"
-          min="9:00"
-          max="18:00"
-          onChange={this.onChange}
-          required
-          value={time}
-        />
-      </div>
+      <input
+        type="time"
+        id={forId}
+        className="nc-controlPane-widget"
+        name="appt-time"
+        onChange={this.onChange}
+        required
+        value={time}
+      />
     );
   }
 }

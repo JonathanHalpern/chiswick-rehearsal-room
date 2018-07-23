@@ -38,6 +38,7 @@ const transactions = [
 class BookingContainer extends Component {
   constructor(props) {
     super(props);
+    console.warn(props);
     this.payment = this.payment.bind(this);
     this.onAuthorize = this.onAuthorize.bind(this);
     this.onCancel = this.onCancel.bind(this);
@@ -79,22 +80,10 @@ class BookingContainer extends Component {
   }
 
   onSlotSelect(slot) {
-    switch (slot) {
-      case 1:
-        this.setState({
-          price: 30,
-        });
-        break;
-      case 2:
-        this.setState({
-          price: 60,
-        });
-        break;
-      default:
-        this.setState({
-          price: 0,
-        });
-    }
+    const { timeSlots } = this.props;
+    this.setState({
+      price: timeSlots[slot].price,
+    });
   }
 
   payment() {
@@ -126,9 +115,13 @@ class BookingContainer extends Component {
 
   render() {
     const { isConfirmed, isProcessing, price } = this.state;
+    const { timeSlots } = this.props;
     return (
       <div>
-        <CalendarBooker onSlotSelect={this.onSlotSelect} />
+        <CalendarBooker
+          onSlotSelect={this.onSlotSelect}
+          timeSlots={timeSlots}
+        />
         <div>
           {isProcessing && <p>Processing...</p>}
           {isConfirmed ? (

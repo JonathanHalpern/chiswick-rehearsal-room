@@ -1,19 +1,19 @@
 import React from 'react';
 
-const CalendarBooker = ({ onSlotSelect }) => (
+const CalendarBooker = ({ onSlotSelect, timeSlots }) => (
   <div>
-    <button
-      onClick={() => {
-        onSlotSelect(1);
-      }}>
-      Slot 1
-    </button>
-    <button
-      onClick={() => {
-        onSlotSelect(2);
-      }}>
-      Slot 2
-    </button>
+    {timeSlots.map((timeSlot, index) => (
+      <button
+        type="button"
+        key={index}
+        onClick={() => {
+          onSlotSelect(index);
+        }}>
+        <p>{timeSlot.startTime}</p>
+        <p>{timeSlot.endTime}</p>
+        <p>£{timeSlot.price}</p>
+      </button>
+    ))}
   </div>
 );
 
