@@ -3215,12 +3215,15 @@ function handler(event, context, callback) {
     });
   }
 
+  const data = event.body;
+  const { bookingDate, startTime, endTime, price } = JSON.parse(data);
+
   const create_web_profile_json = {
     name: profile_name,
     presentation: {
-      brand_name: 'Chiswick Rehearsal Room',
+      brand_name: 'Best Brand',
       logo_image: 'https://www.paypalobjects.com/webstatic/mktg/logo/AM_SbyPP_mc_vs_dc_ae.jpg',
-      locale_code: 'UK'
+      locale_code: 'GB'
     },
     input_fields: {
       allow_note: true,
@@ -3247,14 +3250,14 @@ function handler(event, context, callback) {
         items: [{
           name: 'item',
           sku: 'item',
-          price: '1.00',
-          currency: 'USD',
+          price,
+          currency: 'GBP',
           quantity: 1
         }]
       },
       amount: {
-        currency: 'USD',
-        total: '1.00'
+        currency: 'GBP',
+        total: price
       },
       description: 'This is the payment description.'
     }]

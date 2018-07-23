@@ -46,6 +46,7 @@ class BookingContainer extends Component {
       bookingDate: 'date',
       startTime: 'start',
       endTime: 'end',
+      price: 30,
     };
   }
 
@@ -77,9 +78,16 @@ class BookingContainer extends Component {
     this.setState({
       isProcessing: true,
     });
+    const { bookingDate, startTime, endTime, price } = this.state;
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
         method: 'post',
+        body: JSON.stringify({
+          bookingDate,
+          startTime,
+          endTime,
+          price,
+        }),
       })
         .then(response => response.json())
         .then(response => {
