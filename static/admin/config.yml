@@ -47,7 +47,6 @@ collections:
             min: 1
             max: 20
 
-
       - file: "src/pages/book/book.md"
         label: "Book"
         name: "book"
@@ -56,3 +55,14 @@ collections:
           - {label: "Path", name: "path", widget: "hidden", default: "/book"}
           - {label: "Title", name: "title", widget: "string"}
           - {label: "Body", name: "body", widget: "markdown"}
+          - label: "Time Slots"
+            name: "timeSlots"
+            widget: "list"
+            fields:
+              - {label: "Start Time", name: "startTime", widget: "time"}
+              - {label: "End Time", name: "endTime", widget: "time"}
+              - label: "Price"
+                name: "price"
+                widget: "number"
+                valueType: "int"
+                min: 0
