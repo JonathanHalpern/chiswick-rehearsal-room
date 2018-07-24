@@ -7,6 +7,8 @@ if (typeof window !== 'undefined') {
   paypal = require('paypal-checkout');
 }
 
+console.log(process.env);
+
 const { API, PAYPAL_SANDBOX_CLIENT_ID } = process.env;
 
 const client = {
