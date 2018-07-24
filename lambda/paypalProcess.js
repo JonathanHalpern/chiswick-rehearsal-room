@@ -3199,7 +3199,7 @@ const paypal = __webpack_require__(11);
 
 paypal.configure({
   mode: 'sandbox', // sandbox or live
-  client_id: "AVQRQZrhx5INZ0hvHyFoj6m_vmp94wl8q4mEIcQ6fbuVdjOesWdUEy-V2fa4peZLtXfzKC5-k9j1mlks", // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"
+  client_id: process.env.PAYPAL_SANDBOX_CLIENT_ID, // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"
   client_secret: "ECWnpEE_GmHvAE1eobMrxkd6-u9ugeabUhENE_eAOHR_Kx6m3bYo2ScCNK6C76nrqvA3BFza_VitAm2k" // run: firebase functions:config:set paypal.client_secret="yourPaypalClientSecret"
 });
 
