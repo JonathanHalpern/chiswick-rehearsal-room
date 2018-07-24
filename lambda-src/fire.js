@@ -20,8 +20,6 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-// const firestore = firebase.firestore().collection('users');
-
 export function handler(event, context, callback) {
   const getUser = uid => admin.auth().getUser(uid);
   return getUser('fDcblzwrrLgXhv5HEgEzChu1vl73').then(userRecord => {
