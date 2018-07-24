@@ -7,6 +7,8 @@ if (typeof window !== 'undefined') {
   paypal = require('paypal-checkout');
 }
 
+console.log(process.env);
+
 const { API, PAYPAL_SANDBOX_CLIENT_ID } = process.env;
 
 const client = {
@@ -14,31 +16,9 @@ const client = {
   production: 'production key',
 };
 
-const transactions = [
-  {
-    item_list: {
-      items: [
-        {
-          name: 'item',
-          sku: 'item',
-          price: '1.00',
-          currency: 'USD',
-          quantity: 1,
-        },
-      ],
-    },
-    amount: {
-      currency: 'USD',
-      total: '1.00',
-    },
-    description: 'This is the payment description.',
-  },
-];
-
 class BookingContainer extends Component {
   constructor(props) {
     super(props);
-    console.warn(props);
     this.payment = this.payment.bind(this);
     this.onAuthorize = this.onAuthorize.bind(this);
     this.onCancel = this.onCancel.bind(this);
