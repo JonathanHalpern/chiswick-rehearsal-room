@@ -1,32 +1,42 @@
 import React from 'react';
 import Link from 'gatsby-link';
+import Img from 'gatsby-image';
+import styled from 'styled-components';
 import NavBar from './NavBar';
 
-const Header = ({ siteTitle, pageList }) => (
-  <div
-    style={{
-      background: 'rebeccapurple',
-      marginBottom: '1.45rem',
-    }}>
-    <div
-      style={{
-        margin: '0 auto',
-        maxWidth: 960,
-        padding: '1.45rem 1.0875rem',
-      }}>
-      <h1 style={{ margin: 0 }}>
-        <Link
-          to="/"
-          style={{
-            color: 'white',
-            textDecoration: 'none',
-          }}>
-          {siteTitle}
-        </Link>
-      </h1>
-    </div>
+const Container = styled.div`
+  position: relative;
+`;
+
+const Title = styled.h1`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: 7vw;
+`;
+
+const StyledImg = styled(Img)`
+  width: 100%;
+  height: 80vw;
+`;
+
+const Header = ({ siteTitle, pageList, backgroundImage }) => (
+  <Container>
+    {backgroundImage && <StyledImg sizes={backgroundImage.resolutions} />}
     <NavBar pageList={pageList} />
-  </div>
+    <Title>
+      <Link
+        to="/"
+        style={{
+          color: 'white',
+          textDecoration: 'none',
+        }}>
+        {siteTitle}
+      </Link>
+    </Title>
+  </Container>
 );
 
 export default Header;

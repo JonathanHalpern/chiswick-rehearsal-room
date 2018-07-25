@@ -6,12 +6,14 @@
   "dependencies": {
     "axios": "^0.18.0",
     "gatsby": "^1.9.247",
+    "gatsby-image": "^1.0.55",
     "gatsby-link": "^1.6.40",
     "gatsby-plugin-manifest": "^1.0.27",
     "gatsby-plugin-netlify": "^1.0.21",
     "gatsby-plugin-netlify-cms": "^2.0.1",
     "gatsby-plugin-offline": "^1.0.18",
     "gatsby-plugin-react-helmet": "^2.0.10",
+    "gatsby-plugin-sharp": "^1.6.42",
     "gatsby-plugin-styled-components": "^2.0.11",
     "gatsby-plugin-typography": "^1.7.19",
     "gatsby-remark-images": "^1.5.67",
@@ -32,10 +34,12 @@
     "react-paypal-express-checkout": "^1.0.4",
     "react-sortable-hoc": "^0.8.3",
     "recompose": "^0.27.1",
-    "sharp": "^0.20.4",
     "short-id": "0.1.0-1",
     "styled-components": "^3.3.3",
     "typography": "^0.16.17",
+    "typography-theme-fairy-gates": "^0.15.11",
+    "typography-theme-lincoln": "^0.15.11",
+    "typography-theme-moraga": "^0.15.10",
     "typography-theme-sutro": "^0.15.10"
   },
   "keywords": [
