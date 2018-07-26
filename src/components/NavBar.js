@@ -56,6 +56,12 @@ const StyledLink = styled(Link)`
   }
 `;
 
+const StyledHamburger = styled(Hamburger)`
+  @media (min-width: 701px) {
+    display: none;
+  }
+`;
+
 const Wrapper = styled.div`
   z-index: 2;
   transition: background 0.5s, padding 0.5s;
@@ -101,7 +107,7 @@ const NavBar = compose(
   withData,
 )(({ pageList, scrollTop, width, toggleMenu, isMenuOpen }) => (
   <Wrapper scrollTop={scrollTop}>
-    {width <= 700 && <Hamburger isActive={isMenuOpen} onClick={toggleMenu} />}
+    <StyledHamburger isActive={isMenuOpen} onClick={toggleMenu} />
     <StyledList
       isMenuOpen={isMenuOpen}
       listLength={pageList.length}
