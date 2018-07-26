@@ -6,31 +6,37 @@ import Hamburger from './Hamburger';
 
 const withData = lifecycle({
   componentDidMount() {
-    window.addEventListener('scroll', this.props.handleScroll);
-    window.addEventListener('resize', this.props.updateDimensions);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', this.props.handleScroll);
+      window.addEventListener('resize', this.props.updateDimensions);
+    }
   },
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.props.handleScroll);
-    window.removeEventListener('resize', this.props.updateDimensions);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('scroll', this.props.handleScroll);
+      window.removeEventListener('resize', this.props.updateDimensions);
+    }
   },
 });
 
 const handlers = withStateHandlers(
   () => ({
-    scrollTop: document.documentElement.scrollTop,
-    width: window.innerWidth,
+    scrollTop:
+      typeof window !== 'undefined' && document.documentElement.scrollTop,
+    width: typeof window !== 'undefined' && window.innerWidth,
     isMenuOpen: false,
   }),
   {
     handleScroll: () => () => {
       return {
-        scrollTop: document.documentElement.scrollTop,
+        scrollTop:
+          typeof document !== 'undefined' && document.documentElement.scrollTop,
       };
     },
     updateDimensions: () => () => {
       return {
-        width: window.innerWidth,
+        width: typeof window !== 'undefined' && window.innerWidth,
       };
     },
     toggleMenu: ({ isMenuOpen }) => () => {
