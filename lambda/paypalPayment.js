@@ -60,35 +60,994 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 446);
+/******/ 	return __webpack_require__(__webpack_require__.s = 78);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 13:
-/***/ (function(module, exports) {
-
-module.exports = require("https");
-
-/***/ }),
-
-/***/ 141:
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(142)();
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+var api = __webpack_require__(2);
+
+/**
+ * Attach REST operations from restFunctions as required by a PayPal API
+ * resource e.g. create, get and list are attahed for Payment resource
+ * @param  {Object} destObject A PayPal resource e.g. Invoice
+ * @param  {Array} operations Rest operations that the destObject will allow e.g. get
+ * @return {Object}            
+ */
+function mixin(destObject, operations) {
+    operations.forEach(function (property) {
+        destObject[property] = restFunctions[property];
+    });
+    return destObject;
+}
+
+/**
+ * restFunctions Object containing the REST CRUD methods and paypal specific REST methods that
+ * are shared between at least two of the REST endpoints, otherwise the function
+ * will be defined within the resource definition itself
+ * @type {Object}
+ */
+var restFunctions = {
+    create: function create(data, config, cb) {
+        api.executeHttp('POST', this.baseURL, data, config, cb);
+    },
+    get: function get(id, config, cb) {
+        api.executeHttp('GET', this.baseURL + id, {}, config, cb);
+    },
+    list: function list(data, config, cb) {
+        if (typeof data === 'function') {
+            config = data;
+            data = {};
+        }
+        api.executeHttp('GET', this.baseURL, data, config, cb);
+    },
+    del: function del(id, config, cb) {
+        api.executeHttp('DELETE', this.baseURL + id, {}, config, cb);
+    },
+    //provided for compatibility with 0.* versions
+    delete: function del(id, config, cb) {
+        api.executeHttp('DELETE', this.baseURL + id, {}, config, cb);
+    },
+    capture: function capture(id, data, config, cb) {
+        api.executeHttp('POST', this.baseURL + id + '/capture', data, config, cb);
+    },
+    refund: function refund(id, data, config, cb) {
+        api.executeHttp('POST', this.baseURL + id + '/refund', data, config, cb);
+    },
+    update: function update(id, data, config, cb) {
+        api.executeHttp('PATCH', this.baseURL + id, data, config, cb);
+    },
+    cancel: function cancel(id, data, config, cb) {
+        api.executeHttp('POST', this.baseURL + id + '/cancel', data, config, cb);
+    }
+};
+
+module.exports.mixin = mixin;
 
 
 /***/ }),
-
-/***/ 142:
+/* 1 */,
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var configuration = __webpack_require__(41);
-var api = __webpack_require__(9);
+var client = __webpack_require__(17);
+var utils = __webpack_require__(19);
+var configuration = __webpack_require__(4);
+
+/**
+ * token_persist client id to access token cache, used to reduce access token round trips
+ * @type {Object}
+ */
+var token_persist = {};
+
+/**
+ * Set up configuration globally such as client_id and client_secret,
+ * by merging user provided configurations otherwise use default settings
+ * @param  {Object} options Configuration parameters passed as object
+ * @return {undefined}
+ */
+var configure = exports.configure = function configure(options) {
+    if (options !== undefined && typeof options === 'object') {
+        configuration.default_options = utils.merge(configuration.default_options, options);
+    }
+
+    if (configuration.default_options.mode !== 'sandbox' && configuration.default_options.mode !== 'live') {
+        throw new Error('Mode must be "sandbox" or "live"');
+    }
+};
+
+/**
+ * Generate new access token by making a POST request to /oauth2/token by
+ * exchanging base64 encoded client id/secret pair or valid refresh token.
+ *
+ * Otherwise authorization code from a mobile device can be exchanged for a long
+ * living refresh token used to charge user who has consented to future payments.
+ * @param  {Object|Function}   config Configuration parameters such as authorization code or refresh token
+ * @param  {Function} cb     Callback function
+ * @return {String}          Access token or Refresh token
+ */
+var generateToken = exports.generateToken = function generateToken(config, cb) {
+
+    if (typeof config === "function") {
+        cb = config;
+        config = configuration.default_options;
+    } else if (!config) {
+        config = configuration.default_options;
+    } else {
+        config = utils.merge(config, configuration.default_options, true);
+    }
+
+    var payload = 'grant_type=client_credentials';
+    if (config.authorization_code) {
+        payload = 'grant_type=authorization_code&response_type=token&redirect_uri=urn:ietf:wg:oauth:2.0:oob&code=' + config.authorization_code;
+    } else if (config.refresh_token) {
+        payload = 'grant_type=refresh_token&refresh_token=' + config.refresh_token;
+    }
+
+    var basicAuthString = 'Basic ' + new Buffer(config.client_id + ':' + config.client_secret).toString('base64');
+
+    var http_options = {
+        schema: config.schema || configuration.default_options.schema,
+        host: utils.getDefaultApiEndpoint(config.mode) || config.host || configuration.default_options.host,
+        port: config.port || configuration.default_options.port,
+        headers: utils.merge({
+            'Authorization': basicAuthString,
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }, configuration.default_options.headers, true)
+    };
+
+    client.invoke('POST', '/v1/oauth2/token', payload, http_options, function (err, res) {
+        var token = null;
+        if (res) {
+            if (!config.authorization_code && !config.refresh_token) {
+                var seconds = new Date().getTime() / 1000;
+                token_persist[config.client_id] = res;
+                token_persist[config.client_id].created_at = seconds;
+            }
+
+            if (!config.authorization_code) {
+                token = res.token_type + ' ' + res.access_token;
+            }
+            else {
+                token = res.refresh_token;
+            }
+        }
+        cb(err, token);
+    });
+};
+
+/* Update authorization header with new token obtained by calling
+generateToken */
+/**
+ * Updates http Authorization header to newly created access token
+ * @param  {Object}   http_options   Configuration parameters such as authorization code or refresh token
+ * @param  {Function}   error_callback
+ * @param  {Function} callback
+ */
+function updateToken(http_options, error_callback, callback) {
+    generateToken(http_options, function (error, token) {
+        if (error) {
+            error_callback(error, token);
+        } else {
+            http_options.headers.Authorization = token;
+            callback();
+        }
+    });
+}
+
+/**
+ * Makes a PayPal REST API call. Reuses valid access tokens to reduce
+ * round trips, handles 401 error and token expiration.
+ * @param  {String}   http_method           A HTTP Verb e.g. GET or POST
+ * @param  {String}   path                  Url endpoint for API request
+ * @param  {Data}   data                    Payload associated with API request
+ * @param  {Object|Function}   http_options Configurations for settings and Auth
+ * @param  {Function} cb                    Callback function
+ */
+var executeHttp = exports.executeHttp = function executeHttp(http_method, path, data, http_options, cb) {
+    if (typeof http_options === "function") {
+        cb = http_options;
+        http_options = null;
+    }
+    if (!http_options) {
+        http_options = configuration.default_options;
+    } else {
+        http_options = utils.merge(http_options, configuration.default_options, true);
+    }
+
+    //Get host endpoint using mode
+    http_options.host = utils.getDefaultApiEndpoint(http_options.mode) || http_options.host;
+
+    function retryInvoke() {
+        client.invoke(http_method, path, data, http_options, cb);
+    }
+
+    // correlation-id is deprecated in favor of client-metadata-id
+    if (http_options.client_metadata_id) {
+        http_options.headers['Paypal-Client-Metadata-Id'] = http_options.client_metadata_id;
+    }
+    else if (http_options.correlation_id) {
+        http_options.headers['Paypal-Client-Metadata-Id'] = http_options.correlation_id;
+    }
+
+    // If client_id exists with an unexpired token and a refresh token is not provided, reuse cached token
+    if (http_options.client_id in token_persist && !utils.checkExpiredToken(token_persist[http_options.client_id]) && !http_options.refresh_token) {
+        http_options.headers.Authorization = "Bearer " + token_persist[http_options.client_id].access_token;
+        client.invoke(http_method, path, data, http_options, function (error, response) {
+            // Don't reprompt already authenticated user for login by updating Authorization header
+            // if token expires
+            if (error && error.httpStatusCode === 401 && http_options.client_id && http_options.headers.Authorization) {
+                http_options.headers.Authorization = null;
+                updateToken(http_options, cb, retryInvoke);
+            } else {
+                cb(error, response);
+            }
+        });
+    } else {
+        updateToken(http_options, cb, retryInvoke);
+    }
+};
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+module.exports = require("https");
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+
+var sdkVersion = exports.sdkVersion = __webpack_require__(57).version;
+var userAgent = exports.userAgent = 'PayPalSDK/PayPal-node-SDK ' + sdkVersion + ' (node ' + process.version + '-' + process.arch + '-' + process.platform  + '; OpenSSL ' + process.versions.openssl + ')';
+
+var default_options = exports.default_options = {
+    'mode': 'sandbox',
+    'schema': 'https',
+    'host': 'api.sandbox.paypal.com',
+    'port': '',
+    'openid_connect_schema': 'https',
+    'openid_connect_host': 'api.sandbox.paypal.com',
+    'openid_connect_port': '',
+    'authorize_url': 'https://www.sandbox.paypal.com/signin/authorize',
+    'logout_url': 'https://www.sandbox.paypal.com/webapps/auth/protocol/openidconnect/v1/endsession',
+    'headers': {}
+};
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = require("http");
+
+/***/ }),
+/* 6 */,
+/* 7 */,
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+
+var http = __webpack_require__(5);
+var https = __webpack_require__(3);
+var querystring = __webpack_require__(18);
+var configuration = __webpack_require__(4);
+var semver = __webpack_require__(58);
+
+/**
+ * Wraps the http client, handles request parameters, populates request headers, handles response
+ * @param  {String}   http_method        HTTP Method GET/POST
+ * @param  {String}   path               url endpoint
+ * @param  {Object}   data               Payload for HTTP Request
+ * @param  {Object}   http_options_param Configuration parameters
+ * @param  {Function} cb                 [description]
+ */
+var invoke = exports.invoke = function invoke(http_method, path, data, http_options_param, cb) {
+    var client = (http_options_param.schema === 'http') ? http : https;
+
+    var request_data = data;
+
+    if (http_method === 'GET') {
+        //format object parameters into GET request query string
+        if (typeof request_data !== 'string') {
+            request_data = querystring.stringify(request_data);
+        }
+        if (request_data) {
+            path = path + "?" + request_data;
+            request_data = "";
+        }
+    } else if (typeof request_data !== 'string') {
+        request_data = JSON.stringify(request_data);
+    }
+
+    var http_options = {};
+
+    if (http_options_param) {
+
+        http_options = JSON.parse(JSON.stringify(http_options_param));
+
+        if (!http_options.headers) {
+            http_options.headers = {};
+        }
+        http_options.path = path;
+        http_options.method = http_method;
+        if (request_data) {
+            http_options.headers['Content-Length'] = Buffer.byteLength(request_data, 'utf-8');
+        }
+
+        if (!http_options.headers.Accept) {
+            http_options.headers.Accept = 'application/json';
+        }
+
+        if (!http_options.headers['Content-Type']) {
+            http_options.headers['Content-Type'] = 'application/json';
+        }
+
+        http_options.headers['User-Agent'] = configuration.userAgent;
+        http_options.withCredentials = false;
+    }
+
+    // Enable full request response logging in development/non-production environment only
+    if (configuration.default_options.mode !== 'live' && process.env.PAYPAL_DEBUG) {
+        console.dir(JSON.stringify(http_options.headers));
+        console.dir(request_data);
+    }
+
+    //PCI compliance
+    if (process.versions !== undefined && process.versions.openssl !== undefined && semver.lt(process.versions.openssl.slice(0, 5), '1.0.1')) {
+        console.warn('WARNING: openssl version ' + process.versions.openssl + ' detected. Per PCI Security Council mandate (https://github.com/paypal/TLS-update), you MUST update to the latest security library.');
+    }
+
+    var req = client.request(http_options);
+    req.on('error', function (e) {
+        console.log('problem with request: ' + e.message);
+        cb(e, null);
+    });
+
+    req.on('response', function (res) {
+        var response = '';
+        //do not setEndcoding with browserify
+        if (res.setEncoding) {
+            res.setEncoding('utf8');
+        }
+
+        res.on('data', function (chunk) {
+            response += chunk;
+        });
+
+        res.on('end', function () {
+            var err = null;
+
+            try {
+                //export PAYPAL_DEBUG to development to get access to paypal-debug-id
+                //for questions to merchant technical services.
+                if (res.headers['paypal-debug-id'] !== undefined && process.env.PAYPAL_DEBUG) {
+                    console.log('paypal-debug-id: ' + res.headers['paypal-debug-id']);
+
+                    if (configuration.default_options.mode !== 'live') {
+                        console.dir(JSON.stringify(res.headers));
+                        console.dir(response);
+                    }
+                }
+
+                // Set response to an empty object if no data was received
+                if (response.trim() === '') {
+                    response = {};
+                } else if (typeof res.headers['content-type'] === "string" &&
+                    res.headers['content-type'].match(/^application\/json(?:;.*)?$/) !== null) {
+                    // Set response to be parsed JSON object if data received is json
+                    // expect that content-type header has application/json when it
+                    // returns data
+                    response = JSON.parse(response);
+                }
+                response.httpStatusCode = res.statusCode;
+            } catch (e) {
+                err = new Error('Invalid JSON Response Received. If the response received is empty, please check' +
+                 'the httpStatusCode attribute of error message for 401 or 403. It is possible that the client credentials' +
+                  'are invalid for the environment you are using, be it live or sandbox.');
+                err.error = {
+                    name: 'Invalid JSON Response Received, JSON Parse Error.'
+                };
+                err.response = response;
+                err.httpStatusCode = res.statusCode;
+                response = null;
+            }
+
+            if (!err && (res.statusCode < 200 || res.statusCode >= 300)) {
+                err = new Error('Response Status : ' + res.statusCode);
+                // response contains the full json description of the error
+                // that PayPal returns and information link
+                err.response = response;
+                if (process.env.PAYPAL_DEBUG) {
+                    err.response_stringified = JSON.stringify(response);
+                }
+                err.httpStatusCode = res.statusCode;
+                response = null;
+            }
+            cb(err, response);
+        });
+    });
+
+    if (request_data) {
+        req.write(request_data);
+    }
+    req.end();
+};
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = require("querystring");
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+var https = __webpack_require__(3);
+var isArray = Array.isArray;
+var hasOwn = Object.prototype.hasOwnProperty;
+
+var getDefaultEndpoint = exports.getDefaultEndpoint = function getDefaultEndpoint(mode) {
+    return (typeof mode === "string" && mode === "live") ? "paypal.com" : "sandbox.paypal.com";
+};
+
+var getDefaultApiEndpoint = exports.getDefaultApiEndpoint = function getDefaultApiEndpoint(mode) {
+    var api = (typeof mode === "string" && mode === "security-test-sandbox") ? "test-api." : "api.";
+    return api + getDefaultEndpoint(mode);
+};
+
+/**
+ * Recursively copies given object into a new object. Helper method for merge
+ * @param  {Object} v
+ * @return {Object}
+ */
+function clone(v) {
+    if (v === null || typeof v !== "object") {
+        return v;
+    }
+
+    if (isArray(v)) {
+        var arr = v.slice();
+        for (var i = 0; i < v.length; i++) {
+            arr[i] = clone(arr[i]);
+        }
+        return arr;
+    }
+    else {
+        var obj = {};
+        for (var k in v) {
+            obj[k] = clone(v[k]);
+        }
+        return obj;
+    }
+}
+
+/**
+ * Merges two Objects recursively, setting property of obj1 to those of obj2
+ * and creating property as necessary. 
+ *
+ * Implementation suggested by @kobalicek on https://github.com/paypal/PayPal-node-SDK/issues/69
+ * @param  {Object} obj1 
+ * @param  {Object} obj2 
+ * @return {Object}     
+ */
+var merge = exports.merge = function merge(obj1, obj2, appendOnly) {
+
+    //Handle invalid arguments
+    if (obj1 === null || typeof obj1 !== "object") {
+        throw new TypeError("merge() - first parameter has to be an object, not " + typeof obj1 + ".");
+    }
+
+    if (obj2 === null || typeof obj2 !== "object") {
+        throw new TypeError("merge() - first parameter has to be an object, not " + typeof obj2 + ".");
+    }
+
+    if (isArray(obj1) || isArray(obj2)) {
+        throw new TypeError("merge() - Unsupported for arrays.");
+    }
+
+    for (var k in obj2) {
+        var obj1Val, obj2Val = obj2[k];
+        if (hasOwn.call(obj1, k)) {
+            if (!appendOnly) {
+                obj1Val = obj1[k];
+                if (obj1Val !== null && typeof obj1Val === "object" &&
+                        obj2Val !== null && typeof obj2Val === "object") {
+                    merge(obj1Val, obj2Val);
+                }
+                else {
+                    obj1[k] = clone(obj2Val);
+                }
+            }
+        }
+        else {
+            obj1[k] = clone(obj2Val);
+        }
+    }
+    return obj1;
+};
+
+/**
+ * Checks if access token for client id has expired
+ * @param  {Object} token_hash  object returned from paypal access token request
+ *                              with expires_in set and sdk sets the created_at
+ * @return {Boolean}            true if token expired else false
+ */
+var checkExpiredToken = exports.checkExpiredToken = function checkExpiredToken(token_hash) {
+    var delta = (new Date().getTime() / 1000) - token_hash.created_at;
+    return (delta < token_hash.expires_in) ? false : true;
+};
+
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
+
+/**
+ * Create planned sets of future recurring payments at periodic intervals (sometimes known as “subscriptions”).
+ * @return {Object} billing plan functions
+ */
+function billingPlan() {
+    var baseURL = '/v1/payments/billing-plans/';
+    var operations = ['create', 'get', 'list', 'update'];
+
+    var ret = {
+        baseURL: baseURL,
+        /**
+         * Activate a billing plan so that it can be used to form
+         * billing agreements with users
+         * @param  {String}   id     Billing plan identifier
+         * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
+         * @param  {Function} cb     
+         * @return {}          Returns the HTTP status of 200 if the call is successful
+         */
+        activate: function activate(id, config, cb) {
+            var activate_attributes = [
+                {
+                    "op": "replace",
+                    "path": "/",
+                    "value": {
+                        "state": "ACTIVE"
+                    }
+                }
+            ];
+            api.executeHttp('PATCH', this.baseURL + id, activate_attributes, config, cb);
+        }
+    };
+    ret = generate.mixin(ret, operations);
+    return ret;
+}
+
+module.exports = billingPlan;
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
+
+/**
+ * The billing agreements allows merchants to have users agree to be billed
+ * for billing plans
+ * @return {Object} billing agreement functions
+ */
+function billingAgreement() {
+    var baseURL = '/v1/payments/billing-agreements/';
+    var operations = ['create', 'get', 'update', 'cancel'];
+
+    /**
+     * Search for transactions within a billing agreement
+     * @param  {String}   id         Identifier of the agreement resource for which to list transactions.
+     * @param  {String}   start_date YYYY-MM-DD start date of range of transactions to list
+     * @param  {String}   end_date   YYYY-MM-DD end date of range of transactions to list
+     * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
+     * @param  {Function} cb         
+     * @return {Object}              agreement transaction list, array of agreement transaction objects
+     */
+    function searchTransactions(id, start_date, end_date, config, cb) {
+        var date_range = {
+            "start_date": start_date,
+            "end_date": end_date
+        };
+        api.executeHttp('GET', baseURL + id + '/transactions', date_range, config, cb);
+    }
+
+    /**
+     * Bill outstanding balance of an agreement
+     * @param  {String}   id     Identifier of the agreement resource for which to bill balance
+     * @param  {Object}   data   Agreement state descriptor, fields include note and amount which has two attributes, value and currency
+     * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
+     * @param  {Function} cb      
+     * @return {}          Returns the HTTP status of 204 if the call is successful
+     */
+    function billBalance(id, data, config, cb) {
+        api.executeHttp('POST', baseURL + id + '/bill-balance', data, config, cb);
+    }
+
+    /**
+     * Set the outstanding amount of an agreement
+     * @param  {String}   id     Identifier of the agreement resource for which to set balance
+     * @param  {Object}   data   Two attributes currency e.g. "USD" and value e.g. "100"
+     * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
+     * @param  {Function} cb
+     * @return {}          Returns the HTTP status of 204 if the call is successful
+     */
+    function setBalance(id, data, config, cb) {
+        api.executeHttp('POST', baseURL + id + '/set-balance', data, config, cb);
+    }
+
+    var ret = {
+        baseURL: baseURL,
+        /**
+         * Execute an agreement after the buyer approves it
+         * @param  {String}   token  Payment Token of format EC-XXXXXX, appended to return url as a parameter after buyer approves agreement
+         * @param  {Object|Function}   data Empty object or callback. Optional, will be removed in next major release. 
+         * @param  {Object|Function}   config Configuration parameters e.g. client_id, client_secret override or callback
+         * @param  {Function} cb     
+         * @return {Object}          agreement object
+         */
+        execute: function execute(token, data, config, cb) {
+            //support case where neither data nor config is provided
+            if (typeof data === "function" && arguments.length === 2) {
+                cb = data;
+                data = {};
+            }
+            api.executeHttp('POST', this.baseURL + token + '/agreement-execute', data, config, cb);
+        },
+        /**
+         * Changes agreement state to suspended, can be reactivated unlike cancelling agreement
+         * @param  {String}   id     Identifier of the agreement resource for which to suspend
+         * @param  {Object}   data   Add note attribute, reason for changing state of agreement
+         * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
+         * @param  {Function} cb
+         * @return {}          Returns the HTTP status of 204 if the call is successful
+         */
+        suspend: function suspend(id, data, config, cb) {
+            api.executeHttp('POST', this.baseURL + id + '/suspend', data, config, cb);
+        },
+        /**
+         * Reactivate a suspended agreement
+         * @param  {String}   id     Identifier of the agreement resource for which to reactivate
+         * @param  {Object}   data   Add note attribute, reason for changing state of agreement
+         * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
+         * @param  {Function} cb
+         * @return {}          Returns the HTTP status of 204 if the call is successful
+         */
+        reactivate: function reactivate(id, data, config, cb) {
+            api.executeHttp('POST', this.baseURL + id + '/re-activate', data, config, cb);
+        },
+        billBalance: billBalance,
+        setBalance: setBalance,
+        searchTransactions: searchTransactions,
+        //entries below are deprecated but provided for compatibility with 0.* versions
+        bill_balance: billBalance,
+        set_balance: setBalance,
+        search_transactions: searchTransactions
+    };
+    ret = generate.mixin(ret, operations);
+    return ret;
+}
+module.exports = billingAgreement;
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+
+var generate = __webpack_require__(0);
+
+/**
+ * Store credit cards information securely in vault
+ * @return {Object} Credit Card functions
+ */
+function creditCard() {
+    var baseURL = '/v1/vault/credit-cards/';
+    var operations = ['create', 'get', 'update', 'del', 'delete', 'list'];
+
+    var ret = {
+        baseURL: baseURL
+    };
+    ret = generate.mixin(ret, operations);
+    return ret;
+}
+
+module.exports = creditCard;
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+var configuration = __webpack_require__(4);
+var client = __webpack_require__(17);
+var utils = __webpack_require__(19);
+var querystring = __webpack_require__(18);
+
+/**
+ * Sets up request body for open id connect module requests
+ * @param  {String}   path              url endpoint
+ * @param  {Object}   data              Payload for HTTP Request
+ * @param  {Object|Function}   config   Configuration parameters such as authorization code or refresh token
+ * @param  {Function} cb     
+ */
+function openIdConnectRequest(path, data, config, cb) {
+    var http_options = {
+        schema: config.openid_connect_schema || configuration.default_options.openid_connect_schema,
+        host: utils.getDefaultApiEndpoint(config.mode) || config.openid_connect_host,
+        port: config.openid_connect_port || configuration.default_options.openid_connect_port,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    };
+
+    //Populate Basic Auth header only for endpoints that need it such as tokeninfo
+    if (data.client_id && data.client_secret) {
+        http_options.headers.Authorization = 'Basic ' + new Buffer(data.client_id + ':' + data.client_secret).toString('base64');
+    }
+
+    client.invoke('POST', path, querystring.stringify(data), http_options, cb);
+}
+
+/**
+ * @param  {Object} config Configurations for settings and Auth
+ * @return {String}        client id
+ */
+function getClientId(config) {
+    return config.openid_client_id || config.client_id ||
+        configuration.default_options.openid_client_id || configuration.default_options.client_id;
+}
+
+/**
+ * @param  {Object} config Configurations for settings and Auth
+ * @return {String}        client secret
+ */
+function getClientSecret(config) {
+    return config.openid_client_secret || config.client_secret ||
+        configuration.default_options.openid_client_secret || configuration.default_options.client_secret;
+}
+
+/**
+ * Configurations for settings and Auth
+ * @return {String}        redirect uri
+ */
+function getRedirectUri(config) {
+    return config.openid_redirect_uri || configuration.default_options.openid_redirect_uri;
+}
+
+/**
+ * Obtain a user’s consent to make Identity API calls on their behalf by redirecting them
+ * to authorization endpoint
+ * @param  {Data}   data      Payload associated with API request
+ * @param  {Object} config    Configurations for settings and Auth
+ * @return {String}        authorize url
+ */
+function authorizeUrl(data, config) {
+    config = config || configuration.default_options;
+    data   = data || {};
+
+    //Use mode provided, live or sandbox to construct authorize_url, sandbox is default
+    var url = 'https://www.' + utils.getDefaultEndpoint(config.mode) + '/signin/authorize' || config.authorize_url;
+
+    data = utils.merge({
+        'client_id': getClientId(config),
+        'scope': 'openid',
+        'response_type': 'code',
+        'redirect_uri': getRedirectUri(config)
+    }, data);
+
+    return url + '?' + querystring.stringify(data);
+}
+
+/**
+ * Direct user to logout url to end session
+ * @param  {Data}   data      Payload associated with API request
+ * @param  {Object} config    Configurations for settings and Auth
+ * @return {String}        logout url
+ */
+function logoutUrl(data, config) {
+    config = config || configuration.default_options;
+    data   = data || {};
+
+    var url = 'https://www.' + utils.getDefaultEndpoint(config.mode) + '/webapps/auth/protocol/openidconnect/v1/endsession' || config.logout_url;
+
+    if (typeof data === 'string') {
+        data = { 'id_token': data };
+    }
+
+    data = utils.merge({
+        'logout': 'true',
+        'redirect_uri': getRedirectUri(config)
+    }, data);
+
+    return url + '?' + querystring.stringify(data);
+}
+
+/**
+ * Grant a new access token, using a refresh token
+ * @param  {Object}   data   Payload associated with API request
+ * @param  {Object|Function}   config Configurations for settings and Auth
+ * @param  {Function} cb     Callback function
+ */
+function tokenInfoRequest(data, config, cb) {
+
+    if (typeof config === 'function') {
+        cb = config;
+        config = configuration.default_options;
+    } else if (!config) {
+        config = configuration.default_options;
+    }
+
+    data = utils.merge({
+        'client_id': getClientId(config),
+        'client_secret': getClientSecret(config)
+    }, data);
+
+    openIdConnectRequest('/v1/identity/openidconnect/tokenservice', data, config, cb);
+}
+
+/**
+ * Retrieve user profile attributes
+ * @param  {Object}   data   Payload associated with API request
+ * @param  {Object|Function}   config Configurations for settings and Auth
+ * @param  {Function} cb     Callback function
+ */
+function userInfoRequest(data, config, cb) {
+    if (typeof config === 'function') {
+        cb = config;
+        config = configuration.default_options;
+    } else if (!config) {
+        config = configuration.default_options;
+    }
+
+    if (typeof data === 'string') {
+        data = { 'access_token': data };
+    }
+
+    data = utils.merge({
+        'schema': 'openid'
+    }, data);
+
+    openIdConnectRequest('/v1/identity/openidconnect/userinfo', data, config, cb);
+}
+
+/**
+ * Use log in with PayPal to avoid storing user data on the system
+ * @return {Object} openidconnect functions
+ */
+function openIdConnect() {
+    return {
+        tokeninfo: {
+            create: function (data, config, cb) {
+                if (typeof data === 'string') {
+                    data = { 'code': data };
+                }
+                data.grant_type = 'authorization_code';
+                tokenInfoRequest(data, config, cb);
+            },
+            refresh: function (data, config, cb) {
+                if (typeof data === 'string') {
+                    data = { 'refresh_token': data };
+                }
+                data.grant_type = 'refresh_token';
+                tokenInfoRequest(data, config, cb);
+            }
+        },
+        authorizeUrl: authorizeUrl,
+        logoutUrl: logoutUrl,
+        userinfo: {
+            get: userInfoRequest
+        },
+        //entries below are deprecated but provided for compatibility with 0.* versions
+        authorize_url: authorizeUrl,
+        logout_url: logoutUrl
+    };
+}
+
+module.exports = openIdConnect;
+
+
+/***/ }),
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(56)();
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright 2015-2016 PayPal, Inc. */
+
+
+var configuration = __webpack_require__(4);
+var api = __webpack_require__(2);
 
 module.exports = function () {
 
@@ -105,42 +1064,40 @@ module.exports = function () {
         configure: configure,
         configuration: configuration.default_options,
         generateToken: generateToken,
-        payment: __webpack_require__(145)(),
-        sale: __webpack_require__(146)(),
-        refund: __webpack_require__(147)(),
-        authorization: __webpack_require__(148)(),
-        capture: __webpack_require__(149)(),
-        order: __webpack_require__(150)(),
-        payout: __webpack_require__(151)(),
-        payoutItem: __webpack_require__(152)(),
-        billingPlan: __webpack_require__(84)(),
-        billingAgreement: __webpack_require__(85)(),
-        creditCard: __webpack_require__(86)(),
-        invoice: __webpack_require__(153)(),
-        invoiceTemplate: __webpack_require__(154)(),
-        openIdConnect: __webpack_require__(87)(),
-        webProfile: __webpack_require__(155)(),
-        notification: __webpack_require__(156)(),
+        payment: __webpack_require__(59)(),
+        sale: __webpack_require__(60)(),
+        refund: __webpack_require__(61)(),
+        authorization: __webpack_require__(62)(),
+        capture: __webpack_require__(63)(),
+        order: __webpack_require__(64)(),
+        payout: __webpack_require__(65)(),
+        payoutItem: __webpack_require__(66)(),
+        billingPlan: __webpack_require__(20)(),
+        billingAgreement: __webpack_require__(21)(),
+        creditCard: __webpack_require__(22)(),
+        invoice: __webpack_require__(67)(),
+        invoiceTemplate: __webpack_require__(68)(),
+        openIdConnect: __webpack_require__(23)(),
+        webProfile: __webpack_require__(69)(),
+        notification: __webpack_require__(70)(),
         //entries below are deprecated but provided for compatibility with 0.* versions
         generate_token: generateToken,
-        billing_plan: __webpack_require__(84)(),
-        billing_agreement: __webpack_require__(85)(),
-        credit_card: __webpack_require__(86)(),
-        openid_connect: __webpack_require__(87)()
+        billing_plan: __webpack_require__(20)(),
+        billing_agreement: __webpack_require__(21)(),
+        credit_card: __webpack_require__(22)(),
+        openid_connect: __webpack_require__(23)()
     };
 };
 
 
 /***/ }),
-
-/***/ 143:
+/* 57 */
 /***/ (function(module, exports) {
 
 module.exports = {"_from":"paypal-rest-sdk","_id":"paypal-rest-sdk@1.8.1","_inBundle":false,"_integrity":"sha512-Trj2GuPn10GqpICAxQh5wjxuDT7rq7DMOkvyatz05wI5xPGmqXN7UC0WfDSF9WSBs4YdcWZP0g+nY+sOdaFggw==","_location":"/paypal-rest-sdk","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"paypal-rest-sdk","name":"paypal-rest-sdk","escapedName":"paypal-rest-sdk","rawSpec":"","saveSpec":null,"fetchSpec":"latest"},"_requiredBy":["#USER","/"],"_resolved":"https://registry.npmjs.org/paypal-rest-sdk/-/paypal-rest-sdk-1.8.1.tgz","_shasum":"5023fd42f43da628d18cc00d6bd566eacba74528","_spec":"paypal-rest-sdk","_where":"/Users/jonathanhalpern/Projects/chiswick-rehearsal-room","author":{"name":"PayPal","email":"DL-PP-NODEJS-SDK@paypal.com","url":"https://developer.paypal.com/"},"bugs":{"url":"https://github.com/paypal/PayPal-node-SDK/issues","email":"DL-PP-NODEJS-SDK@paypal.com"},"bundleDependencies":false,"config":{"blanket":{"pattern":"lib","data-cover-never":"node_modules"}},"dependencies":{"buffer-crc32":"^0.2.3","semver":"^5.0.3"},"deprecated":false,"description":"SDK for PayPal REST APIs","devDependencies":{"blanket":"~1.1.5","chai":"~1.9.1","grunt":"~0.4.1","grunt-contrib-jshint":"~0.3.0","grunt-jsdoc":"^0.5.8","grunt-simple-mocha":"~0.4.0","ink-docstrap":"^0.5.2","jsdoc":"^3.3.0-beta1","mocha":"~1.18.2","mocha-lcov-reporter":"0.0.1","nock":"0.36.2"},"engines":{"node":">= v0.6.0"},"homepage":"https://github.com/paypal/PayPal-node-SDK","keywords":["paypal","rest","api","sdk"],"license":"SEE LICENSE IN https://github.com/paypal/PayPal-node-SDK/blob/master/LICENSE","main":"./index.js","name":"paypal-rest-sdk","repository":{"type":"git","url":"git+https://github.com/paypal/PayPal-node-SDK.git"},"scripts":{"test":"grunt"},"version":"1.8.1"}
 
 /***/ }),
-
-/***/ 144:
+/* 58 */
 /***/ (function(module, exports) {
 
 exports = module.exports = SemVer;
@@ -1470,16 +2427,15 @@ function coerce(version) {
 
 
 /***/ }),
-
-/***/ 145:
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
 
 /**
  * Create or get details of payments
@@ -1511,15 +2467,14 @@ module.exports = payment;
 
 
 /***/ }),
-
-/***/ 146:
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
+var generate = __webpack_require__(0);
 
 /**
  * Completed payments are referred to as sale transactions
@@ -1540,15 +2495,14 @@ module.exports = sale;
 
 
 /***/ }),
-
-/***/ 147:
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
+var generate = __webpack_require__(0);
 
 /**
  * Refunds on direct and captured payments
@@ -1569,16 +2523,15 @@ module.exports = refund;
 
 
 /***/ }),
-
-/***/ 148:
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
 
 /**
  * Retrieving, capturing, voiding, and reauthorizing previously created authorizations
@@ -1620,15 +2573,14 @@ module.exports = authorization;
 
 
 /***/ }),
-
-/***/ 149:
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
+var generate = __webpack_require__(0);
 
 /**
  * Look up and refund captured payments
@@ -1649,16 +2601,15 @@ module.exports = capture;
 
 
 /***/ }),
-
-/***/ 150:
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
 
 /**
  * Take action on a payment with the intent of order
@@ -1700,16 +2651,15 @@ module.exports = order;
 
 
 /***/ }),
-
-/***/ 151:
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
 
 /**
  * Make payouts to multiple PayPal accounts, or multiple payments to same PayPal account
@@ -1743,16 +2693,15 @@ module.exports = payout;
 
 
 /***/ }),
-
-/***/ 152:
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
 
 /**
  * An individual Payout item
@@ -1786,16 +2735,15 @@ module.exports = payoutItem;
 
 
 /***/ }),
-
-/***/ 153:
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
 
 /**
  * Create, send and manage invoices, PayPal emails the customer with link to invoice
@@ -1852,16 +2800,15 @@ module.exports = invoice;
 
 
 /***/ }),
-
-/***/ 154:
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
 
 function invoiceTemplate() {
     var baseURL = '/v1/invoicing/templates/';
@@ -1882,16 +2829,15 @@ module.exports = invoiceTemplate;
 
 
 /***/ }),
-
-/***/ 155:
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
 
 /**
  * Exposes REST endpoints for providing a customizing Paypal checkout
@@ -1937,19 +2883,18 @@ module.exports = webProfile;
 
 
 /***/ }),
-
-/***/ 156:
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
-var https = __webpack_require__(13);
-var crypto = __webpack_require__(4);
-var crc32 = __webpack_require__(157);
+var generate = __webpack_require__(0);
+var api = __webpack_require__(2);
+var https = __webpack_require__(3);
+var crypto = __webpack_require__(71);
+var crc32 = __webpack_require__(72);
 
 /**
  * Exposes REST endpoints for creating and managing webhooks
@@ -2152,11 +3097,16 @@ module.exports = notification;
 
 
 /***/ }),
+/* 71 */
+/***/ (function(module, exports) {
 
-/***/ 157:
+module.exports = require("crypto");
+
+/***/ }),
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Buffer = __webpack_require__(31).Buffer;
+var Buffer = __webpack_require__(73).Buffer;
 
 var CRC_TABLE = [
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
@@ -2270,62 +3220,17 @@ module.exports = crc32;
 
 
 /***/ }),
-
-/***/ 30:
-/***/ (function(module, exports) {
-
-module.exports = require("http");
-
-/***/ }),
-
-/***/ 31:
+/* 73 */
 /***/ (function(module, exports) {
 
 module.exports = require("buffer");
 
 /***/ }),
-
-/***/ 34:
-/***/ (function(module, exports) {
-
-module.exports = require("querystring");
-
-/***/ }),
-
-/***/ 4:
-/***/ (function(module, exports) {
-
-module.exports = require("crypto");
-
-/***/ }),
-
-/***/ 41:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-
-var sdkVersion = exports.sdkVersion = __webpack_require__(143).version;
-var userAgent = exports.userAgent = 'PayPalSDK/PayPal-node-SDK ' + sdkVersion + ' (node ' + process.version + '-' + process.arch + '-' + process.platform  + '; OpenSSL ' + process.versions.openssl + ')';
-
-var default_options = exports.default_options = {
-    'mode': 'sandbox',
-    'schema': 'https',
-    'host': 'api.sandbox.paypal.com',
-    'port': '',
-    'openid_connect_schema': 'https',
-    'openid_connect_host': 'api.sandbox.paypal.com',
-    'openid_connect_port': '',
-    'authorize_url': 'https://www.sandbox.paypal.com/signin/authorize',
-    'logout_url': 'https://www.sandbox.paypal.com/webapps/auth/protocol/openidconnect/v1/endsession',
-    'headers': {}
-};
-
-
-/***/ }),
-
-/***/ 446:
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2335,7 +3240,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.handler = handler;
-const paypal = __webpack_require__(141);
+const paypal = __webpack_require__(55);
 
 paypal.configure({
   mode: 'sandbox', // sandbox or live
@@ -2357,7 +3262,21 @@ function handler(event, context, callback) {
   }
 
   const data = event.body;
-  const { bookingDate, startTime, endTime, price } = JSON.parse(data);
+  const { bookingDate, startTime, endTime, price, discountCode } = JSON.parse(data);
+
+  if (discountCode) {
+    if (discountCode === '123') {
+      callback(null, {
+        statusCode: 200,
+        body: JSON.stringify('correct')
+      });
+    } else {
+      callback(null, {
+        statusCode: 403,
+        body: JSON.stringify('not a valid code')
+      });
+    }
+  }
 
   console.log('price is', price);
 
@@ -2436,896 +3355,5 @@ function handler(event, context, callback) {
   });
 }
 
-/***/ }),
-
-/***/ 6:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-var api = __webpack_require__(9);
-
-/**
- * Attach REST operations from restFunctions as required by a PayPal API
- * resource e.g. create, get and list are attahed for Payment resource
- * @param  {Object} destObject A PayPal resource e.g. Invoice
- * @param  {Array} operations Rest operations that the destObject will allow e.g. get
- * @return {Object}            
- */
-function mixin(destObject, operations) {
-    operations.forEach(function (property) {
-        destObject[property] = restFunctions[property];
-    });
-    return destObject;
-}
-
-/**
- * restFunctions Object containing the REST CRUD methods and paypal specific REST methods that
- * are shared between at least two of the REST endpoints, otherwise the function
- * will be defined within the resource definition itself
- * @type {Object}
- */
-var restFunctions = {
-    create: function create(data, config, cb) {
-        api.executeHttp('POST', this.baseURL, data, config, cb);
-    },
-    get: function get(id, config, cb) {
-        api.executeHttp('GET', this.baseURL + id, {}, config, cb);
-    },
-    list: function list(data, config, cb) {
-        if (typeof data === 'function') {
-            config = data;
-            data = {};
-        }
-        api.executeHttp('GET', this.baseURL, data, config, cb);
-    },
-    del: function del(id, config, cb) {
-        api.executeHttp('DELETE', this.baseURL + id, {}, config, cb);
-    },
-    //provided for compatibility with 0.* versions
-    delete: function del(id, config, cb) {
-        api.executeHttp('DELETE', this.baseURL + id, {}, config, cb);
-    },
-    capture: function capture(id, data, config, cb) {
-        api.executeHttp('POST', this.baseURL + id + '/capture', data, config, cb);
-    },
-    refund: function refund(id, data, config, cb) {
-        api.executeHttp('POST', this.baseURL + id + '/refund', data, config, cb);
-    },
-    update: function update(id, data, config, cb) {
-        api.executeHttp('PATCH', this.baseURL + id, data, config, cb);
-    },
-    cancel: function cancel(id, data, config, cb) {
-        api.executeHttp('POST', this.baseURL + id + '/cancel', data, config, cb);
-    }
-};
-
-module.exports.mixin = mixin;
-
-
-/***/ }),
-
-/***/ 82:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-
-var http = __webpack_require__(30);
-var https = __webpack_require__(13);
-var querystring = __webpack_require__(34);
-var configuration = __webpack_require__(41);
-var semver = __webpack_require__(144);
-
-/**
- * Wraps the http client, handles request parameters, populates request headers, handles response
- * @param  {String}   http_method        HTTP Method GET/POST
- * @param  {String}   path               url endpoint
- * @param  {Object}   data               Payload for HTTP Request
- * @param  {Object}   http_options_param Configuration parameters
- * @param  {Function} cb                 [description]
- */
-var invoke = exports.invoke = function invoke(http_method, path, data, http_options_param, cb) {
-    var client = (http_options_param.schema === 'http') ? http : https;
-
-    var request_data = data;
-
-    if (http_method === 'GET') {
-        //format object parameters into GET request query string
-        if (typeof request_data !== 'string') {
-            request_data = querystring.stringify(request_data);
-        }
-        if (request_data) {
-            path = path + "?" + request_data;
-            request_data = "";
-        }
-    } else if (typeof request_data !== 'string') {
-        request_data = JSON.stringify(request_data);
-    }
-
-    var http_options = {};
-
-    if (http_options_param) {
-
-        http_options = JSON.parse(JSON.stringify(http_options_param));
-
-        if (!http_options.headers) {
-            http_options.headers = {};
-        }
-        http_options.path = path;
-        http_options.method = http_method;
-        if (request_data) {
-            http_options.headers['Content-Length'] = Buffer.byteLength(request_data, 'utf-8');
-        }
-
-        if (!http_options.headers.Accept) {
-            http_options.headers.Accept = 'application/json';
-        }
-
-        if (!http_options.headers['Content-Type']) {
-            http_options.headers['Content-Type'] = 'application/json';
-        }
-
-        http_options.headers['User-Agent'] = configuration.userAgent;
-        http_options.withCredentials = false;
-    }
-
-    // Enable full request response logging in development/non-production environment only
-    if (configuration.default_options.mode !== 'live' && process.env.PAYPAL_DEBUG) {
-        console.dir(JSON.stringify(http_options.headers));
-        console.dir(request_data);
-    }
-
-    //PCI compliance
-    if (process.versions !== undefined && process.versions.openssl !== undefined && semver.lt(process.versions.openssl.slice(0, 5), '1.0.1')) {
-        console.warn('WARNING: openssl version ' + process.versions.openssl + ' detected. Per PCI Security Council mandate (https://github.com/paypal/TLS-update), you MUST update to the latest security library.');
-    }
-
-    var req = client.request(http_options);
-    req.on('error', function (e) {
-        console.log('problem with request: ' + e.message);
-        cb(e, null);
-    });
-
-    req.on('response', function (res) {
-        var response = '';
-        //do not setEndcoding with browserify
-        if (res.setEncoding) {
-            res.setEncoding('utf8');
-        }
-
-        res.on('data', function (chunk) {
-            response += chunk;
-        });
-
-        res.on('end', function () {
-            var err = null;
-
-            try {
-                //export PAYPAL_DEBUG to development to get access to paypal-debug-id
-                //for questions to merchant technical services.
-                if (res.headers['paypal-debug-id'] !== undefined && process.env.PAYPAL_DEBUG) {
-                    console.log('paypal-debug-id: ' + res.headers['paypal-debug-id']);
-
-                    if (configuration.default_options.mode !== 'live') {
-                        console.dir(JSON.stringify(res.headers));
-                        console.dir(response);
-                    }
-                }
-
-                // Set response to an empty object if no data was received
-                if (response.trim() === '') {
-                    response = {};
-                } else if (typeof res.headers['content-type'] === "string" &&
-                    res.headers['content-type'].match(/^application\/json(?:;.*)?$/) !== null) {
-                    // Set response to be parsed JSON object if data received is json
-                    // expect that content-type header has application/json when it
-                    // returns data
-                    response = JSON.parse(response);
-                }
-                response.httpStatusCode = res.statusCode;
-            } catch (e) {
-                err = new Error('Invalid JSON Response Received. If the response received is empty, please check' +
-                 'the httpStatusCode attribute of error message for 401 or 403. It is possible that the client credentials' +
-                  'are invalid for the environment you are using, be it live or sandbox.');
-                err.error = {
-                    name: 'Invalid JSON Response Received, JSON Parse Error.'
-                };
-                err.response = response;
-                err.httpStatusCode = res.statusCode;
-                response = null;
-            }
-
-            if (!err && (res.statusCode < 200 || res.statusCode >= 300)) {
-                err = new Error('Response Status : ' + res.statusCode);
-                // response contains the full json description of the error
-                // that PayPal returns and information link
-                err.response = response;
-                if (process.env.PAYPAL_DEBUG) {
-                    err.response_stringified = JSON.stringify(response);
-                }
-                err.httpStatusCode = res.statusCode;
-                response = null;
-            }
-            cb(err, response);
-        });
-    });
-
-    if (request_data) {
-        req.write(request_data);
-    }
-    req.end();
-};
-
-
-/***/ }),
-
-/***/ 83:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-var https = __webpack_require__(13);
-var isArray = Array.isArray;
-var hasOwn = Object.prototype.hasOwnProperty;
-
-var getDefaultEndpoint = exports.getDefaultEndpoint = function getDefaultEndpoint(mode) {
-    return (typeof mode === "string" && mode === "live") ? "paypal.com" : "sandbox.paypal.com";
-};
-
-var getDefaultApiEndpoint = exports.getDefaultApiEndpoint = function getDefaultApiEndpoint(mode) {
-    var api = (typeof mode === "string" && mode === "security-test-sandbox") ? "test-api." : "api.";
-    return api + getDefaultEndpoint(mode);
-};
-
-/**
- * Recursively copies given object into a new object. Helper method for merge
- * @param  {Object} v
- * @return {Object}
- */
-function clone(v) {
-    if (v === null || typeof v !== "object") {
-        return v;
-    }
-
-    if (isArray(v)) {
-        var arr = v.slice();
-        for (var i = 0; i < v.length; i++) {
-            arr[i] = clone(arr[i]);
-        }
-        return arr;
-    }
-    else {
-        var obj = {};
-        for (var k in v) {
-            obj[k] = clone(v[k]);
-        }
-        return obj;
-    }
-}
-
-/**
- * Merges two Objects recursively, setting property of obj1 to those of obj2
- * and creating property as necessary. 
- *
- * Implementation suggested by @kobalicek on https://github.com/paypal/PayPal-node-SDK/issues/69
- * @param  {Object} obj1 
- * @param  {Object} obj2 
- * @return {Object}     
- */
-var merge = exports.merge = function merge(obj1, obj2, appendOnly) {
-
-    //Handle invalid arguments
-    if (obj1 === null || typeof obj1 !== "object") {
-        throw new TypeError("merge() - first parameter has to be an object, not " + typeof obj1 + ".");
-    }
-
-    if (obj2 === null || typeof obj2 !== "object") {
-        throw new TypeError("merge() - first parameter has to be an object, not " + typeof obj2 + ".");
-    }
-
-    if (isArray(obj1) || isArray(obj2)) {
-        throw new TypeError("merge() - Unsupported for arrays.");
-    }
-
-    for (var k in obj2) {
-        var obj1Val, obj2Val = obj2[k];
-        if (hasOwn.call(obj1, k)) {
-            if (!appendOnly) {
-                obj1Val = obj1[k];
-                if (obj1Val !== null && typeof obj1Val === "object" &&
-                        obj2Val !== null && typeof obj2Val === "object") {
-                    merge(obj1Val, obj2Val);
-                }
-                else {
-                    obj1[k] = clone(obj2Val);
-                }
-            }
-        }
-        else {
-            obj1[k] = clone(obj2Val);
-        }
-    }
-    return obj1;
-};
-
-/**
- * Checks if access token for client id has expired
- * @param  {Object} token_hash  object returned from paypal access token request
- *                              with expires_in set and sdk sets the created_at
- * @return {Boolean}            true if token expired else false
- */
-var checkExpiredToken = exports.checkExpiredToken = function checkExpiredToken(token_hash) {
-    var delta = (new Date().getTime() / 1000) - token_hash.created_at;
-    return (delta < token_hash.expires_in) ? false : true;
-};
-
-
-
-/***/ }),
-
-/***/ 84:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
-
-/**
- * Create planned sets of future recurring payments at periodic intervals (sometimes known as “subscriptions”).
- * @return {Object} billing plan functions
- */
-function billingPlan() {
-    var baseURL = '/v1/payments/billing-plans/';
-    var operations = ['create', 'get', 'list', 'update'];
-
-    var ret = {
-        baseURL: baseURL,
-        /**
-         * Activate a billing plan so that it can be used to form
-         * billing agreements with users
-         * @param  {String}   id     Billing plan identifier
-         * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
-         * @param  {Function} cb     
-         * @return {}          Returns the HTTP status of 200 if the call is successful
-         */
-        activate: function activate(id, config, cb) {
-            var activate_attributes = [
-                {
-                    "op": "replace",
-                    "path": "/",
-                    "value": {
-                        "state": "ACTIVE"
-                    }
-                }
-            ];
-            api.executeHttp('PATCH', this.baseURL + id, activate_attributes, config, cb);
-        }
-    };
-    ret = generate.mixin(ret, operations);
-    return ret;
-}
-
-module.exports = billingPlan;
-
-
-/***/ }),
-
-/***/ 85:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-
-var generate = __webpack_require__(6);
-var api = __webpack_require__(9);
-
-/**
- * The billing agreements allows merchants to have users agree to be billed
- * for billing plans
- * @return {Object} billing agreement functions
- */
-function billingAgreement() {
-    var baseURL = '/v1/payments/billing-agreements/';
-    var operations = ['create', 'get', 'update', 'cancel'];
-
-    /**
-     * Search for transactions within a billing agreement
-     * @param  {String}   id         Identifier of the agreement resource for which to list transactions.
-     * @param  {String}   start_date YYYY-MM-DD start date of range of transactions to list
-     * @param  {String}   end_date   YYYY-MM-DD end date of range of transactions to list
-     * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
-     * @param  {Function} cb         
-     * @return {Object}              agreement transaction list, array of agreement transaction objects
-     */
-    function searchTransactions(id, start_date, end_date, config, cb) {
-        var date_range = {
-            "start_date": start_date,
-            "end_date": end_date
-        };
-        api.executeHttp('GET', baseURL + id + '/transactions', date_range, config, cb);
-    }
-
-    /**
-     * Bill outstanding balance of an agreement
-     * @param  {String}   id     Identifier of the agreement resource for which to bill balance
-     * @param  {Object}   data   Agreement state descriptor, fields include note and amount which has two attributes, value and currency
-     * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
-     * @param  {Function} cb      
-     * @return {}          Returns the HTTP status of 204 if the call is successful
-     */
-    function billBalance(id, data, config, cb) {
-        api.executeHttp('POST', baseURL + id + '/bill-balance', data, config, cb);
-    }
-
-    /**
-     * Set the outstanding amount of an agreement
-     * @param  {String}   id     Identifier of the agreement resource for which to set balance
-     * @param  {Object}   data   Two attributes currency e.g. "USD" and value e.g. "100"
-     * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
-     * @param  {Function} cb
-     * @return {}          Returns the HTTP status of 204 if the call is successful
-     */
-    function setBalance(id, data, config, cb) {
-        api.executeHttp('POST', baseURL + id + '/set-balance', data, config, cb);
-    }
-
-    var ret = {
-        baseURL: baseURL,
-        /**
-         * Execute an agreement after the buyer approves it
-         * @param  {String}   token  Payment Token of format EC-XXXXXX, appended to return url as a parameter after buyer approves agreement
-         * @param  {Object|Function}   data Empty object or callback. Optional, will be removed in next major release. 
-         * @param  {Object|Function}   config Configuration parameters e.g. client_id, client_secret override or callback
-         * @param  {Function} cb     
-         * @return {Object}          agreement object
-         */
-        execute: function execute(token, data, config, cb) {
-            //support case where neither data nor config is provided
-            if (typeof data === "function" && arguments.length === 2) {
-                cb = data;
-                data = {};
-            }
-            api.executeHttp('POST', this.baseURL + token + '/agreement-execute', data, config, cb);
-        },
-        /**
-         * Changes agreement state to suspended, can be reactivated unlike cancelling agreement
-         * @param  {String}   id     Identifier of the agreement resource for which to suspend
-         * @param  {Object}   data   Add note attribute, reason for changing state of agreement
-         * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
-         * @param  {Function} cb
-         * @return {}          Returns the HTTP status of 204 if the call is successful
-         */
-        suspend: function suspend(id, data, config, cb) {
-            api.executeHttp('POST', this.baseURL + id + '/suspend', data, config, cb);
-        },
-        /**
-         * Reactivate a suspended agreement
-         * @param  {String}   id     Identifier of the agreement resource for which to reactivate
-         * @param  {Object}   data   Add note attribute, reason for changing state of agreement
-         * @param  {Object|Function}   config     Configuration parameters e.g. client_id, client_secret override or callback
-         * @param  {Function} cb
-         * @return {}          Returns the HTTP status of 204 if the call is successful
-         */
-        reactivate: function reactivate(id, data, config, cb) {
-            api.executeHttp('POST', this.baseURL + id + '/re-activate', data, config, cb);
-        },
-        billBalance: billBalance,
-        setBalance: setBalance,
-        searchTransactions: searchTransactions,
-        //entries below are deprecated but provided for compatibility with 0.* versions
-        bill_balance: billBalance,
-        set_balance: setBalance,
-        search_transactions: searchTransactions
-    };
-    ret = generate.mixin(ret, operations);
-    return ret;
-}
-module.exports = billingAgreement;
-
-
-/***/ }),
-
-/***/ 86:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-
-var generate = __webpack_require__(6);
-
-/**
- * Store credit cards information securely in vault
- * @return {Object} Credit Card functions
- */
-function creditCard() {
-    var baseURL = '/v1/vault/credit-cards/';
-    var operations = ['create', 'get', 'update', 'del', 'delete', 'list'];
-
-    var ret = {
-        baseURL: baseURL
-    };
-    ret = generate.mixin(ret, operations);
-    return ret;
-}
-
-module.exports = creditCard;
-
-
-/***/ }),
-
-/***/ 87:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-var configuration = __webpack_require__(41);
-var client = __webpack_require__(82);
-var utils = __webpack_require__(83);
-var querystring = __webpack_require__(34);
-
-/**
- * Sets up request body for open id connect module requests
- * @param  {String}   path              url endpoint
- * @param  {Object}   data              Payload for HTTP Request
- * @param  {Object|Function}   config   Configuration parameters such as authorization code or refresh token
- * @param  {Function} cb     
- */
-function openIdConnectRequest(path, data, config, cb) {
-    var http_options = {
-        schema: config.openid_connect_schema || configuration.default_options.openid_connect_schema,
-        host: utils.getDefaultApiEndpoint(config.mode) || config.openid_connect_host,
-        port: config.openid_connect_port || configuration.default_options.openid_connect_port,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    };
-
-    //Populate Basic Auth header only for endpoints that need it such as tokeninfo
-    if (data.client_id && data.client_secret) {
-        http_options.headers.Authorization = 'Basic ' + new Buffer(data.client_id + ':' + data.client_secret).toString('base64');
-    }
-
-    client.invoke('POST', path, querystring.stringify(data), http_options, cb);
-}
-
-/**
- * @param  {Object} config Configurations for settings and Auth
- * @return {String}        client id
- */
-function getClientId(config) {
-    return config.openid_client_id || config.client_id ||
-        configuration.default_options.openid_client_id || configuration.default_options.client_id;
-}
-
-/**
- * @param  {Object} config Configurations for settings and Auth
- * @return {String}        client secret
- */
-function getClientSecret(config) {
-    return config.openid_client_secret || config.client_secret ||
-        configuration.default_options.openid_client_secret || configuration.default_options.client_secret;
-}
-
-/**
- * Configurations for settings and Auth
- * @return {String}        redirect uri
- */
-function getRedirectUri(config) {
-    return config.openid_redirect_uri || configuration.default_options.openid_redirect_uri;
-}
-
-/**
- * Obtain a user’s consent to make Identity API calls on their behalf by redirecting them
- * to authorization endpoint
- * @param  {Data}   data      Payload associated with API request
- * @param  {Object} config    Configurations for settings and Auth
- * @return {String}        authorize url
- */
-function authorizeUrl(data, config) {
-    config = config || configuration.default_options;
-    data   = data || {};
-
-    //Use mode provided, live or sandbox to construct authorize_url, sandbox is default
-    var url = 'https://www.' + utils.getDefaultEndpoint(config.mode) + '/signin/authorize' || config.authorize_url;
-
-    data = utils.merge({
-        'client_id': getClientId(config),
-        'scope': 'openid',
-        'response_type': 'code',
-        'redirect_uri': getRedirectUri(config)
-    }, data);
-
-    return url + '?' + querystring.stringify(data);
-}
-
-/**
- * Direct user to logout url to end session
- * @param  {Data}   data      Payload associated with API request
- * @param  {Object} config    Configurations for settings and Auth
- * @return {String}        logout url
- */
-function logoutUrl(data, config) {
-    config = config || configuration.default_options;
-    data   = data || {};
-
-    var url = 'https://www.' + utils.getDefaultEndpoint(config.mode) + '/webapps/auth/protocol/openidconnect/v1/endsession' || config.logout_url;
-
-    if (typeof data === 'string') {
-        data = { 'id_token': data };
-    }
-
-    data = utils.merge({
-        'logout': 'true',
-        'redirect_uri': getRedirectUri(config)
-    }, data);
-
-    return url + '?' + querystring.stringify(data);
-}
-
-/**
- * Grant a new access token, using a refresh token
- * @param  {Object}   data   Payload associated with API request
- * @param  {Object|Function}   config Configurations for settings and Auth
- * @param  {Function} cb     Callback function
- */
-function tokenInfoRequest(data, config, cb) {
-
-    if (typeof config === 'function') {
-        cb = config;
-        config = configuration.default_options;
-    } else if (!config) {
-        config = configuration.default_options;
-    }
-
-    data = utils.merge({
-        'client_id': getClientId(config),
-        'client_secret': getClientSecret(config)
-    }, data);
-
-    openIdConnectRequest('/v1/identity/openidconnect/tokenservice', data, config, cb);
-}
-
-/**
- * Retrieve user profile attributes
- * @param  {Object}   data   Payload associated with API request
- * @param  {Object|Function}   config Configurations for settings and Auth
- * @param  {Function} cb     Callback function
- */
-function userInfoRequest(data, config, cb) {
-    if (typeof config === 'function') {
-        cb = config;
-        config = configuration.default_options;
-    } else if (!config) {
-        config = configuration.default_options;
-    }
-
-    if (typeof data === 'string') {
-        data = { 'access_token': data };
-    }
-
-    data = utils.merge({
-        'schema': 'openid'
-    }, data);
-
-    openIdConnectRequest('/v1/identity/openidconnect/userinfo', data, config, cb);
-}
-
-/**
- * Use log in with PayPal to avoid storing user data on the system
- * @return {Object} openidconnect functions
- */
-function openIdConnect() {
-    return {
-        tokeninfo: {
-            create: function (data, config, cb) {
-                if (typeof data === 'string') {
-                    data = { 'code': data };
-                }
-                data.grant_type = 'authorization_code';
-                tokenInfoRequest(data, config, cb);
-            },
-            refresh: function (data, config, cb) {
-                if (typeof data === 'string') {
-                    data = { 'refresh_token': data };
-                }
-                data.grant_type = 'refresh_token';
-                tokenInfoRequest(data, config, cb);
-            }
-        },
-        authorizeUrl: authorizeUrl,
-        logoutUrl: logoutUrl,
-        userinfo: {
-            get: userInfoRequest
-        },
-        //entries below are deprecated but provided for compatibility with 0.* versions
-        authorize_url: authorizeUrl,
-        logout_url: logoutUrl
-    };
-}
-
-module.exports = openIdConnect;
-
-
-/***/ }),
-
-/***/ 9:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright 2015-2016 PayPal, Inc. */
-
-
-var client = __webpack_require__(82);
-var utils = __webpack_require__(83);
-var configuration = __webpack_require__(41);
-
-/**
- * token_persist client id to access token cache, used to reduce access token round trips
- * @type {Object}
- */
-var token_persist = {};
-
-/**
- * Set up configuration globally such as client_id and client_secret,
- * by merging user provided configurations otherwise use default settings
- * @param  {Object} options Configuration parameters passed as object
- * @return {undefined}
- */
-var configure = exports.configure = function configure(options) {
-    if (options !== undefined && typeof options === 'object') {
-        configuration.default_options = utils.merge(configuration.default_options, options);
-    }
-
-    if (configuration.default_options.mode !== 'sandbox' && configuration.default_options.mode !== 'live') {
-        throw new Error('Mode must be "sandbox" or "live"');
-    }
-};
-
-/**
- * Generate new access token by making a POST request to /oauth2/token by
- * exchanging base64 encoded client id/secret pair or valid refresh token.
- *
- * Otherwise authorization code from a mobile device can be exchanged for a long
- * living refresh token used to charge user who has consented to future payments.
- * @param  {Object|Function}   config Configuration parameters such as authorization code or refresh token
- * @param  {Function} cb     Callback function
- * @return {String}          Access token or Refresh token
- */
-var generateToken = exports.generateToken = function generateToken(config, cb) {
-
-    if (typeof config === "function") {
-        cb = config;
-        config = configuration.default_options;
-    } else if (!config) {
-        config = configuration.default_options;
-    } else {
-        config = utils.merge(config, configuration.default_options, true);
-    }
-
-    var payload = 'grant_type=client_credentials';
-    if (config.authorization_code) {
-        payload = 'grant_type=authorization_code&response_type=token&redirect_uri=urn:ietf:wg:oauth:2.0:oob&code=' + config.authorization_code;
-    } else if (config.refresh_token) {
-        payload = 'grant_type=refresh_token&refresh_token=' + config.refresh_token;
-    }
-
-    var basicAuthString = 'Basic ' + new Buffer(config.client_id + ':' + config.client_secret).toString('base64');
-
-    var http_options = {
-        schema: config.schema || configuration.default_options.schema,
-        host: utils.getDefaultApiEndpoint(config.mode) || config.host || configuration.default_options.host,
-        port: config.port || configuration.default_options.port,
-        headers: utils.merge({
-            'Authorization': basicAuthString,
-            'Accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }, configuration.default_options.headers, true)
-    };
-
-    client.invoke('POST', '/v1/oauth2/token', payload, http_options, function (err, res) {
-        var token = null;
-        if (res) {
-            if (!config.authorization_code && !config.refresh_token) {
-                var seconds = new Date().getTime() / 1000;
-                token_persist[config.client_id] = res;
-                token_persist[config.client_id].created_at = seconds;
-            }
-
-            if (!config.authorization_code) {
-                token = res.token_type + ' ' + res.access_token;
-            }
-            else {
-                token = res.refresh_token;
-            }
-        }
-        cb(err, token);
-    });
-};
-
-/* Update authorization header with new token obtained by calling
-generateToken */
-/**
- * Updates http Authorization header to newly created access token
- * @param  {Object}   http_options   Configuration parameters such as authorization code or refresh token
- * @param  {Function}   error_callback
- * @param  {Function} callback
- */
-function updateToken(http_options, error_callback, callback) {
-    generateToken(http_options, function (error, token) {
-        if (error) {
-            error_callback(error, token);
-        } else {
-            http_options.headers.Authorization = token;
-            callback();
-        }
-    });
-}
-
-/**
- * Makes a PayPal REST API call. Reuses valid access tokens to reduce
- * round trips, handles 401 error and token expiration.
- * @param  {String}   http_method           A HTTP Verb e.g. GET or POST
- * @param  {String}   path                  Url endpoint for API request
- * @param  {Data}   data                    Payload associated with API request
- * @param  {Object|Function}   http_options Configurations for settings and Auth
- * @param  {Function} cb                    Callback function
- */
-var executeHttp = exports.executeHttp = function executeHttp(http_method, path, data, http_options, cb) {
-    if (typeof http_options === "function") {
-        cb = http_options;
-        http_options = null;
-    }
-    if (!http_options) {
-        http_options = configuration.default_options;
-    } else {
-        http_options = utils.merge(http_options, configuration.default_options, true);
-    }
-
-    //Get host endpoint using mode
-    http_options.host = utils.getDefaultApiEndpoint(http_options.mode) || http_options.host;
-
-    function retryInvoke() {
-        client.invoke(http_method, path, data, http_options, cb);
-    }
-
-    // correlation-id is deprecated in favor of client-metadata-id
-    if (http_options.client_metadata_id) {
-        http_options.headers['Paypal-Client-Metadata-Id'] = http_options.client_metadata_id;
-    }
-    else if (http_options.correlation_id) {
-        http_options.headers['Paypal-Client-Metadata-Id'] = http_options.correlation_id;
-    }
-
-    // If client_id exists with an unexpired token and a refresh token is not provided, reuse cached token
-    if (http_options.client_id in token_persist && !utils.checkExpiredToken(token_persist[http_options.client_id]) && !http_options.refresh_token) {
-        http_options.headers.Authorization = "Bearer " + token_persist[http_options.client_id].access_token;
-        client.invoke(http_method, path, data, http_options, function (error, response) {
-            // Don't reprompt already authenticated user for login by updating Authorization header
-            // if token expires
-            if (error && error.httpStatusCode === 401 && http_options.client_id && http_options.headers.Authorization) {
-                http_options.headers.Authorization = null;
-                updateToken(http_options, cb, retryInvoke);
-            } else {
-                cb(error, response);
-            }
-        });
-    } else {
-        updateToken(http_options, cb, retryInvoke);
-    }
-};
-
-
 /***/ })
-
-/******/ })));
+/******/ ])));

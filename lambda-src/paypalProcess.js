@@ -1,4 +1,11 @@
 const paypal = require('paypal-rest-sdk');
+const axios = require('axios');
+
+const instance = axios.create({
+  baseURL: 'https://us-central1-chiswick-rehearsal-room.cloudfunctions.net',
+  timeout: 1000,
+  headers: { key: 'secret333' },
+});
 
 paypal.configure({
   mode: 'sandbox', // sandbox or live
@@ -15,7 +22,7 @@ export function handler(event, context, callback) {
   }
 
   const data = event.body;
-  const { paymentID, payerID, price } = JSON.parse(data);
+  const { paymentID, payerID, price, ...otherDetails } = JSON.parse(data);
 
   const execute_payment_json = {
     payer_id: payerID,
@@ -29,7 +36,7 @@ export function handler(event, context, callback) {
     ],
   };
 
-  console.log(paymentID, execute_payment_json);
+  console.log(paymentID, execute_payment_json, otherDetails);
 
   paypal.payment.execute(paymentID, execute_payment_json, (error, payment) => {
     if (error) {
@@ -43,10 +50,29 @@ export function handler(event, context, callback) {
         'payment completed successfully, description: ',
         payment.transactions[0].description,
       );
-      callback(null, {
-        statusCode: 200,
-        body: JSON.stringify(payment),
-      });
+      const bookingObject = {
+        ...otherDetails,
+        price,
+      };
+
+      instance
+        .post('/hey', bookingObject)
+        .then(response => {
+          console.log(response.data.url);
+          console.log(response.data.explanation);
+          callback(null, {
+            statusCode: 200,
+            body: JSON.stringify({ explanation: response.data }),
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+
+      // callback(null, {
+      //   statusCode: 200,
+      //   body: JSON.stringify(payment),
+      // });
     } else {
       console.warn('payment.state: not approved ?');
       // replace debug url

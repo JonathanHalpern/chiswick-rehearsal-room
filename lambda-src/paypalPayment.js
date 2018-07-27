@@ -22,7 +22,23 @@ export function handler(event, context, callback) {
   }
 
   const data = event.body;
-  const { bookingDate, startTime, endTime, price } = JSON.parse(data);
+  const { bookingDate, startTime, endTime, price, discountCode } = JSON.parse(
+    data,
+  );
+
+  if (discountCode) {
+    if (discountCode === '123') {
+      callback(null, {
+        statusCode: 200,
+        body: JSON.stringify('correct'),
+      });
+    } else {
+      callback(null, {
+        statusCode: 403,
+        body: JSON.stringify('not a valid code'),
+      });
+    }
+  }
 
   console.log('price is', price);
 

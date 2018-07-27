@@ -1,5 +1,5 @@
 import React from 'react';
-import BookingContainer from '../components/BookingContainer';
+import BookingContainer from '../containers/BookingContainer';
 
 export default ({ data }) =>
   console.log(data) || (

@@ -12,6 +12,8 @@ const CartComponent = ({
   onAuthorize,
   onCancel,
   purchase,
+  validate,
+  isReadyToBook,
 }) => {
   const PayPalButton = paypal.Button.driver('react', { React, ReactDOM });
   return (
@@ -25,6 +27,7 @@ const CartComponent = ({
         commit
         onAuthorize={data => onAuthorize(data)}
         onCancel={onCancel}
+        validate={validate}
         env="sandbox"
       />
     </div>
