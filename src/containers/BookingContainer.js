@@ -10,11 +10,22 @@ if (typeof window !== 'undefined') {
   paypal = require('paypal-checkout');
 }
 
+let onChangeForm = () => {
+  console.log('hey');
+};
+
 const { API, PAYPAL_SANDBOX_CLIENT_ID } = process.env;
 
 const client = {
   sandbox: PAYPAL_SANDBOX_CLIENT_ID,
   production: 'production key',
+};
+
+const isValid = state => {
+  const { name, email, price, startTime, endTime } = state;
+  const isValid = name && email && price && startTime && endTime;
+  console.log(isValid ? 'true' : 'false');
+  return isValid;
 };
 
 class BookingContainer extends Component {
@@ -26,7 +37,6 @@ class BookingContainer extends Component {
     this.onSlotSelect = this.onSlotSelect.bind(this);
     this.updateField = this.updateField.bind(this);
     this.validate = this.validate.bind(this);
-    this.toggleButton = this.toggleButton.bind(this);
     this.onCouponPurchase = this.onCouponPurchase.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.onNewBooking = this.onNewBooking.bind(this);
@@ -43,10 +53,14 @@ class BookingContainer extends Component {
       message: '',
       discountCode: '',
       paymentMethod: 'paypal',
-      actions: {},
       couponMessage: '',
       errorMessage: '',
     };
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    console.log(nextState);
+    onChangeForm(nextState);
   }
 
   onAuthorize(data) {
@@ -77,15 +91,14 @@ class BookingContainer extends Component {
         couponUsed: false,
       }),
     })
-      .then(response => response.json())
-      .then(response => {
+      .then(() => {
         this.setState({
           isConfirmed: true,
           isProcessing: false,
         });
       })
       .catch(error => {
-        console.log('error');
+        console.log(error);
       });
   }
 
@@ -181,7 +194,6 @@ class BookingContainer extends Component {
       isProcessing: true,
     });
     const { bookingDate, startTime, endTime, price, discountCode } = this.state;
-    console.log(this.state);
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
         method: 'post',
@@ -205,18 +217,12 @@ class BookingContainer extends Component {
     });
   }
 
-  toggleButton() {
-    const { name, email, price, startTime, endTime, actions } = this.state;
-    return actions && name && email && price && startTime && endTime
-      ? actions.enable()
-      : actions.disable();
-  }
-
   validate(actions) {
-    this.setState({
-      actions,
-    });
-    this.toggleButton(actions);
+    const initialState = this.state;
+    isValid(initialState) ? actions.enable() : actions.disable();
+    onChangeForm = nextState => {
+      isValid(nextState) ? actions.enable() : actions.disable();
+    };
   }
 
   render() {

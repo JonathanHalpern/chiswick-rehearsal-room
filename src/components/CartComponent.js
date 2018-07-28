@@ -26,7 +26,7 @@ const CartComponent = ({
         commit
         onAuthorize={data => onAuthorize(data)}
         onCancel={onCancel}
-        // validate={validate}
+        validate={validate}
         env="sandbox"
       />
     </div>
