@@ -181,6 +181,7 @@ class BookingContainer extends Component {
       isProcessing: true,
     });
     const { bookingDate, startTime, endTime, price, discountCode } = this.state;
+    console.log(this.state);
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
         method: 'post',

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 121);
+/******/ 	return __webpack_require__(__webpack_require__.s = 72);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -15526,72 +15526,6 @@ module.exports = function spread(callback) {
   };
 };
 
-
-/***/ }),
-/* 100 */,
-/* 101 */,
-/* 102 */,
-/* 103 */,
-/* 104 */,
-/* 105 */,
-/* 106 */,
-/* 107 */,
-/* 108 */,
-/* 109 */,
-/* 110 */,
-/* 111 */,
-/* 112 */,
-/* 113 */,
-/* 114 */,
-/* 115 */,
-/* 116 */,
-/* 117 */,
-/* 118 */,
-/* 119 */,
-/* 120 */,
-/* 121 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.handler = handler;
-
-var _firebase = __webpack_require__(72);
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-function handler(event, context, callback) {
-  const data = event.body;
-  const envCode = '123';
-  const _JSON$parse = JSON.parse(data),
-        { discountCode } = _JSON$parse,
-        bookingObject = _objectWithoutProperties(_JSON$parse, ['discountCode']);
-  const { name, email, bookingDate, startTime, endTime } = bookingObject;
-  console.log(bookingObject);
-  if (!(name && email && bookingDate && startTime && endTime)) {
-    callback(null, {
-      statusCode: 403,
-      body: JSON.stringify({
-        errorMessage: 'Your booking is missing information, check the form',
-        errorType: 'form'
-      })
-    });
-  } else if (discountCode !== envCode) {
-    callback(null, {
-      statusCode: 403,
-      body: JSON.stringify({
-        errorMessage: 'Your code is invalid',
-        errorType: 'coupon'
-      })
-    });
-  } else {
-    (0, _firebase.addBooking)(bookingObject, callback);
-  }
-}
 
 /***/ })
 /******/ ])));

@@ -60,17 +60,19 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 120);
+/******/ 	return __webpack_require__(__webpack_require__.s = 123);
 /******/ })
 /************************************************************************/
 /******/ ([
-/* 0 */
+/* 0 */,
+/* 1 */,
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
-var api = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * Attach REST operations from restFunctions as required by a PayPal API
@@ -131,17 +133,18 @@ module.exports.mixin = mixin;
 
 
 /***/ }),
-/* 1 */,
-/* 2 */
+/* 3 */,
+/* 4 */,
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var client = __webpack_require__(24);
-var utils = __webpack_require__(26);
-var configuration = __webpack_require__(10);
+var client = __webpack_require__(41);
+var utils = __webpack_require__(43);
+var configuration = __webpack_require__(19);
 
 /**
  * token_persist client id to access token cache, used to reduce access token round trips
@@ -300,14 +303,6 @@ var executeHttp = exports.executeHttp = function executeHttp(http_method, path, 
 
 
 /***/ }),
-/* 3 */,
-/* 4 */
-/***/ (function(module, exports) {
-
-module.exports = require("https");
-
-/***/ }),
-/* 5 */,
 /* 6 */
 /***/ (function(module, exports) {
 
@@ -319,17 +314,31 @@ module.exports = require("crypto");
 /* 9 */
 /***/ (function(module, exports) {
 
+module.exports = require("https");
+
+/***/ }),
+/* 10 */,
+/* 11 */,
+/* 12 */
+/***/ (function(module, exports) {
+
 module.exports = require("http");
 
 /***/ }),
-/* 10 */
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var sdkVersion = exports.sdkVersion = __webpack_require__(67).version;
+var sdkVersion = exports.sdkVersion = __webpack_require__(102).version;
 var userAgent = exports.userAgent = 'PayPalSDK/PayPal-node-SDK ' + sdkVersion + ' (node ' + process.version + '-' + process.arch + '-' + process.platform  + '; OpenSSL ' + process.versions.openssl + ')';
 
 var default_options = exports.default_options = {
@@ -347,31 +356,39 @@ var default_options = exports.default_options = {
 
 
 /***/ }),
-/* 11 */,
-/* 12 */,
-/* 13 */,
-/* 14 */,
-/* 15 */,
-/* 16 */,
-/* 17 */,
-/* 18 */,
-/* 19 */,
 /* 20 */,
 /* 21 */,
 /* 22 */,
 /* 23 */,
-/* 24 */
+/* 24 */,
+/* 25 */,
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */,
+/* 30 */,
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var http = __webpack_require__(9);
-var https = __webpack_require__(4);
-var querystring = __webpack_require__(25);
-var configuration = __webpack_require__(10);
-var semver = __webpack_require__(68);
+var http = __webpack_require__(12);
+var https = __webpack_require__(9);
+var querystring = __webpack_require__(42);
+var configuration = __webpack_require__(19);
+var semver = __webpack_require__(103);
 
 /**
  * Wraps the http client, handles request parameters, populates request headers, handles response
@@ -515,19 +532,19 @@ var invoke = exports.invoke = function invoke(http_method, path, data, http_opti
 
 
 /***/ }),
-/* 25 */
+/* 42 */
 /***/ (function(module, exports) {
 
 module.exports = require("querystring");
 
 /***/ }),
-/* 26 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
-var https = __webpack_require__(4);
+var https = __webpack_require__(9);
 var isArray = Array.isArray;
 var hasOwn = Object.prototype.hasOwnProperty;
 
@@ -625,15 +642,15 @@ var checkExpiredToken = exports.checkExpiredToken = function checkExpiredToken(t
 
 
 /***/ }),
-/* 27 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * Create planned sets of future recurring payments at periodic intervals (sometimes known as “subscriptions”).
@@ -674,15 +691,15 @@ module.exports = billingPlan;
 
 
 /***/ }),
-/* 28 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * The billing agreements allows merchants to have users agree to be billed
@@ -789,14 +806,14 @@ module.exports = billingAgreement;
 
 
 /***/ }),
-/* 29 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
+var generate = __webpack_require__(2);
 
 /**
  * Store credit cards information securely in vault
@@ -817,16 +834,16 @@ module.exports = creditCard;
 
 
 /***/ }),
-/* 30 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
-var configuration = __webpack_require__(10);
-var client = __webpack_require__(24);
-var utils = __webpack_require__(26);
-var querystring = __webpack_require__(25);
+var configuration = __webpack_require__(19);
+var client = __webpack_require__(41);
+var utils = __webpack_require__(43);
+var querystring = __webpack_require__(42);
 
 /**
  * Sets up request body for open id connect module requests
@@ -1013,23 +1030,6 @@ module.exports = openIdConnect;
 
 
 /***/ }),
-/* 31 */,
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
 /* 48 */,
 /* 49 */,
 /* 50 */,
@@ -1047,22 +1047,57 @@ module.exports = openIdConnect;
 /* 62 */,
 /* 63 */,
 /* 64 */,
-/* 65 */
+/* 65 */,
+/* 66 */,
+/* 67 */,
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */,
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(66)();
+module.exports = __webpack_require__(101)();
 
 
 /***/ }),
-/* 66 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var configuration = __webpack_require__(10);
-var api = __webpack_require__(2);
+var configuration = __webpack_require__(19);
+var api = __webpack_require__(5);
 
 module.exports = function () {
 
@@ -1079,40 +1114,40 @@ module.exports = function () {
         configure: configure,
         configuration: configuration.default_options,
         generateToken: generateToken,
-        payment: __webpack_require__(69)(),
-        sale: __webpack_require__(70)(),
-        refund: __webpack_require__(71)(),
-        authorization: __webpack_require__(72)(),
-        capture: __webpack_require__(73)(),
-        order: __webpack_require__(74)(),
-        payout: __webpack_require__(75)(),
-        payoutItem: __webpack_require__(76)(),
-        billingPlan: __webpack_require__(27)(),
-        billingAgreement: __webpack_require__(28)(),
-        creditCard: __webpack_require__(29)(),
-        invoice: __webpack_require__(77)(),
-        invoiceTemplate: __webpack_require__(78)(),
-        openIdConnect: __webpack_require__(30)(),
-        webProfile: __webpack_require__(79)(),
-        notification: __webpack_require__(80)(),
+        payment: __webpack_require__(104)(),
+        sale: __webpack_require__(105)(),
+        refund: __webpack_require__(106)(),
+        authorization: __webpack_require__(107)(),
+        capture: __webpack_require__(108)(),
+        order: __webpack_require__(109)(),
+        payout: __webpack_require__(110)(),
+        payoutItem: __webpack_require__(111)(),
+        billingPlan: __webpack_require__(44)(),
+        billingAgreement: __webpack_require__(45)(),
+        creditCard: __webpack_require__(46)(),
+        invoice: __webpack_require__(112)(),
+        invoiceTemplate: __webpack_require__(113)(),
+        openIdConnect: __webpack_require__(47)(),
+        webProfile: __webpack_require__(114)(),
+        notification: __webpack_require__(115)(),
         //entries below are deprecated but provided for compatibility with 0.* versions
         generate_token: generateToken,
-        billing_plan: __webpack_require__(27)(),
-        billing_agreement: __webpack_require__(28)(),
-        credit_card: __webpack_require__(29)(),
-        openid_connect: __webpack_require__(30)()
+        billing_plan: __webpack_require__(44)(),
+        billing_agreement: __webpack_require__(45)(),
+        credit_card: __webpack_require__(46)(),
+        openid_connect: __webpack_require__(47)()
     };
 };
 
 
 /***/ }),
-/* 67 */
+/* 102 */
 /***/ (function(module, exports) {
 
 module.exports = {"_from":"paypal-rest-sdk","_id":"paypal-rest-sdk@1.8.1","_inBundle":false,"_integrity":"sha512-Trj2GuPn10GqpICAxQh5wjxuDT7rq7DMOkvyatz05wI5xPGmqXN7UC0WfDSF9WSBs4YdcWZP0g+nY+sOdaFggw==","_location":"/paypal-rest-sdk","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"paypal-rest-sdk","name":"paypal-rest-sdk","escapedName":"paypal-rest-sdk","rawSpec":"","saveSpec":null,"fetchSpec":"latest"},"_requiredBy":["#USER","/"],"_resolved":"https://registry.npmjs.org/paypal-rest-sdk/-/paypal-rest-sdk-1.8.1.tgz","_shasum":"5023fd42f43da628d18cc00d6bd566eacba74528","_spec":"paypal-rest-sdk","_where":"/Users/jonathanhalpern/Projects/chiswick-rehearsal-room","author":{"name":"PayPal","email":"DL-PP-NODEJS-SDK@paypal.com","url":"https://developer.paypal.com/"},"bugs":{"url":"https://github.com/paypal/PayPal-node-SDK/issues","email":"DL-PP-NODEJS-SDK@paypal.com"},"bundleDependencies":false,"config":{"blanket":{"pattern":"lib","data-cover-never":"node_modules"}},"dependencies":{"buffer-crc32":"^0.2.3","semver":"^5.0.3"},"deprecated":false,"description":"SDK for PayPal REST APIs","devDependencies":{"blanket":"~1.1.5","chai":"~1.9.1","grunt":"~0.4.1","grunt-contrib-jshint":"~0.3.0","grunt-jsdoc":"^0.5.8","grunt-simple-mocha":"~0.4.0","ink-docstrap":"^0.5.2","jsdoc":"^3.3.0-beta1","mocha":"~1.18.2","mocha-lcov-reporter":"0.0.1","nock":"0.36.2"},"engines":{"node":">= v0.6.0"},"homepage":"https://github.com/paypal/PayPal-node-SDK","keywords":["paypal","rest","api","sdk"],"license":"SEE LICENSE IN https://github.com/paypal/PayPal-node-SDK/blob/master/LICENSE","main":"./index.js","name":"paypal-rest-sdk","repository":{"type":"git","url":"git+https://github.com/paypal/PayPal-node-SDK.git"},"scripts":{"test":"grunt"},"version":"1.8.1"}
 
 /***/ }),
-/* 68 */
+/* 103 */
 /***/ (function(module, exports) {
 
 exports = module.exports = SemVer;
@@ -2442,15 +2477,15 @@ function coerce(version) {
 
 
 /***/ }),
-/* 69 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * Create or get details of payments
@@ -2482,14 +2517,14 @@ module.exports = payment;
 
 
 /***/ }),
-/* 70 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
+var generate = __webpack_require__(2);
 
 /**
  * Completed payments are referred to as sale transactions
@@ -2510,14 +2545,14 @@ module.exports = sale;
 
 
 /***/ }),
-/* 71 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
+var generate = __webpack_require__(2);
 
 /**
  * Refunds on direct and captured payments
@@ -2538,15 +2573,15 @@ module.exports = refund;
 
 
 /***/ }),
-/* 72 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * Retrieving, capturing, voiding, and reauthorizing previously created authorizations
@@ -2588,14 +2623,14 @@ module.exports = authorization;
 
 
 /***/ }),
-/* 73 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
+var generate = __webpack_require__(2);
 
 /**
  * Look up and refund captured payments
@@ -2616,15 +2651,15 @@ module.exports = capture;
 
 
 /***/ }),
-/* 74 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * Take action on a payment with the intent of order
@@ -2666,15 +2701,15 @@ module.exports = order;
 
 
 /***/ }),
-/* 75 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * Make payouts to multiple PayPal accounts, or multiple payments to same PayPal account
@@ -2708,15 +2743,15 @@ module.exports = payout;
 
 
 /***/ }),
-/* 76 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * An individual Payout item
@@ -2750,15 +2785,15 @@ module.exports = payoutItem;
 
 
 /***/ }),
-/* 77 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * Create, send and manage invoices, PayPal emails the customer with link to invoice
@@ -2815,15 +2850,15 @@ module.exports = invoice;
 
 
 /***/ }),
-/* 78 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 function invoiceTemplate() {
     var baseURL = '/v1/invoicing/templates/';
@@ -2844,15 +2879,15 @@ module.exports = invoiceTemplate;
 
 
 /***/ }),
-/* 79 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
 
 /**
  * Exposes REST endpoints for providing a customizing Paypal checkout
@@ -2898,18 +2933,18 @@ module.exports = webProfile;
 
 
 /***/ }),
-/* 80 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var generate = __webpack_require__(0);
-var api = __webpack_require__(2);
-var https = __webpack_require__(4);
+var generate = __webpack_require__(2);
+var api = __webpack_require__(5);
+var https = __webpack_require__(9);
 var crypto = __webpack_require__(6);
-var crc32 = __webpack_require__(81);
+var crc32 = __webpack_require__(116);
 
 /**
  * Exposes REST endpoints for creating and managing webhooks
@@ -3112,10 +3147,10 @@ module.exports = notification;
 
 
 /***/ }),
-/* 81 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Buffer = __webpack_require__(82).Buffer;
+var Buffer = __webpack_require__(117).Buffer;
 
 var CRC_TABLE = [
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
@@ -3229,50 +3264,13 @@ module.exports = crc32;
 
 
 /***/ }),
-/* 82 */
+/* 117 */
 /***/ (function(module, exports) {
 
 module.exports = require("buffer");
 
 /***/ }),
-/* 83 */,
-/* 84 */,
-/* 85 */,
-/* 86 */,
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */,
-/* 95 */,
-/* 96 */,
-/* 97 */,
-/* 98 */,
-/* 99 */,
-/* 100 */,
-/* 101 */,
-/* 102 */,
-/* 103 */,
-/* 104 */,
-/* 105 */,
-/* 106 */,
-/* 107 */,
-/* 108 */,
-/* 109 */,
-/* 110 */,
-/* 111 */,
-/* 112 */,
-/* 113 */,
-/* 114 */,
-/* 115 */,
-/* 116 */,
-/* 117 */,
-/* 118 */,
-/* 119 */,
-/* 120 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3281,49 +3279,25 @@ module.exports = require("buffer");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.handler = handler;
-const paypal = __webpack_require__(65);
+exports.createPayment = exports.createProfile = undefined;
 
-paypal.configure({
+var _paypalRestSdk = __webpack_require__(100);
+
+var _paypalRestSdk2 = _interopRequireDefault(_paypalRestSdk);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_paypalRestSdk2.default.configure({
   mode: 'sandbox', // sandbox or live
   client_id: "AVQRQZrhx5INZ0hvHyFoj6m_vmp94wl8q4mEIcQ6fbuVdjOesWdUEy-V2fa4peZLtXfzKC5-k9j1mlks", // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"
   client_secret: "ECWnpEE_GmHvAE1eobMrxkd6-u9ugeabUhENE_eAOHR_Kx6m3bYo2ScCNK6C76nrqvA3BFza_VitAm2k" // run: firebase functions:config:set paypal.client_secret="yourPaypalClientSecret"
 });
 
-// Name needs to be unique so just generating a random one
+const createProfile = exports.createProfile = callback => {
+  const profileName = Math.random().toString(36).substring(7);
 
-function handler(event, context, callback) {
-  const profile_name = Math.random().toString(36).substring(7);
-  if (event.httpMethod !== 'POST' || !event.body) {
-    callback(null, {
-      statusCode: 200,
-      body: {
-        message: 'must post'
-      }
-    });
-  }
-
-  const data = event.body;
-  const { bookingDate, startTime, endTime, price, discountCode } = JSON.parse(data);
-
-  if (discountCode) {
-    if (discountCode === '123') {
-      callback(null, {
-        statusCode: 200,
-        body: JSON.stringify('correct')
-      });
-    } else {
-      callback(null, {
-        statusCode: 403,
-        body: JSON.stringify('not a valid code')
-      });
-    }
-  }
-
-  console.log('price is', price);
-
-  const create_web_profile_json = {
-    name: profile_name,
+  const createWebProfileJson = {
+    name: profileName,
     presentation: {
       brand_name: 'Best Brand',
       logo_image: 'https://www.paypalobjects.com/webstatic/mktg/logo/AM_SbyPP_mc_vs_dc_ae.jpg',
@@ -3339,6 +3313,63 @@ function handler(event, context, callback) {
       bank_txn_pending_url: 'http://www.yeowza.com'
     }
   };
+
+  _paypalRestSdk2.default.webProfile.create(createWebProfileJson, callback);
+};
+
+const createPayment = exports.createPayment = (create_payment_json, callback) => {
+  _paypalRestSdk2.default.payment.create(create_payment_json, (error, payment) => {
+    if (error) {
+      callback(null, {
+        statusCode: 500,
+        body: JSON.stringify(error)
+      });
+    } else {
+      console.log('Create Payment Response');
+      console.log(payment);
+      callback(null, {
+        statusCode: 200,
+        body: JSON.stringify(payment)
+      });
+    }
+  });
+};
+
+/***/ }),
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.handler = handler;
+
+var _paypal = __webpack_require__(118);
+
+// Name needs to be unique so just generating a random one
+
+function handler(event, context, callback) {
+  const profile_name = Math.random().toString(36).substring(7);
+  if (event.httpMethod !== 'POST' || !event.body) {
+    callback(null, {
+      statusCode: 200,
+      body: {
+        message: 'must post'
+      }
+    });
+  }
+
+  const data = event.body;
+  const { price } = JSON.parse(data);
+
+  console.log('price is', price);
 
   const create_payment_json = {
     intent: 'sale',
@@ -3367,7 +3398,8 @@ function handler(event, context, callback) {
     }]
   };
 
-  paypal.webProfile.create(create_web_profile_json, (error, web_profile) => {
+  (0, _paypal.createProfile)((error, web_profile) => {
+    // paypal.webProfile.create(create_web_profile_json, (error, web_profile) => {
     if (error) {
       callback(null, {
         statusCode: 500,
@@ -3377,22 +3409,7 @@ function handler(event, context, callback) {
       // Set the id of the created payment experience in payment json
       const experience_profile_id = web_profile.id;
       create_payment_json.experience_profile_id = experience_profile_id;
-
-      paypal.payment.create(create_payment_json, (error, payment) => {
-        if (error) {
-          callback(null, {
-            statusCode: 500,
-            body: JSON.stringify(error)
-          });
-        } else {
-          console.log('Create Payment Response');
-          console.log(payment);
-          callback(null, {
-            statusCode: 200,
-            body: JSON.stringify(payment)
-          });
-        }
-      });
+      (0, _paypal.createPayment)(create_payment_json, callback);
     }
   });
 }
