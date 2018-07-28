@@ -13,10 +13,11 @@ const CartComponent = ({
   onCancel,
   purchase,
   validate,
+  className,
 }) => {
   const PayPalButton = paypal.Button.driver('react', { React, ReactDOM });
   return (
-    <div className="shoppingCart">
+    <div className={`shoppingCart ${className || ''}`}>
       <p>
         You are booking <strong>{purchase}</strong>
       </p>

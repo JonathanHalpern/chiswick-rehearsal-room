@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import styled from 'styled-components';
 import CartComponent from '../components/CartComponent';
 import CalendarBooker from '../components/CalendarBooker';
 import BookingDetails from '../components/BookingDetails';
@@ -10,9 +11,7 @@ if (typeof window !== 'undefined') {
   paypal = require('paypal-checkout');
 }
 
-let onChangeForm = () => {
-  console.log('hey');
-};
+let onChangeForm = () => {};
 
 const { API, PAYPAL_SANDBOX_CLIENT_ID } = process.env;
 
@@ -24,9 +23,16 @@ const client = {
 const isValid = state => {
   const { name, email, price, startTime, endTime } = state;
   const isValid = name && email && price && startTime && endTime;
-  console.log(isValid ? 'true' : 'false');
   return isValid;
 };
+
+const StyledCartComponent = styled(CartComponent)`
+  display: ${({ isVisible }) => (isVisible ? 'initial' : 'none')};
+`;
+
+const StyledCouponComponent = styled(CouponComponent)`
+  display: ${({ isVisible }) => (isVisible ? 'initial' : 'none')};
+`;
 
 class BookingContainer extends Component {
   constructor(props) {
@@ -35,7 +41,6 @@ class BookingContainer extends Component {
     this.onAuthorize = this.onAuthorize.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onSlotSelect = this.onSlotSelect.bind(this);
-    this.updateField = this.updateField.bind(this);
     this.validate = this.validate.bind(this);
     this.onCouponPurchase = this.onCouponPurchase.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -59,8 +64,10 @@ class BookingContainer extends Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    console.log(nextState);
-    onChangeForm(nextState);
+    const { paymentMethod } = nextState;
+    if (paymentMethod === 'paypal') {
+      onChangeForm(nextState);
+    }
   }
 
   onAuthorize(data) {
@@ -183,12 +190,6 @@ class BookingContainer extends Component {
     });
   };
 
-  updateField(fieldName, value) {
-    this.setState({
-      [fieldName]: value,
-    });
-  }
-
   payment() {
     this.setState({
       isProcessing: true,
@@ -218,6 +219,7 @@ class BookingContainer extends Component {
   }
 
   validate(actions) {
+    // necessary because the paypal button creates an iFrame so we cannot get a ref to it
     const initialState = this.state;
     isValid(initialState) ? actions.enable() : actions.disable();
     onChangeForm = nextState => {
@@ -261,28 +263,25 @@ class BookingContainer extends Component {
             />
             {errorMessage && <p>{errorMessage}</p>}
             {isProcessing && <p>Processing...</p>}
-            {paymentMethod === 'paypal' ? (
-              <div>
-                <CartComponent
-                  client={client}
-                  payment={this.payment}
-                  onAuthorize={this.onAuthorize}
-                  onCancel={this.onCancel}
-                  purchase={price}
-                  isReadyToBook={name && email}
-                  validate={this.validate}
-                />
-              </div>
-            ) : (
-              <CouponComponent
-                onSubmit={this.onCouponPurchase}
-                handleChange={this.handleChange}
-                discountCode={discountCode}
-                errorMessage={couponMessage}
-                isProcessing={isProcessing}
-                isFormComplete={!!(name && email)}
-              />
-            )}
+            <StyledCartComponent
+              client={client}
+              payment={this.payment}
+              onAuthorize={this.onAuthorize}
+              onCancel={this.onCancel}
+              purchase={price}
+              isReadyToBook={name && email}
+              validate={this.validate}
+              isVisible={paymentMethod === 'paypal'}
+            />
+            <StyledCouponComponent
+              onSubmit={this.onCouponPurchase}
+              handleChange={this.handleChange}
+              discountCode={discountCode}
+              errorMessage={couponMessage}
+              isProcessing={isProcessing}
+              isFormComplete={!!(name && email)}
+              isVisible={paymentMethod === 'coupon'}
+            />
           </div>
         )}
       </div>

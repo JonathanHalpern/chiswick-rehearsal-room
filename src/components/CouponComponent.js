@@ -8,6 +8,7 @@ const StyledButton = styled(Button)`
 `;
 
 const CouponComponent = ({
+  className,
   discountCode,
   errorMessage,
   isProcessing,
@@ -15,7 +16,7 @@ const CouponComponent = ({
   onSubmit,
   handleChange,
 }) => (
-  <form>
+  <form className={`${className || ''}`}>
     <TextField
       required
       id="discountCode"
