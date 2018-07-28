@@ -11,7 +11,7 @@ const mailTransport = nodemailer.createTransport({
 export const sendMail = mailOptions => {
   mailTransport
     .sendMail(mailOptions)
-    .then(() => console.log(`messaged someone}`))
+    .then(() => console.log(`messaged ${mailOptions.to}`))
     .catch(error =>
       console.error('There was an error while sending the email:', error),
     );

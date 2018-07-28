@@ -8444,7 +8444,7 @@ const mailTransport = nodemailer.createTransport({
 });
 
 const sendMail = exports.sendMail = mailOptions => {
-  mailTransport.sendMail(mailOptions).then(() => console.log(`messaged someone}`)).catch(error => console.error('There was an error while sending the email:', error));
+  mailTransport.sendMail(mailOptions).then(() => console.log(`messaged ${mailOptions.to}`)).catch(error => console.error('There was an error while sending the email:', error));
 };
 
 /***/ }),
@@ -13566,13 +13566,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const instance = _axios2.default.create({
   baseURL: 'https://us-central1-chiswick-rehearsal-room.cloudfunctions.net',
-  headers: { key: 'secret333' }
+  headers: { key: "secret333" }
 });
 
 const addBooking = exports.addBooking = (bookingObject, callback) => {
   const { name, email, startTime, endTime, bookingDate } = bookingObject;
   instance.post('/hey', bookingObject).then(response => {
-    console.log(response.data);
+    console.log('booking created');
+    console.log(bookingObject);
     const mailOptions = {
       from: '"Chiswick Rehearsal Room"',
       to: email,
@@ -13589,7 +13590,7 @@ const addBooking = exports.addBooking = (bookingObject, callback) => {
     };
     (0, _email.sendMail)(mailOptions);
     callback(null, {
-      statusCode: 200,
+      statusCode: 201,
       body: JSON.stringify({ data: response.data })
     });
   }).catch(() => {

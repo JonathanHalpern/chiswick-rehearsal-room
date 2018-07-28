@@ -33,20 +33,10 @@ export const createProfile = callback => {
   paypal.webProfile.create(createWebProfileJson, callback);
 };
 
-export const createPayment = (create_payment_json, callback) => {
-  paypal.payment.create(create_payment_json, (error, payment) => {
-    if (error) {
-      callback(null, {
-        statusCode: 500,
-        body: JSON.stringify(error),
-      });
-    } else {
-      console.log('Create Payment Response');
-      console.log(payment);
-      callback(null, {
-        statusCode: 200,
-        body: JSON.stringify(payment),
-      });
-    }
-  });
+export const createPayment = (createPaymentJson, callback) => {
+  paypal.payment.create(createPaymentJson, callback);
+};
+
+export const executePayment = (paymentID, executePaymentJson, callback) => {
+  paypal.payment.execute(paymentID, executePaymentJson, callback);
 };

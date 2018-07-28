@@ -3630,7 +3630,7 @@ module.exports = require("os");
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var sdkVersion = exports.sdkVersion = __webpack_require__(102).version;
+var sdkVersion = exports.sdkVersion = __webpack_require__(103).version;
 var userAgent = exports.userAgent = 'PayPalSDK/PayPal-node-SDK ' + sdkVersion + ' (node ' + process.version + '-' + process.arch + '-' + process.platform  + '; OpenSSL ' + process.versions.openssl + ')';
 
 var default_options = exports.default_options = {
@@ -8685,7 +8685,7 @@ var http = __webpack_require__(12);
 var https = __webpack_require__(9);
 var querystring = __webpack_require__(42);
 var configuration = __webpack_require__(19);
-var semver = __webpack_require__(103);
+var semver = __webpack_require__(104);
 
 /**
  * Wraps the http client, handles request parameters, populates request headers, handles response
@@ -9347,7 +9347,7 @@ const mailTransport = nodemailer.createTransport({
 });
 
 const sendMail = exports.sendMail = mailOptions => {
-  mailTransport.sendMail(mailOptions).then(() => console.log(`messaged someone}`)).catch(error => console.error('There was an error while sending the email:', error));
+  mailTransport.sendMail(mailOptions).then(() => console.log(`messaged ${mailOptions.to}`)).catch(error => console.error('There was an error while sending the email:', error));
 };
 
 /***/ }),
@@ -14469,13 +14469,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const instance = _axios2.default.create({
   baseURL: 'https://us-central1-chiswick-rehearsal-room.cloudfunctions.net',
-  headers: { key: 'secret333' }
+  headers: { key: "secret333" }
 });
 
 const addBooking = exports.addBooking = (bookingObject, callback) => {
   const { name, email, startTime, endTime, bookingDate } = bookingObject;
   instance.post('/hey', bookingObject).then(response => {
-    console.log(response.data);
+    console.log('booking created');
+    console.log(bookingObject);
     const mailOptions = {
       from: '"Chiswick Rehearsal Room"',
       to: email,
@@ -14492,7 +14493,7 @@ const addBooking = exports.addBooking = (bookingObject, callback) => {
     };
     (0, _email.sendMail)(mailOptions);
     callback(null, {
-      statusCode: 200,
+      statusCode: 201,
       body: JSON.stringify({ data: response.data })
     });
   }).catch(() => {
@@ -16434,11 +16435,67 @@ module.exports = function spread(callback) {
 /* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(101)();
+"use strict";
 
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.executePayment = exports.createPayment = exports.createProfile = undefined;
+
+var _paypalRestSdk = __webpack_require__(101);
+
+var _paypalRestSdk2 = _interopRequireDefault(_paypalRestSdk);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_paypalRestSdk2.default.configure({
+  mode: 'sandbox', // sandbox or live
+  client_id: "AVQRQZrhx5INZ0hvHyFoj6m_vmp94wl8q4mEIcQ6fbuVdjOesWdUEy-V2fa4peZLtXfzKC5-k9j1mlks", // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"
+  client_secret: "ECWnpEE_GmHvAE1eobMrxkd6-u9ugeabUhENE_eAOHR_Kx6m3bYo2ScCNK6C76nrqvA3BFza_VitAm2k" // run: firebase functions:config:set paypal.client_secret="yourPaypalClientSecret"
+});
+
+const createProfile = exports.createProfile = callback => {
+  const profileName = Math.random().toString(36).substring(7);
+
+  const createWebProfileJson = {
+    name: profileName,
+    presentation: {
+      brand_name: 'Best Brand',
+      logo_image: 'https://www.paypalobjects.com/webstatic/mktg/logo/AM_SbyPP_mc_vs_dc_ae.jpg',
+      locale_code: 'GB'
+    },
+    input_fields: {
+      allow_note: true,
+      no_shipping: 1,
+      address_override: 1
+    },
+    flow_config: {
+      landing_page_type: 'billing',
+      bank_txn_pending_url: 'http://www.yeowza.com'
+    }
+  };
+
+  _paypalRestSdk2.default.webProfile.create(createWebProfileJson, callback);
+};
+
+const createPayment = exports.createPayment = (createPaymentJson, callback) => {
+  _paypalRestSdk2.default.payment.create(createPaymentJson, callback);
+};
+
+const executePayment = exports.executePayment = (paymentID, executePaymentJson, callback) => {
+  _paypalRestSdk2.default.payment.execute(paymentID, executePaymentJson, callback);
+};
 
 /***/ }),
 /* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(102)();
+
+
+/***/ }),
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16463,22 +16520,22 @@ module.exports = function () {
         configure: configure,
         configuration: configuration.default_options,
         generateToken: generateToken,
-        payment: __webpack_require__(104)(),
-        sale: __webpack_require__(105)(),
-        refund: __webpack_require__(106)(),
-        authorization: __webpack_require__(107)(),
-        capture: __webpack_require__(108)(),
-        order: __webpack_require__(109)(),
-        payout: __webpack_require__(110)(),
-        payoutItem: __webpack_require__(111)(),
+        payment: __webpack_require__(105)(),
+        sale: __webpack_require__(106)(),
+        refund: __webpack_require__(107)(),
+        authorization: __webpack_require__(108)(),
+        capture: __webpack_require__(109)(),
+        order: __webpack_require__(110)(),
+        payout: __webpack_require__(111)(),
+        payoutItem: __webpack_require__(112)(),
         billingPlan: __webpack_require__(44)(),
         billingAgreement: __webpack_require__(45)(),
         creditCard: __webpack_require__(46)(),
-        invoice: __webpack_require__(112)(),
-        invoiceTemplate: __webpack_require__(113)(),
+        invoice: __webpack_require__(113)(),
+        invoiceTemplate: __webpack_require__(114)(),
         openIdConnect: __webpack_require__(47)(),
-        webProfile: __webpack_require__(114)(),
-        notification: __webpack_require__(115)(),
+        webProfile: __webpack_require__(115)(),
+        notification: __webpack_require__(116)(),
         //entries below are deprecated but provided for compatibility with 0.* versions
         generate_token: generateToken,
         billing_plan: __webpack_require__(44)(),
@@ -16490,13 +16547,13 @@ module.exports = function () {
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports) {
 
 module.exports = {"_from":"paypal-rest-sdk","_id":"paypal-rest-sdk@1.8.1","_inBundle":false,"_integrity":"sha512-Trj2GuPn10GqpICAxQh5wjxuDT7rq7DMOkvyatz05wI5xPGmqXN7UC0WfDSF9WSBs4YdcWZP0g+nY+sOdaFggw==","_location":"/paypal-rest-sdk","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"paypal-rest-sdk","name":"paypal-rest-sdk","escapedName":"paypal-rest-sdk","rawSpec":"","saveSpec":null,"fetchSpec":"latest"},"_requiredBy":["#USER","/"],"_resolved":"https://registry.npmjs.org/paypal-rest-sdk/-/paypal-rest-sdk-1.8.1.tgz","_shasum":"5023fd42f43da628d18cc00d6bd566eacba74528","_spec":"paypal-rest-sdk","_where":"/Users/jonathanhalpern/Projects/chiswick-rehearsal-room","author":{"name":"PayPal","email":"DL-PP-NODEJS-SDK@paypal.com","url":"https://developer.paypal.com/"},"bugs":{"url":"https://github.com/paypal/PayPal-node-SDK/issues","email":"DL-PP-NODEJS-SDK@paypal.com"},"bundleDependencies":false,"config":{"blanket":{"pattern":"lib","data-cover-never":"node_modules"}},"dependencies":{"buffer-crc32":"^0.2.3","semver":"^5.0.3"},"deprecated":false,"description":"SDK for PayPal REST APIs","devDependencies":{"blanket":"~1.1.5","chai":"~1.9.1","grunt":"~0.4.1","grunt-contrib-jshint":"~0.3.0","grunt-jsdoc":"^0.5.8","grunt-simple-mocha":"~0.4.0","ink-docstrap":"^0.5.2","jsdoc":"^3.3.0-beta1","mocha":"~1.18.2","mocha-lcov-reporter":"0.0.1","nock":"0.36.2"},"engines":{"node":">= v0.6.0"},"homepage":"https://github.com/paypal/PayPal-node-SDK","keywords":["paypal","rest","api","sdk"],"license":"SEE LICENSE IN https://github.com/paypal/PayPal-node-SDK/blob/master/LICENSE","main":"./index.js","name":"paypal-rest-sdk","repository":{"type":"git","url":"git+https://github.com/paypal/PayPal-node-SDK.git"},"scripts":{"test":"grunt"},"version":"1.8.1"}
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports) {
 
 exports = module.exports = SemVer;
@@ -17826,7 +17883,7 @@ function coerce(version) {
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17866,7 +17923,7 @@ module.exports = payment;
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17894,7 +17951,7 @@ module.exports = sale;
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17922,7 +17979,7 @@ module.exports = refund;
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17972,7 +18029,7 @@ module.exports = authorization;
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18000,7 +18057,7 @@ module.exports = capture;
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18050,7 +18107,7 @@ module.exports = order;
 
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18092,7 +18149,7 @@ module.exports = payout;
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18134,7 +18191,7 @@ module.exports = payoutItem;
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18199,7 +18256,7 @@ module.exports = invoice;
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18228,7 +18285,7 @@ module.exports = invoiceTemplate;
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18282,7 +18339,7 @@ module.exports = webProfile;
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18293,7 +18350,7 @@ var generate = __webpack_require__(2);
 var api = __webpack_require__(5);
 var https = __webpack_require__(9);
 var crypto = __webpack_require__(6);
-var crc32 = __webpack_require__(116);
+var crc32 = __webpack_require__(117);
 
 /**
  * Exposes REST endpoints for creating and managing webhooks
@@ -18496,10 +18553,10 @@ module.exports = notification;
 
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Buffer = __webpack_require__(117).Buffer;
+var Buffer = __webpack_require__(118).Buffer;
 
 var CRC_TABLE = [
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
@@ -18613,13 +18670,12 @@ module.exports = crc32;
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports) {
 
 module.exports = require("buffer");
 
 /***/ }),
-/* 118 */,
 /* 119 */,
 /* 120 */,
 /* 121 */,
@@ -18639,21 +18695,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.handler = handler;
 
-var _paypalRestSdk = __webpack_require__(100);
-
-var _paypalRestSdk2 = _interopRequireDefault(_paypalRestSdk);
-
 var _firebase = __webpack_require__(72);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _paypal = __webpack_require__(100);
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-_paypalRestSdk2.default.configure({
-  mode: 'sandbox', // sandbox or live
-  client_id: "AVQRQZrhx5INZ0hvHyFoj6m_vmp94wl8q4mEIcQ6fbuVdjOesWdUEy-V2fa4peZLtXfzKC5-k9j1mlks", // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"
-  client_secret: "ECWnpEE_GmHvAE1eobMrxkd6-u9ugeabUhENE_eAOHR_Kx6m3bYo2ScCNK6C76nrqvA3BFza_VitAm2k" // run: firebase functions:config:set paypal.client_secret="yourPaypalClientSecret"
-});
 
 function handler(event, context, callback) {
   if (event.httpMethod !== 'POST' || !event.body) {
@@ -18668,7 +18714,7 @@ function handler(event, context, callback) {
         { paymentID, payerID, price } = _JSON$parse,
         otherDetails = _objectWithoutProperties(_JSON$parse, ['paymentID', 'payerID', 'price']);
 
-  const execute_payment_json = {
+  const executePaymentJson = {
     payer_id: payerID,
     transactions: [{
       amount: {
@@ -18678,12 +18724,13 @@ function handler(event, context, callback) {
     }]
   };
 
-  _paypalRestSdk2.default.payment.execute(paymentID, execute_payment_json, (error, payment) => {
+  (0, _paypal.executePayment)(paymentID, executePaymentJson, (error, payment) => {
     if (error) {
+      console.warn('execute payment failed');
       console.error(error);
       callback(null, {
-        statusCode: 200,
-        body: 'payment failed'
+        statusCode: 404,
+        body: JSON.stringify(error)
       });
     } else if (payment.state === 'approved') {
       console.info('payment completed successfully, description: ', payment.transactions[0].description);
@@ -18693,10 +18740,12 @@ function handler(event, context, callback) {
 
       (0, _firebase.addBooking)(bookingObject, callback);
     } else {
-      console.warn('payment.state: not approved ?');
+      console.warn('payment.state: not approved');
       callback(null, {
-        statusCode: 200,
-        body: 'payment failed'
+        statusCode: 404,
+        body: JSON.stringify({
+          message: 'payment not approved'
+        })
       });
     }
   });

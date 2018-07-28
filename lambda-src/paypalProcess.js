@@ -1,11 +1,5 @@
-import paypal from 'paypal-rest-sdk';
 import { addBooking } from './firebase';
-
-paypal.configure({
-  mode: 'sandbox', // sandbox or live
-  client_id: process.env.PAYPAL_SANDBOX_CLIENT_ID, // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"
-  client_secret: process.env.PAYPAL_SECRET, // run: firebase functions:config:set paypal.client_secret="yourPaypalClientSecret"
-});
+import { executePayment } from './paypal';
 
 export function handler(event, context, callback) {
   if (event.httpMethod !== 'POST' || !event.body) {
@@ -18,7 +12,7 @@ export function handler(event, context, callback) {
   const data = event.body;
   const { paymentID, payerID, price, ...otherDetails } = JSON.parse(data);
 
-  const execute_payment_json = {
+  const executePaymentJson = {
     payer_id: payerID,
     transactions: [
       {
@@ -30,12 +24,13 @@ export function handler(event, context, callback) {
     ],
   };
 
-  paypal.payment.execute(paymentID, execute_payment_json, (error, payment) => {
+  executePayment(paymentID, executePaymentJson, (error, payment) => {
     if (error) {
+      console.warn('execute payment failed');
       console.error(error);
       callback(null, {
-        statusCode: 200,
-        body: 'payment failed',
+        statusCode: 404,
+        body: JSON.stringify(error),
       });
     } else if (payment.state === 'approved') {
       console.info(
@@ -49,10 +44,12 @@ export function handler(event, context, callback) {
 
       addBooking(bookingObject, callback);
     } else {
-      console.warn('payment.state: not approved ?');
+      console.warn('payment.state: not approved');
       callback(null, {
-        statusCode: 200,
-        body: 'payment failed',
+        statusCode: 404,
+        body: JSON.stringify({
+          message: 'payment not approved',
+        }),
       });
     }
   });

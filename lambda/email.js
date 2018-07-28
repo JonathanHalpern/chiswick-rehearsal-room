@@ -7306,7 +7306,7 @@ const mailTransport = nodemailer.createTransport({
 });
 
 const sendMail = exports.sendMail = mailOptions => {
-  mailTransport.sendMail(mailOptions).then(() => console.log(`messaged someone}`)).catch(error => console.error('There was an error while sending the email:', error));
+  mailTransport.sendMail(mailOptions).then(() => console.log(`messaged ${mailOptions.to}`)).catch(error => console.error('There was an error while sending the email:', error));
 };
 
 /***/ }),

@@ -3,7 +3,7 @@ import { sendMail } from './email';
 
 const instance = axios.create({
   baseURL: 'https://us-central1-chiswick-rehearsal-room.cloudfunctions.net',
-  headers: { key: 'secret333' },
+  headers: { key: process.env.FIREBASE_FUNCTIONS_KEY },
 });
 
 export const addBooking = (bookingObject, callback) => {
@@ -11,7 +11,8 @@ export const addBooking = (bookingObject, callback) => {
   instance
     .post('/hey', bookingObject)
     .then(response => {
-      console.log(response.data);
+      console.log('booking created');
+      console.log(bookingObject);
       const mailOptions = {
         from: '"Chiswick Rehearsal Room"',
         to: email,
@@ -28,7 +29,7 @@ export const addBooking = (bookingObject, callback) => {
       };
       sendMail(mailOptions);
       callback(null, {
-        statusCode: 200,
+        statusCode: 201,
         body: JSON.stringify({ data: response.data }),
       });
     })
