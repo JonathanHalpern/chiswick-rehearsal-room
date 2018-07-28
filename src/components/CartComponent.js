@@ -13,7 +13,6 @@ const CartComponent = ({
   onCancel,
   purchase,
   validate,
-  isReadyToBook,
 }) => {
   const PayPalButton = paypal.Button.driver('react', { React, ReactDOM });
   return (

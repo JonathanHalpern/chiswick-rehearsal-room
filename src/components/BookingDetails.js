@@ -8,6 +8,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 const StlyedForm = styled.form`
   display: flex;
   flex-wrap: wrap;
+  margin: 0;
 `;
 
 const StyledTextField = styled(TextField)`
@@ -54,7 +55,6 @@ const BookingDetails = ({
       margin="normal"
       fullWidth
     />
-
     <RadioGroup
       aria-label="Gender"
       name="gender1"

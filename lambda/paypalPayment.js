@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 78);
+/******/ 	return __webpack_require__(__webpack_require__.s = 120);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -139,9 +139,9 @@ module.exports.mixin = mixin;
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var client = __webpack_require__(17);
-var utils = __webpack_require__(19);
-var configuration = __webpack_require__(4);
+var client = __webpack_require__(24);
+var utils = __webpack_require__(26);
+var configuration = __webpack_require__(10);
 
 /**
  * token_persist client id to access token cache, used to reduce access token round trips
@@ -300,20 +300,36 @@ var executeHttp = exports.executeHttp = function executeHttp(http_method, path, 
 
 
 /***/ }),
-/* 3 */
+/* 3 */,
+/* 4 */
 /***/ (function(module, exports) {
 
 module.exports = require("https");
 
 /***/ }),
-/* 4 */
+/* 5 */,
+/* 6 */
+/***/ (function(module, exports) {
+
+module.exports = require("crypto");
+
+/***/ }),
+/* 7 */,
+/* 8 */,
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("http");
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var sdkVersion = exports.sdkVersion = __webpack_require__(57).version;
+var sdkVersion = exports.sdkVersion = __webpack_require__(67).version;
 var userAgent = exports.userAgent = 'PayPalSDK/PayPal-node-SDK ' + sdkVersion + ' (node ' + process.version + '-' + process.arch + '-' + process.platform  + '; OpenSSL ' + process.versions.openssl + ')';
 
 var default_options = exports.default_options = {
@@ -331,35 +347,31 @@ var default_options = exports.default_options = {
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-module.exports = require("http");
-
-/***/ }),
-/* 6 */,
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
 /* 11 */,
 /* 12 */,
 /* 13 */,
 /* 14 */,
 /* 15 */,
 /* 16 */,
-/* 17 */
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var http = __webpack_require__(5);
-var https = __webpack_require__(3);
-var querystring = __webpack_require__(18);
-var configuration = __webpack_require__(4);
-var semver = __webpack_require__(58);
+var http = __webpack_require__(9);
+var https = __webpack_require__(4);
+var querystring = __webpack_require__(25);
+var configuration = __webpack_require__(10);
+var semver = __webpack_require__(68);
 
 /**
  * Wraps the http client, handles request parameters, populates request headers, handles response
@@ -503,19 +515,19 @@ var invoke = exports.invoke = function invoke(http_method, path, data, http_opti
 
 
 /***/ }),
-/* 18 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("querystring");
 
 /***/ }),
-/* 19 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
-var https = __webpack_require__(3);
+var https = __webpack_require__(4);
 var isArray = Array.isArray;
 var hasOwn = Object.prototype.hasOwnProperty;
 
@@ -613,7 +625,7 @@ var checkExpiredToken = exports.checkExpiredToken = function checkExpiredToken(t
 
 
 /***/ }),
-/* 20 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -662,7 +674,7 @@ module.exports = billingPlan;
 
 
 /***/ }),
-/* 21 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -777,7 +789,7 @@ module.exports = billingAgreement;
 
 
 /***/ }),
-/* 22 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -805,16 +817,16 @@ module.exports = creditCard;
 
 
 /***/ }),
-/* 23 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
-var configuration = __webpack_require__(4);
-var client = __webpack_require__(17);
-var utils = __webpack_require__(19);
-var querystring = __webpack_require__(18);
+var configuration = __webpack_require__(10);
+var client = __webpack_require__(24);
+var utils = __webpack_require__(26);
+var querystring = __webpack_require__(25);
 
 /**
  * Sets up request body for open id connect module requests
@@ -1001,13 +1013,6 @@ module.exports = openIdConnect;
 
 
 /***/ }),
-/* 24 */,
-/* 25 */,
-/* 26 */,
-/* 27 */,
-/* 28 */,
-/* 29 */,
-/* 30 */,
 /* 31 */,
 /* 32 */,
 /* 33 */,
@@ -1032,21 +1037,31 @@ module.exports = openIdConnect;
 /* 52 */,
 /* 53 */,
 /* 54 */,
-/* 55 */
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(56)();
+module.exports = __webpack_require__(66)();
 
 
 /***/ }),
-/* 56 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright 2015-2016 PayPal, Inc. */
 
 
-var configuration = __webpack_require__(4);
+var configuration = __webpack_require__(10);
 var api = __webpack_require__(2);
 
 module.exports = function () {
@@ -1064,40 +1079,40 @@ module.exports = function () {
         configure: configure,
         configuration: configuration.default_options,
         generateToken: generateToken,
-        payment: __webpack_require__(59)(),
-        sale: __webpack_require__(60)(),
-        refund: __webpack_require__(61)(),
-        authorization: __webpack_require__(62)(),
-        capture: __webpack_require__(63)(),
-        order: __webpack_require__(64)(),
-        payout: __webpack_require__(65)(),
-        payoutItem: __webpack_require__(66)(),
-        billingPlan: __webpack_require__(20)(),
-        billingAgreement: __webpack_require__(21)(),
-        creditCard: __webpack_require__(22)(),
-        invoice: __webpack_require__(67)(),
-        invoiceTemplate: __webpack_require__(68)(),
-        openIdConnect: __webpack_require__(23)(),
-        webProfile: __webpack_require__(69)(),
-        notification: __webpack_require__(70)(),
+        payment: __webpack_require__(69)(),
+        sale: __webpack_require__(70)(),
+        refund: __webpack_require__(71)(),
+        authorization: __webpack_require__(72)(),
+        capture: __webpack_require__(73)(),
+        order: __webpack_require__(74)(),
+        payout: __webpack_require__(75)(),
+        payoutItem: __webpack_require__(76)(),
+        billingPlan: __webpack_require__(27)(),
+        billingAgreement: __webpack_require__(28)(),
+        creditCard: __webpack_require__(29)(),
+        invoice: __webpack_require__(77)(),
+        invoiceTemplate: __webpack_require__(78)(),
+        openIdConnect: __webpack_require__(30)(),
+        webProfile: __webpack_require__(79)(),
+        notification: __webpack_require__(80)(),
         //entries below are deprecated but provided for compatibility with 0.* versions
         generate_token: generateToken,
-        billing_plan: __webpack_require__(20)(),
-        billing_agreement: __webpack_require__(21)(),
-        credit_card: __webpack_require__(22)(),
-        openid_connect: __webpack_require__(23)()
+        billing_plan: __webpack_require__(27)(),
+        billing_agreement: __webpack_require__(28)(),
+        credit_card: __webpack_require__(29)(),
+        openid_connect: __webpack_require__(30)()
     };
 };
 
 
 /***/ }),
-/* 57 */
+/* 67 */
 /***/ (function(module, exports) {
 
 module.exports = {"_from":"paypal-rest-sdk","_id":"paypal-rest-sdk@1.8.1","_inBundle":false,"_integrity":"sha512-Trj2GuPn10GqpICAxQh5wjxuDT7rq7DMOkvyatz05wI5xPGmqXN7UC0WfDSF9WSBs4YdcWZP0g+nY+sOdaFggw==","_location":"/paypal-rest-sdk","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"paypal-rest-sdk","name":"paypal-rest-sdk","escapedName":"paypal-rest-sdk","rawSpec":"","saveSpec":null,"fetchSpec":"latest"},"_requiredBy":["#USER","/"],"_resolved":"https://registry.npmjs.org/paypal-rest-sdk/-/paypal-rest-sdk-1.8.1.tgz","_shasum":"5023fd42f43da628d18cc00d6bd566eacba74528","_spec":"paypal-rest-sdk","_where":"/Users/jonathanhalpern/Projects/chiswick-rehearsal-room","author":{"name":"PayPal","email":"DL-PP-NODEJS-SDK@paypal.com","url":"https://developer.paypal.com/"},"bugs":{"url":"https://github.com/paypal/PayPal-node-SDK/issues","email":"DL-PP-NODEJS-SDK@paypal.com"},"bundleDependencies":false,"config":{"blanket":{"pattern":"lib","data-cover-never":"node_modules"}},"dependencies":{"buffer-crc32":"^0.2.3","semver":"^5.0.3"},"deprecated":false,"description":"SDK for PayPal REST APIs","devDependencies":{"blanket":"~1.1.5","chai":"~1.9.1","grunt":"~0.4.1","grunt-contrib-jshint":"~0.3.0","grunt-jsdoc":"^0.5.8","grunt-simple-mocha":"~0.4.0","ink-docstrap":"^0.5.2","jsdoc":"^3.3.0-beta1","mocha":"~1.18.2","mocha-lcov-reporter":"0.0.1","nock":"0.36.2"},"engines":{"node":">= v0.6.0"},"homepage":"https://github.com/paypal/PayPal-node-SDK","keywords":["paypal","rest","api","sdk"],"license":"SEE LICENSE IN https://github.com/paypal/PayPal-node-SDK/blob/master/LICENSE","main":"./index.js","name":"paypal-rest-sdk","repository":{"type":"git","url":"git+https://github.com/paypal/PayPal-node-SDK.git"},"scripts":{"test":"grunt"},"version":"1.8.1"}
 
 /***/ }),
-/* 58 */
+/* 68 */
 /***/ (function(module, exports) {
 
 exports = module.exports = SemVer;
@@ -2427,7 +2442,7 @@ function coerce(version) {
 
 
 /***/ }),
-/* 59 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2467,7 +2482,7 @@ module.exports = payment;
 
 
 /***/ }),
-/* 60 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2495,7 +2510,7 @@ module.exports = sale;
 
 
 /***/ }),
-/* 61 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2523,7 +2538,7 @@ module.exports = refund;
 
 
 /***/ }),
-/* 62 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2573,7 +2588,7 @@ module.exports = authorization;
 
 
 /***/ }),
-/* 63 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2601,7 +2616,7 @@ module.exports = capture;
 
 
 /***/ }),
-/* 64 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2651,7 +2666,7 @@ module.exports = order;
 
 
 /***/ }),
-/* 65 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2693,7 +2708,7 @@ module.exports = payout;
 
 
 /***/ }),
-/* 66 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2735,7 +2750,7 @@ module.exports = payoutItem;
 
 
 /***/ }),
-/* 67 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2800,7 +2815,7 @@ module.exports = invoice;
 
 
 /***/ }),
-/* 68 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2829,7 +2844,7 @@ module.exports = invoiceTemplate;
 
 
 /***/ }),
-/* 69 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2883,7 +2898,7 @@ module.exports = webProfile;
 
 
 /***/ }),
-/* 70 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2892,9 +2907,9 @@ module.exports = webProfile;
 
 var generate = __webpack_require__(0);
 var api = __webpack_require__(2);
-var https = __webpack_require__(3);
-var crypto = __webpack_require__(71);
-var crc32 = __webpack_require__(72);
+var https = __webpack_require__(4);
+var crypto = __webpack_require__(6);
+var crc32 = __webpack_require__(81);
 
 /**
  * Exposes REST endpoints for creating and managing webhooks
@@ -3097,16 +3112,10 @@ module.exports = notification;
 
 
 /***/ }),
-/* 71 */
-/***/ (function(module, exports) {
-
-module.exports = require("crypto");
-
-/***/ }),
-/* 72 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Buffer = __webpack_require__(73).Buffer;
+var Buffer = __webpack_require__(82).Buffer;
 
 var CRC_TABLE = [
   0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
@@ -3220,17 +3229,50 @@ module.exports = crc32;
 
 
 /***/ }),
-/* 73 */
+/* 82 */
 /***/ (function(module, exports) {
 
 module.exports = require("buffer");
 
 /***/ }),
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */,
-/* 78 */
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3240,7 +3282,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.handler = handler;
-const paypal = __webpack_require__(55);
+const paypal = __webpack_require__(65);
 
 paypal.configure({
   mode: 'sandbox', // sandbox or live

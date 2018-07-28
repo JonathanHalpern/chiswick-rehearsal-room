@@ -3,6 +3,7 @@ import CartComponent from '../components/CartComponent';
 import CalendarBooker from '../components/CalendarBooker';
 import BookingDetails from '../components/BookingDetails';
 import CouponComponent from '../components/CouponComponent';
+import BookingConfirmed from '../components/BookingConfirmed';
 
 let paypal;
 if (typeof window !== 'undefined') {
@@ -28,6 +29,7 @@ class BookingContainer extends Component {
     this.toggleButton = this.toggleButton.bind(this);
     this.onCouponPurchase = this.onCouponPurchase.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.onNewBooking = this.onNewBooking.bind(this);
     this.state = {
       isProcessing: false,
       isConfirmed: false,
@@ -42,6 +44,8 @@ class BookingContainer extends Component {
       discountCode: '',
       paymentMethod: 'paypal',
       actions: {},
+      couponMessage: '',
+      errorMessage: '',
     };
   }
 
@@ -64,11 +68,10 @@ class BookingContainer extends Component {
         name,
         email,
         phoneNumber,
-        data: '31/07/2018',
+        bookingDate: '31/07/2018',
         startTime,
         endTime,
         message,
-        amount: price,
         currency: 'GBP',
         method: 'PayPal',
         couponUsed: false,
@@ -91,13 +94,18 @@ class BookingContainer extends Component {
   }
 
   onCouponPurchase() {
+    this.setState({
+      isProcessing: true,
+      errorMessage: '',
+      couponMessage: '',
+    });
     const {
-      price,
       startTime,
       endTime,
       name,
       email,
       phoneNumber,
+      bookingDate,
       message,
       discountCode,
       paymentMethod,
@@ -105,24 +113,48 @@ class BookingContainer extends Component {
     fetch(`${API}/axios`, {
       method: 'post',
       body: JSON.stringify({
-        price,
+        price: 0,
         name,
         email,
         phoneNumber,
-        data: '31/07/2018',
+        bookingDate,
         startTime,
         endTime,
         message,
-        amount: 0,
-        currency: 'GBP',
         method: paymentMethod,
         discountCode,
       }),
     })
-      .then(response => response.json())
       .then(response => {
-        console.log(response);
+        this.setState({
+          isProcessing: false,
+        });
+        if (!response.ok) {
+          throw response;
+        }
+        this.setState({
+          isConfirmed: true,
+        });
+      })
+      .catch(err => {
+        err.text().then(errorObject => {
+          const { errorMessage, errorType } = JSON.parse(errorObject);
+          if (errorType === 'coupon') {
+            this.setState({
+              couponMessage: errorMessage,
+            });
+          }
+          this.setState({
+            errorMessage,
+          });
+        });
       });
+  }
+
+  onNewBooking() {
+    this.setState({
+      isConfirmed: false,
+    });
   }
 
   onSlotSelect(slot) {
@@ -197,47 +229,52 @@ class BookingContainer extends Component {
       message,
       discountCode,
       paymentMethod,
+      errorMessage,
+      couponMessage,
     } = this.state;
     const { timeSlots } = this.props;
     return (
       <div>
-        <CalendarBooker
-          onSlotSelect={this.onSlotSelect}
-          timeSlots={timeSlots}
-        />
-        <BookingDetails
-          name={name}
-          email={email}
-          phoneNumber={phoneNumber}
-          message={message}
-          discountCode={discountCode}
-          paymentMethod={paymentMethod}
-          handleChange={this.handleChange}
-        />
-        {paymentMethod === 'paypal' ? (
+        {isConfirmed ? (
+          <BookingConfirmed onClick={this.onNewBooking} />
+        ) : (
           <div>
+            <CalendarBooker
+              onSlotSelect={this.onSlotSelect}
+              timeSlots={timeSlots}
+            />
+            <BookingDetails
+              name={name}
+              email={email}
+              phoneNumber={phoneNumber}
+              message={message}
+              discountCode={discountCode}
+              paymentMethod={paymentMethod}
+              handleChange={this.handleChange}
+            />
+            {errorMessage && <p>{errorMessage}</p>}
             {isProcessing && <p>Processing...</p>}
-            {isConfirmed ? (
-              <p>Done</p>
+            {paymentMethod === 'paypal' ? (
+              <div>
+                <CartComponent
+                  client={client}
+                  payment={this.payment}
+                  onAuthorize={this.onAuthorize}
+                  onCancel={this.onCancel}
+                  purchase={price}
+                  isReadyToBook={name && email}
+                  validate={this.validate}
+                />
+              </div>
             ) : (
-              <CartComponent
-                client={client}
-                payment={this.payment}
-                onAuthorize={this.onAuthorize}
-                onCancel={this.onCancel}
-                purchase={price}
-                isReadyToBook={name && email}
-                validate={this.validate}
+              <CouponComponent
+                onSubmit={this.onCouponPurchase}
+                handleChange={this.handleChange}
+                errorMessage={couponMessage}
+                isProcessing={isProcessing}
               />
             )}
           </div>
-        ) : (
-          <CouponComponent
-            onSubmit={this.onCouponPurchase}
-            onChange={event => {
-              this.updateField('discountCode', event.target.value);
-            }}
-          />
         )}
       </div>
     );
