@@ -11,6 +11,7 @@ const CouponComponent = ({
   discountCode,
   errorMessage,
   isProcessing,
+  isFormComplete,
   onSubmit,
   handleChange,
 }) => (
@@ -28,7 +29,7 @@ const CouponComponent = ({
       variant="contained"
       color="primary"
       onClick={onSubmit}
-      disabled={isProcessing}>
+      disabled={isProcessing || !isFormComplete || !discountCode}>
       Purchase with coupon
     </StyledButton>
     {errorMessage && <p>{errorMessage}</p>}

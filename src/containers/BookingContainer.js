@@ -270,8 +270,10 @@ class BookingContainer extends Component {
               <CouponComponent
                 onSubmit={this.onCouponPurchase}
                 handleChange={this.handleChange}
+                discountCode={discountCode}
                 errorMessage={couponMessage}
                 isProcessing={isProcessing}
+                isFormComplete={!!(name && email)}
               />
             )}
           </div>
