@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 
 import Header from '../components/header';
-import './index.css';
 
 const Layout = ({ children, data }) => (
   <div>
@@ -17,6 +16,7 @@ const Layout = ({ children, data }) => (
     <Header
       siteTitle={data.site.siteMetadata.title}
       pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
+      backgroundImage={data.backgroundImage}
     />
     <div
       style={{
@@ -51,6 +51,11 @@ export const query = graphql`
             path
           }
         }
+      }
+    }
+    backgroundImage: imageSharp(id: { regex: "/room-piano/" }) {
+      resolutions(width: 2000) {
+        ...GatsbyImageSharpResolutions
       }
     }
   }
