@@ -1,11 +1,13 @@
-import { addBooking } from './firebase';
+import { createBooking } from './firebase';
 import { executePayment } from './paypal';
 
 export function handler(event, context, callback) {
   if (event.httpMethod !== 'POST' || !event.body) {
     callback(null, {
-      statusCode: 200,
-      body: {},
+      statusCode: 405,
+      body: JSON.stringify({
+        message: 'API only accepts posts',
+      }),
     });
   }
 
@@ -42,7 +44,7 @@ export function handler(event, context, callback) {
         price,
       };
 
-      addBooking(bookingObject, callback);
+      createBooking(bookingObject, callback);
     } else {
       console.warn('payment.state: not approved');
       callback(null, {

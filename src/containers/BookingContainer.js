@@ -34,6 +34,10 @@ const StyledCouponComponent = styled(CouponComponent)`
   display: ${({ isVisible }) => (isVisible ? 'initial' : 'none')};
 `;
 
+const Container = styled.div`
+  display: ${({ isVisible }) => (isVisible ? 'initial' : 'none')};
+`;
+
 class BookingContainer extends Component {
   constructor(props) {
     super(props);
@@ -130,7 +134,7 @@ class BookingContainer extends Component {
       discountCode,
       paymentMethod,
     } = this.state;
-    fetch(`${API}/axios`, {
+    fetch(`${API}/couponBooking`, {
       method: 'post',
       body: JSON.stringify({
         price: 0,
@@ -208,7 +212,6 @@ class BookingContainer extends Component {
       })
         .then(response => response.json())
         .then(response => {
-          console.log(response.id);
           resolve(response.id);
         })
         .catch(error => {
@@ -244,46 +247,43 @@ class BookingContainer extends Component {
     const { timeSlots } = this.props;
     return (
       <div>
-        {isConfirmed ? (
-          <BookingConfirmed onClick={this.onNewBooking} />
-        ) : (
-          <div>
-            <CalendarBooker
-              onSlotSelect={this.onSlotSelect}
-              timeSlots={timeSlots}
-            />
-            <BookingDetails
-              name={name}
-              email={email}
-              phoneNumber={phoneNumber}
-              message={message}
-              discountCode={discountCode}
-              paymentMethod={paymentMethod}
-              handleChange={this.handleChange}
-            />
-            {errorMessage && <p>{errorMessage}</p>}
-            {isProcessing && <p>Processing...</p>}
-            <StyledCartComponent
-              client={client}
-              payment={this.payment}
-              onAuthorize={this.onAuthorize}
-              onCancel={this.onCancel}
-              purchase={price}
-              isReadyToBook={name && email}
-              validate={this.validate}
-              isVisible={paymentMethod === 'paypal'}
-            />
-            <StyledCouponComponent
-              onSubmit={this.onCouponPurchase}
-              handleChange={this.handleChange}
-              discountCode={discountCode}
-              errorMessage={couponMessage}
-              isProcessing={isProcessing}
-              isFormComplete={!!(name && email)}
-              isVisible={paymentMethod === 'coupon'}
-            />
-          </div>
-        )}
+        {isConfirmed && <BookingConfirmed onClick={this.onNewBooking} />}
+        <Container isVisible={!isConfirmed}>
+          <CalendarBooker
+            onSlotSelect={this.onSlotSelect}
+            timeSlots={timeSlots}
+          />
+          <BookingDetails
+            name={name}
+            email={email}
+            phoneNumber={phoneNumber}
+            message={message}
+            discountCode={discountCode}
+            paymentMethod={paymentMethod}
+            handleChange={this.handleChange}
+          />
+          {errorMessage && <p>{errorMessage}</p>}
+          {isProcessing && <p>Processing...</p>}
+          <StyledCartComponent
+            client={client}
+            payment={this.payment}
+            onAuthorize={this.onAuthorize}
+            onCancel={this.onCancel}
+            purchase={price}
+            isReadyToBook={name && email}
+            validate={this.validate}
+            isVisible={paymentMethod === 'paypal'}
+          />
+          <StyledCouponComponent
+            onSubmit={this.onCouponPurchase}
+            handleChange={this.handleChange}
+            discountCode={discountCode}
+            errorMessage={couponMessage}
+            isProcessing={isProcessing}
+            isFormComplete={!!(name && email)}
+            isVisible={paymentMethod === 'coupon'}
+          />
+        </Container>
       </div>
     );
   }

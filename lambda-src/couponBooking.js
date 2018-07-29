@@ -1,8 +1,7 @@
-import { addBooking } from './firebase';
+import { createBooking } from './firebase';
 
 export function handler(event, context, callback) {
   const data = event.body;
-  const envCode = '123';
   const { discountCode, ...bookingObject } = JSON.parse(data);
   const { name, email, bookingDate, startTime, endTime } = bookingObject;
   console.log(bookingObject);
@@ -14,7 +13,7 @@ export function handler(event, context, callback) {
         errorType: 'form',
       }),
     });
-  } else if (discountCode !== envCode) {
+  } else if (discountCode !== process.env.DISCOUNT_CODE) {
     callback(null, {
       statusCode: 403,
       body: JSON.stringify({
@@ -23,6 +22,6 @@ export function handler(event, context, callback) {
       }),
     });
   } else {
-    addBooking(bookingObject, callback);
+    createBooking(bookingObject, callback);
   }
 }

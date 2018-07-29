@@ -6,10 +6,10 @@ const instance = axios.create({
   headers: { key: process.env.FIREBASE_FUNCTIONS_KEY },
 });
 
-export const addBooking = (bookingObject, callback) => {
+export const createBooking = (bookingObject, callback) => {
   const { name, email, startTime, endTime, bookingDate } = bookingObject;
   instance
-    .post('/hey', bookingObject)
+    .post('/createBooking', bookingObject)
     .then(response => {
       console.log('booking created');
       console.log(bookingObject);
