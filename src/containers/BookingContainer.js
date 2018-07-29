@@ -113,8 +113,10 @@ class BookingContainer extends Component {
       });
   }
 
-  onCancel(data) {
-    console.log(data);
+  onCancel() {
+    this.setState({
+      isProcessing: false,
+    });
   }
 
   onCouponPurchase() {
