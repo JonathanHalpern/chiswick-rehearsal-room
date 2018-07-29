@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "author": "Jonathan Halpern <jonnyhalpern@gmail.com>",
   "dependencies": {
+    "@material-ui/core": "^1.4.1",
     "axios": "^0.18.0",
+    "firebase": "^5.3.0",
     "gatsby": "^1.9.247",
     "gatsby-image": "^1.0.55",
     "gatsby-link": "^1.6.40",
@@ -13,6 +15,7 @@
     "gatsby-plugin-netlify-cms": "^2.0.1",
     "gatsby-plugin-offline": "^1.0.18",
     "gatsby-plugin-react-helmet": "^2.0.10",
+    "gatsby-plugin-react-next": "^1.0.11",
     "gatsby-plugin-sharp": "^1.6.42",
     "gatsby-plugin-styled-components": "^2.0.11",
     "gatsby-plugin-typography": "^1.7.19",
@@ -25,6 +28,7 @@
     "gatsby-transformer-sharp": "^1.6.22",
     "http-proxy-middleware": "^0.18.0",
     "netlify-cms": "^1.7.0",
+    "nodemailer": "^4.6.7",
     "npm": "^6.1.0",
     "paypal-checkout": "^4.0.209",
     "paypal-rest-sdk": "^1.8.1",
@@ -34,13 +38,9 @@
     "react-paypal-express-checkout": "^1.0.4",
     "react-sortable-hoc": "^0.8.3",
     "recompose": "^0.27.1",
-    "short-id": "0.1.0-1",
     "styled-components": "^3.3.3",
     "typography": "^0.16.17",
-    "typography-theme-fairy-gates": "^0.15.11",
-    "typography-theme-lincoln": "^0.15.11",
-    "typography-theme-moraga": "^0.15.10",
-    "typography-theme-sutro": "^0.15.10"
+    "typography-theme-ocean-beach": "^0.15.11"
   },
   "keywords": [
     "gatsby"
@@ -66,7 +66,6 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-react": "^7.9.1",
-    "firebase": "^5.1.0",
     "netlify-lambda": "^0.4.0",
     "prettier": "^1.13.5"
   },

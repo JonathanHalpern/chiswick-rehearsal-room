@@ -1,23 +1,20 @@
-const paypal = require('paypal-rest-sdk');
-
-paypal.configure({
-  mode: 'sandbox', // sandbox or live
-  client_id: process.env.PAYPAL_SANDBOX_CLIENT_ID, // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"
-  client_secret: process.env.PAYPAL_SECRET, // run: firebase functions:config:set paypal.client_secret="yourPaypalClientSecret"
-});
+import { createBooking } from './firebase';
+import { executePayment } from './paypal';
 
 export function handler(event, context, callback) {
   if (event.httpMethod !== 'POST' || !event.body) {
     callback(null, {
-      statusCode: 200,
-      body: {},
+      statusCode: 405,
+      body: JSON.stringify({
+        message: 'API only accepts posts',
+      }),
     });
   }
 
   const data = event.body;
-  const { paymentID, payerID, price } = JSON.parse(data);
+  const { paymentID, payerID, price, ...otherDetails } = JSON.parse(data);
 
-  const execute_payment_json = {
+  const executePaymentJson = {
     payer_id: payerID,
     transactions: [
       {
@@ -29,30 +26,32 @@ export function handler(event, context, callback) {
     ],
   };
 
-  console.log(paymentID, execute_payment_json);
-
-  paypal.payment.execute(paymentID, execute_payment_json, (error, payment) => {
+  executePayment(paymentID, executePaymentJson, (error, payment) => {
     if (error) {
+      console.warn('execute payment failed');
       console.error(error);
       callback(null, {
-        statusCode: 200,
-        body: 'payment failed',
+        statusCode: 404,
+        body: JSON.stringify(error),
       });
     } else if (payment.state === 'approved') {
       console.info(
         'payment completed successfully, description: ',
         payment.transactions[0].description,
       );
-      callback(null, {
-        statusCode: 200,
-        body: JSON.stringify(payment),
-      });
+      const bookingObject = {
+        ...otherDetails,
+        price,
+      };
+
+      createBooking(bookingObject, callback);
     } else {
-      console.warn('payment.state: not approved ?');
-      // replace debug url
+      console.warn('payment.state: not approved');
       callback(null, {
-        statusCode: 200,
-        body: 'payment failed',
+        statusCode: 404,
+        body: JSON.stringify({
+          message: 'payment not approved',
+        }),
       });
     }
   });

@@ -65,9 +65,9 @@ const StyledHamburger = styled(Hamburger)`
 const Wrapper = styled.div`
   z-index: 2;
   transition: background 0.5s, padding 0.5s;
-  position: ${props => (props.scrollTop ? 'fixed' : 'absolute')};
-  background: ${props => (props.scrollTop ? 'black' : 'default')};
-  padding: ${props => (props.scrollTop ? '20px 0' : '30px 0')};
+  position: ${({ scrollTop }) => (scrollTop ? 'fixed' : 'absolute')};
+  background: ${({ scrollTop }) => (scrollTop ? 'black' : 'default')};
+  padding: ${({ scrollTop }) => (scrollTop ? '20px 0' : '30px 0')};
   top: 0;
   width: 100%;
   margin: 0;
@@ -82,10 +82,10 @@ const StyledList = styled.ul`
   display: flex;
   position: relative;
   @media (max-width: 700px) {
-    transition: height 0.5s, opacity 0.8s;
-    opacity: ${props => (props.isMenuOpen ? '1' : '0')};
-    height: ${props =>
-      props.isMenuOpen ? `${props.listLength * props.listHeight}px` : '0px'};
+    transition: max-height 0.8s, opacity 0.8s;
+    opacity: ${({ isMenuOpen }) => (isMenuOpen ? '1' : '0')};
+    max-height: ${({ isMenuOpen, listLength, maxHeight }) =>
+      isMenuOpen ? `${listLength * maxHeight}px` : '0px'};
     overflow: hidden;
     flex-direction: column;
     float: none;
@@ -111,7 +111,7 @@ const NavBar = compose(
     <StyledList
       isMenuOpen={isMenuOpen}
       listLength={pageList.length}
-      listHeight={44}>
+      maxHeight={80}>
       {pageList.map(pageItem => (
         <StyledListItem key={pageItem.path}>
           <StyledLink to={pageItem.path}>

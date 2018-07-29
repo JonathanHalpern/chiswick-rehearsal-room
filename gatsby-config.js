@@ -6,6 +6,7 @@ module.exports = {
     title: 'Chiswick Rehearsal Room',
   },
   plugins: [
+    `gatsby-plugin-react-next`,
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-styled-components',
     'gatsby-transformer-sharp',
