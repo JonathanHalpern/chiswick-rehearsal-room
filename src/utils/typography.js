@@ -19,6 +19,7 @@ oceanBeachTheme.overrideThemeStyles = ({ rhythm }, options) => ({
     textDecoration: 'none',
     color: 'inherit',
     textShadow: 'none',
+    backgroundImage: 'none',
   },
   '.gatsby-resp-image-background-image': {
     borderRadius: '10px',
