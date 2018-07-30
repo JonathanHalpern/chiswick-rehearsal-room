@@ -1,8 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
+import styled from 'styled-components';
 
-import Header from '../components/header';
+import NavBar from '../components/NavBar';
+
+const Header = styled.div`
+  position: relative;
+`;
 
 const Layout = ({ children, data }) => (
   <div>
@@ -13,20 +18,12 @@ const Layout = ({ children, data }) => (
         { name: 'keywords', content: 'sample, something' },
       ]}
     />
-    <Header
-      siteTitle={data.site.siteMetadata.title}
-      pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
-      backgroundImage={data.backgroundImage}
-    />
-    <div
-      style={{
-        margin: '0 auto',
-        maxWidth: 960,
-        padding: '0px 1.0875rem 1.45rem',
-        paddingTop: 0,
-      }}>
-      {children()}
-    </div>
+    <Header>
+      <NavBar
+        pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
+      />
+    </Header>
+    <div>{children()}</div>
   </div>
 );
 
@@ -51,11 +48,6 @@ export const query = graphql`
             path
           }
         }
-      }
-    }
-    backgroundImage: imageSharp(id: { regex: "/room-piano/" }) {
-      resolutions(width: 2000) {
-        ...GatsbyImageSharpResolutions
       }
     }
   }

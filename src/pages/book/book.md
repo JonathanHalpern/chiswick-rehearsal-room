@@ -2,6 +2,7 @@
 templateKey: book-page
 path: /book
 title: Book the room
+evidenceImage: ../../../static/img/piano-keys.jpg
 timeSlots:
   - endTime: '12:00'
     price: 20
@@ -14,4 +15,4 @@ timeSlots:
     startTime: '10:30'
 ---
 
-## Contact me now!
+## Select a date in the calendar to book

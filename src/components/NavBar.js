@@ -8,14 +8,12 @@ const withData = lifecycle({
   componentDidMount() {
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', this.props.handleScroll);
-      window.addEventListener('resize', this.props.updateDimensions);
     }
   },
 
   componentWillUnmount() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('scroll', this.props.handleScroll);
-      window.removeEventListener('resize', this.props.updateDimensions);
     }
   },
 });
@@ -24,7 +22,6 @@ const handlers = withStateHandlers(
   () => ({
     scrollTop:
       typeof window !== 'undefined' && document.documentElement.scrollTop,
-    width: typeof window !== 'undefined' && window.innerWidth,
     isMenuOpen: false,
   }),
   {
@@ -32,11 +29,6 @@ const handlers = withStateHandlers(
       return {
         scrollTop:
           typeof document !== 'undefined' && document.documentElement.scrollTop,
-      };
-    },
-    updateDimensions: () => () => {
-      return {
-        width: typeof window !== 'undefined' && window.innerWidth,
       };
     },
     toggleMenu: ({ isMenuOpen }) => () => {
@@ -66,7 +58,7 @@ const Wrapper = styled.div`
   z-index: 2;
   transition: background 0.5s, padding 0.5s;
   position: ${({ scrollTop }) => (scrollTop ? 'fixed' : 'absolute')};
-  background: ${({ scrollTop }) => (scrollTop ? 'black' : 'default')};
+  background: ${({ scrollTop }) => (scrollTop ? 'black' : 'initial')};
   padding: ${({ scrollTop }) => (scrollTop ? '20px 0' : '30px 0')};
   top: 0;
   width: 100%;
@@ -105,7 +97,7 @@ const StyledListItem = styled.li`
 const NavBar = compose(
   handlers,
   withData,
-)(({ pageList, scrollTop, width, toggleMenu, isMenuOpen }) => (
+)(({ pageList, scrollTop, toggleMenu, isMenuOpen }) => (
   <Wrapper scrollTop={scrollTop}>
     <StyledHamburger isActive={isMenuOpen} onClick={toggleMenu} />
     <StyledList
