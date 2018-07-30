@@ -39,7 +39,8 @@ export function handler(event, context, callback) {
       callback(null, {
         statusCode: 404,
         body: JSON.stringify({
-          errorMessage: 'Your email could not be sent',
+          errorMessage:
+            'Your email could not be sent. Try emailing directly, using the address above',
         }),
       });
     });

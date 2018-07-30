@@ -8,8 +8,10 @@ export default ({ data }) => (
     backgroundImage={
       data.markdownRemark.frontmatter.evidenceImage.childImageSharp
     }>
+    <ContactFormContainer
+      onEmailSendMessage={data.markdownRemark.frontmatter.onEmailSendMessage}
+    />
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
-    <ContactFormContainer />
   </PageWrapper>
 );
 
@@ -27,6 +29,7 @@ export const contactPageQuery = graphql`
             }
           }
         }
+        onEmailSendMessage
       }
     }
   }

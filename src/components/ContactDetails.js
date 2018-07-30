@@ -13,6 +13,10 @@ const StyledTextField = styled(TextField)`
   margin-right: 20px !important;
 `;
 
+const StyledButton = styled(Button)`
+  margin: 10px 0 !important;
+`;
+
 const ContactDetails = ({
   name,
   email,
@@ -54,13 +58,13 @@ const ContactDetails = ({
       fullWidth
       required
     />
-    <Button
+    <StyledButton
       variant="contained"
       color="primary"
       onClick={onSubmit}
       disabled={isSubmitting || !email || !message}>
       {isSubmitting ? 'Sending' : 'Send'} message
-    </Button>
+    </StyledButton>
   </StlyedForm>
 );
 

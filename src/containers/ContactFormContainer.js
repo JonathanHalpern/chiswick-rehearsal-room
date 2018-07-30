@@ -12,6 +12,7 @@ class ContactFormContainer extends Component {
       email: 'ad',
       phoneNumber: '',
       message: 'sd',
+      errorMessage: '',
       isSending: false,
       isSent: false,
     };
@@ -33,23 +34,23 @@ class ContactFormContainer extends Component {
         message,
       }),
     })
-      .then(response => response.json())
       .then(response => {
-        // if (!response.ok) {
-        //   throw response;
-        // }
+        if (!response.ok) {
+          throw response;
+        }
         this.setState({
           isSubmitting: false,
           isSent: true,
         });
-        // handleChange('isSent', true);
-        console.log(response);
       })
-      .catch(error => {
-        this.setState({
-          isSubmitting: false,
+      .catch(err => {
+        err.text().then(errorObject => {
+          const { errorMessage } = JSON.parse(errorObject);
+          this.setState({
+            isSubmitting: false,
+            errorMessage,
+          });
         });
-        console.log('error');
       });
   }
 
@@ -60,11 +61,12 @@ class ContactFormContainer extends Component {
   };
 
   render() {
-    const { isSent, isSubmitting, ...values } = this.state;
+    const { isSent, isSubmitting, errorMessage, ...values } = this.state;
+    const { onEmailSendMessage } = this.props;
     return (
       <div>
         {isSent ? (
-          <p>Done</p>
+          <p>{onEmailSendMessage}</p>
         ) : (
           <ContactDetails
             {...values}
@@ -73,6 +75,7 @@ class ContactFormContainer extends Component {
             isSubmitting={isSubmitting}
           />
         )}
+        <p>{errorMessage}</p>
       </div>
     );
   }
