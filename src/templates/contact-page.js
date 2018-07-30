@@ -1,5 +1,6 @@
 import React from 'react';
 import PageWrapper from '../components/PageWrapper';
+import ContactFormContainer from '../containers/ContactFormContainer';
 
 export default ({ data }) => (
   <PageWrapper
@@ -8,7 +9,7 @@ export default ({ data }) => (
       data.markdownRemark.frontmatter.evidenceImage.childImageSharp
     }>
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
-    <p>Hey</p>
+    <ContactFormContainer />
   </PageWrapper>
 );
 
