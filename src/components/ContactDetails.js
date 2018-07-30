@@ -20,6 +20,7 @@ const ContactDetails = ({
   message,
   handleChange,
   onSubmit,
+  isSubmitting,
 }) => (
   <StlyedForm>
     <StyledTextField
@@ -57,8 +58,8 @@ const ContactDetails = ({
       variant="contained"
       color="primary"
       onClick={onSubmit}
-      disabled={!email || !message}>
-      Send message
+      disabled={isSubmitting || !email || !message}>
+      {isSubmitting ? 'Sending' : 'Send'} message
     </Button>
   </StlyedForm>
 );
