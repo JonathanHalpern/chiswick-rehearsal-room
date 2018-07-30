@@ -1,14 +1,18 @@
 import React from 'react';
+import PageWrapper from '../components/PageWrapper';
 import BookingContainer from '../containers/BookingContainer';
 
 export default ({ data }) => (
-  <div>
-    <h1>{data.markdownRemark.frontmatter.title}</h1>
+  <PageWrapper
+    title={data.markdownRemark.frontmatter.title}
+    backgroundImage={
+      data.markdownRemark.frontmatter.evidenceImage.childImageSharp
+    }>
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
     {typeof window !== 'undefined' && (
       <BookingContainer timeSlots={data.markdownRemark.frontmatter.timeSlots} />
     )}
-  </div>
+  </PageWrapper>
 );
 
 export const bookPageQuery = graphql`
@@ -16,6 +20,13 @@ export const bookPageQuery = graphql`
     markdownRemark(frontmatter: { path: { eq: $path } }) {
       html
       frontmatter {
+        evidenceImage {
+          childImageSharp {
+            resolutions(width: 2000) {
+              ...GatsbyImageSharpResolutions
+            }
+          }
+        }
         path
         title
         timeSlots {

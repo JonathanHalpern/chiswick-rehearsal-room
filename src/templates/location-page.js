@@ -1,15 +1,19 @@
 import React from 'react';
+import PageWrapper from '../components/PageWrapper';
 import Map from '../components/Map';
 
 export default ({ data }) => (
-  <div>
-    <h1>{data.markdownRemark.frontmatter.title}</h1>
+  <PageWrapper
+    title={data.markdownRemark.frontmatter.title}
+    backgroundImage={
+      data.markdownRemark.frontmatter.evidenceImage.childImageSharp
+    }>
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
     <Map
       mapLocations={data.markdownRemark.frontmatter.mapLocations}
       defaultZoom={data.markdownRemark.frontmatter.defaultZoom}
     />
-  </div>
+  </PageWrapper>
 );
 
 export const locationPageQuery = graphql`
@@ -19,6 +23,13 @@ export const locationPageQuery = graphql`
       frontmatter {
         path
         title
+        evidenceImage {
+          childImageSharp {
+            resolutions(width: 2000) {
+              ...GatsbyImageSharpResolutions
+            }
+          }
+        }
         defaultZoom
         mapLocations {
           address
