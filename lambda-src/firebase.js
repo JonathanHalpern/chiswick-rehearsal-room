@@ -39,7 +39,7 @@ export const createBooking = ({
       </div>`,
       };
       sendMail(notifcationMsg);
-      const mailOptions = {
+      const confirmationMsg = {
         from: 'no-reply@chiswickrehearsalroom.com',
         to: email,
         subject: `Booking Confirmation for Chiswick Rehearsal Room`,
@@ -53,7 +53,7 @@ export const createBooking = ({
           <p>Regards, Louise</p>
       </div>`,
       };
-      sendMail(mailOptions)
+      sendMail(confirmationMsg)
         .then(() => {
           console.log('mail sent');
           callback(null, {
