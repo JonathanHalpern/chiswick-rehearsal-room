@@ -2,8 +2,8 @@ backend:
   name: git-gateway
   branch: master
 
-media_folder: static/assets
-public_folder: assets
+media_folder: static/img
+public_folder: img
 
 collections:
   - name: "pages"
@@ -16,9 +16,16 @@ collections:
           - {label: "Template Key", name: "templateKey", widget: "hidden", default: "contact-page"}
           - {label: "Path", name: "path", widget: "hidden", default: "/contact"}
           - {label: "Title", name: "title", widget: "string"}
+          - label: "Photographic evidence"
+            name: "evidenceImage"
+            widget: "custompathimage"
+            customMediaPath: "../../../static/img/"
+            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/year-of-the-challenge/master/static/img/"
+            required: true
           - {label: "Email address for contact messages", name: "contactEmail", widget: "string"}
           - {label: "Message shown after contact message sent", name: "onEmailSendMessage", widget: "string"}
           - {label: "Body", name: "body", widget: "markdown"}
+
       - file: "src/pages/about/about.md"
         label: "About"
         name: "about"

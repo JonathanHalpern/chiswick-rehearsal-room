@@ -1,13 +1,16 @@
 import React from 'react';
+import PageWrapper from '../components/PageWrapper';
 
-export default ({ data }) =>
-  console.log(data) || (
-    <div>
-      <h1>{data.markdownRemark.frontmatter.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
-      <p>Hey</p>
-    </div>
-  );
+export default ({ data }) => (
+  <PageWrapper
+    title={data.markdownRemark.frontmatter.title}
+    backgroundImage={
+      data.markdownRemark.frontmatter.headerImage.childImageSharp
+    }>
+    <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
+    <p>Hey</p>
+  </PageWrapper>
+);
 
 export const aboutPageQuery = graphql`
   query AboutPage($path: String!) {
@@ -16,6 +19,13 @@ export const aboutPageQuery = graphql`
       frontmatter {
         path
         title
+        headerImage {
+          childImageSharp {
+            resolutions(width: 2000) {
+              ...GatsbyImageSharpResolutions
+            }
+          }
+        }
       }
     }
   }

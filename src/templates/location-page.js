@@ -6,7 +6,7 @@ export default ({ data }) => (
   <PageWrapper
     title={data.markdownRemark.frontmatter.title}
     backgroundImage={
-      data.markdownRemark.frontmatter.evidenceImage.childImageSharp
+      data.markdownRemark.frontmatter.headerImage.childImageSharp
     }>
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
     <Map
@@ -23,7 +23,7 @@ export const locationPageQuery = graphql`
       frontmatter {
         path
         title
-        evidenceImage {
+        headerImage {
           childImageSharp {
             resolutions(width: 2000) {
               ...GatsbyImageSharpResolutions
