@@ -16,6 +16,8 @@ collections:
           - {label: "Template Key", name: "templateKey", widget: "hidden", default: "contact-page"}
           - {label: "Path", name: "path", widget: "hidden", default: "/contact"}
           - {label: "Title", name: "title", widget: "string"}
+          - {label: "Email address for contact messages", name: "contactEmail", widget: "string"}
+          - {label: "Message shown after contact message sent", name: "onEmailSendMessage", widget: "string"}
           - {label: "Body", name: "body", widget: "markdown"}
       - file: "src/pages/about/about.md"
         label: "About"
@@ -54,6 +56,7 @@ collections:
           - {label: "Template Key", name: "templateKey", widget: "hidden", default: "book-page"}
           - {label: "Path", name: "path", widget: "hidden", default: "/book"}
           - {label: "Title", name: "title", widget: "string"}
+          - {label: "Email address for booking alerts", name: "bookingAlertEmail", widget: "string"}
           - {label: "Body", name: "body", widget: "markdown"}
           - label: "Time Slots"
             name: "timeSlots"

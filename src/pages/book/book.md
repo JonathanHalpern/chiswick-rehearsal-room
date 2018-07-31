@@ -15,5 +15,3 @@ timeSlots:
     price: 35
     startTime: '10:30'
 ---
-
-## Select a date in the calendar to book
