@@ -1,18 +1,5 @@
-const nodemailer = require('nodemailer');
+import sgMail from '@sendgrid/mail';
 
-const mailTransport = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_EMAIL,
-    pass: process.env.GMAIL_PASSWORD,
-  },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-export const sendMail = mailOptions => {
-  mailTransport
-    .sendMail(mailOptions)
-    .then(() => console.log(`messaged ${mailOptions.to}`))
-    .catch(error =>
-      console.error('There was an error while sending the email:', error),
-    );
-};
+export const sendMail = mailOptions => sgMail.send(mailOptions);

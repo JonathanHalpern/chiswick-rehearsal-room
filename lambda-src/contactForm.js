@@ -1,14 +1,8 @@
-import sgMail from '@sendgrid/mail';
-
-const emailTo = 'jonnyhalpern@gmail.com';
+import { sendMail } from './email';
 
 export function handler(event, context, callback) {
   const data = event.body;
   const { to, from, name, message, phoneNumber } = JSON.parse(data);
-
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-  console.log(from, name, message, emailTo);
 
   const msg = {
     to,
@@ -23,8 +17,7 @@ export function handler(event, context, callback) {
         <p>${message}</p>
     </div>`,
   };
-  sgMail
-    .send(msg)
+  sendMail(msg)
     .then(() => {
       callback(null, {
         statusCode: 200,
