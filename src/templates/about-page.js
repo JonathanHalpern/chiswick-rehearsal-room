@@ -8,7 +8,6 @@ export default ({ data }) => (
       data.markdownRemark.frontmatter.headerImage.childImageSharp
     }>
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
-    <p>Hey</p>
   </PageWrapper>
 );
 

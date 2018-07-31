@@ -20,6 +20,19 @@ const Title = styled.h1`
   }
 `;
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: white;
+  text-shadow: none;
+  background-image: none;
+  :hover {
+    text-decoration: none;
+    color: grey;
+    text-shadow: none;
+    background-image: none;
+  }
+`;
+
 const StyledImg = styled(Img)`
   width: 100%;
   height: 100vh;
@@ -31,16 +44,11 @@ const IndexPage = ({ data }) => (
       <StyledImg sizes={data.backgroundImage.resolutions} />
     )}
     <Title>
-      <Link
-        to="/"
-        style={{
-          color: 'white',
-          textDecoration: 'none',
-        }}>
+      <StyledLink to="/">
         <span>Chiswick</span>
         <span>Rehearsal</span>
         <span>Room</span>
-      </Link>
+      </StyledLink>
     </Title>
   </Container>
 );

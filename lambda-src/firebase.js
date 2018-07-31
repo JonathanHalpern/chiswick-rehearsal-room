@@ -33,9 +33,9 @@ export const createBooking = ({
         text: 'Plaintext version of the message',
         html: `
         <div>
-          <p>Your have received a new booking from ${name}</p>
+          <p>You have received a new booking from ${name}</p>
           <p>${startTime} to ${endTime} on ${bookingDate}</p>
-          <p>If you need to contact them there details are:</p>
+          <p>If you need to contact them their details are:</p>
           <p>Email: ${email}</p>
           ${phoneNumber && `<p>Phone Number: ${phoneNumber}</p>`}
       </div>`,

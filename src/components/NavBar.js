@@ -42,9 +42,13 @@ const handlers = withStateHandlers(
 const StyledLink = styled(Link)`
   text-decoration: none;
   color: white;
+  text-shadow: none;
+  background-image: none;
   :hover {
     text-decoration: none;
     color: grey;
+    text-shadow: none;
+    background-image: none;
   }
 `;
 

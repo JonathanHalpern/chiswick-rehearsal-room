@@ -13,6 +13,9 @@ mapLocations:
 defaultZoom: 18
 ---
 
-First collect the keys from Maggie and Rose Nursery
+First collect the keys with the teddy bear attached, from Maggie and Rose Nursery.
 
-Then go to the rehearsal room on the ground floor at Wellington place
+Then go to the rehearsal room on the ground floor at Wellington place. Use this map, as google maps does not show the right location.
+
+If you need help find a parking space, try using:
+<a href="https://www.justpark.com/search/?q=London+W4+5PS%2C+UK&start_date=02+Aug+2018&end_date=02+Aug+2018&start_time=08%3A00%3A00&end_time=10%3A00%3A00" target="_blank">JustPark</a>
