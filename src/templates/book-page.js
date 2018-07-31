@@ -10,7 +10,10 @@ export default ({ data }) => (
     }>
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
     {typeof window !== 'undefined' && (
-      <BookingContainer timeSlots={data.markdownRemark.frontmatter.timeSlots} />
+      <BookingContainer
+        timeSlots={data.markdownRemark.frontmatter.timeSlots}
+        bookingAlertEmail={data.markdownRemark.frontmatter.bookingAlertEmail}
+      />
     )}
   </PageWrapper>
 );
@@ -29,6 +32,7 @@ export const bookPageQuery = graphql`
         }
         path
         title
+        bookingAlertEmail
         timeSlots {
           endTime
           price

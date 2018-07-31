@@ -6,15 +6,41 @@ const instance = axios.create({
   headers: { key: process.env.FIREBASE_FUNCTIONS_KEY },
 });
 
-export const createBooking = (bookingObject, callback) => {
-  const { name, email, startTime, endTime, bookingDate } = bookingObject;
+export const createBooking = ({
+  bookingObject,
+  bookingAlertEmail,
+  callback,
+}) => {
+  const {
+    name,
+    email,
+    startTime,
+    endTime,
+    bookingDate,
+    phoneNumber,
+  } = bookingObject;
   instance
     .post('/createBooking', bookingObject)
     .then(response => {
       console.log('booking created');
       console.log(bookingObject);
-      const mailOptions = {
-        from: '"Chiswick Rehearsal Room"',
+      const notifcationMsg = {
+        from: 'no-reply@chiswickrehearsalroom.com',
+        to: bookingAlertEmail,
+        subject: `Someone booked the room`,
+        text: 'Plaintext version of the message',
+        html: `
+        <div>
+          <p>Your have received a new booking from ${name}</p>
+          <p>${startTime} to ${endTime} on ${bookingDate}</p>
+          <p>If you need to contact them there details are:</p>
+          <p>Email: ${email}</p>
+          ${phoneNumber && `<p>Phone Number: ${phoneNumber}</p>`}
+      </div>`,
+      };
+      sendMail(notifcationMsg);
+      const confirmationMsg = {
+        from: 'no-reply@chiswickrehearsalroom.com',
         to: email,
         subject: `Booking Confirmation for Chiswick Rehearsal Room`,
         text: 'Plaintext version of the message',
@@ -27,13 +53,28 @@ export const createBooking = (bookingObject, callback) => {
           <p>Regards, Louise</p>
       </div>`,
       };
-      sendMail(mailOptions);
-      callback(null, {
-        statusCode: 201,
-        body: JSON.stringify({ data: response.data }),
-      });
+      sendMail(confirmationMsg)
+        .then(() => {
+          console.log('mail sent');
+          callback(null, {
+            statusCode: 201,
+            body: JSON.stringify({ data: response.data }),
+          });
+        })
+        .catch(error => {
+          console.log('Problem with confirmation email');
+          console.log(error);
+          callback(null, {
+            statusCode: 404,
+            body: JSON.stringify({
+              errorMessage:
+                'Confirmation email not sent, please contact us to check your booking has been made',
+            }),
+          });
+        });
     })
-    .catch(() => {
+    .catch(error => {
+      console.log(error);
       console.log('The booking failed unexpectedly, !!!send email');
       callback(null, {
         statusCode: 403,

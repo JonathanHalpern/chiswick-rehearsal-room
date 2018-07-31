@@ -2,7 +2,9 @@ import { createBooking } from './firebase';
 
 export function handler(event, context, callback) {
   const data = event.body;
-  const { discountCode, ...bookingObject } = JSON.parse(data);
+  const { discountCode, bookingAlertEmail, ...bookingObject } = JSON.parse(
+    data,
+  );
   const { name, email, bookingDate, startTime, endTime } = bookingObject;
   console.log(bookingObject);
   if (!(name && email && bookingDate && startTime && endTime)) {
@@ -22,6 +24,6 @@ export function handler(event, context, callback) {
       }),
     });
   } else {
-    createBooking(bookingObject, callback);
+    createBooking({ bookingObject, bookingAlertEmail, callback });
   }
 }

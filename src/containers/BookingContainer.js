@@ -75,6 +75,7 @@ class BookingContainer extends Component {
   }
 
   onAuthorize(data) {
+    const { bookingAlertEmail } = this.props;
     const {
       price,
       startTime,
@@ -100,6 +101,7 @@ class BookingContainer extends Component {
         currency: 'GBP',
         method: 'PayPal',
         couponUsed: false,
+        bookingAlertEmail,
       }),
     })
       .then(() => {
@@ -120,6 +122,7 @@ class BookingContainer extends Component {
   }
 
   onCouponPurchase() {
+    const { bookingAlertEmail } = this.props;
     this.setState({
       isProcessing: true,
       errorMessage: '',
@@ -149,6 +152,7 @@ class BookingContainer extends Component {
         message,
         method: paymentMethod,
         discountCode,
+        bookingAlertEmail,
       }),
     })
       .then(response => {

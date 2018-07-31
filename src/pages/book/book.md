@@ -3,6 +3,7 @@ templateKey: book-page
 path: /book
 title: Book the room
 evidenceImage: ../../../static/img/piano-keys.jpg
+bookingAlertEmail: jonnyhalpern@gmail.com
 timeSlots:
   - endTime: '12:00'
     price: 20

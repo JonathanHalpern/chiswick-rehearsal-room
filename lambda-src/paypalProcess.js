@@ -12,7 +12,13 @@ export function handler(event, context, callback) {
   }
 
   const data = event.body;
-  const { paymentID, payerID, price, ...otherDetails } = JSON.parse(data);
+  const {
+    paymentID,
+    payerID,
+    price,
+    bookingAlertEmail,
+    ...otherDetails
+  } = JSON.parse(data);
 
   const executePaymentJson = {
     payer_id: payerID,
@@ -44,7 +50,7 @@ export function handler(event, context, callback) {
         price,
       };
 
-      createBooking(bookingObject, callback);
+      createBooking({ bookingObject, bookingAlertEmail, callback });
     } else {
       console.warn('payment.state: not approved');
       callback(null, {
