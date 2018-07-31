@@ -1,5 +1,7 @@
 import paypal from 'paypal-rest-sdk';
 
+require('dotenv').config();
+
 paypal.configure({
   mode: 'sandbox', // sandbox or live
   client_id: process.env.PAYPAL_SANDBOX_CLIENT_ID, // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"

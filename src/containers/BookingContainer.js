@@ -13,12 +13,7 @@ if (typeof window !== 'undefined') {
 
 let onChangeForm = () => {};
 
-const { API, PAYPAL_SANDBOX_CLIENT_ID } = process.env;
-
-const client = {
-  sandbox: PAYPAL_SANDBOX_CLIENT_ID,
-  production: 'production key',
-};
+const { API } = process.env;
 
 const isValid = state => {
   const { name, email, price, startTime, endTime } = state;
@@ -271,7 +266,6 @@ class BookingContainer extends Component {
           {errorMessage && <p>{errorMessage}</p>}
           {isProcessing && <p>Processing...</p>}
           <StyledCartComponent
-            client={client}
             payment={this.payment}
             onAuthorize={this.onAuthorize}
             onCancel={this.onCancel}

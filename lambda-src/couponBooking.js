@@ -1,5 +1,7 @@
 import { createBooking } from './firebase';
 
+require('dotenv').config();
+
 export function handler(event, context, callback) {
   const data = event.body;
   const { discountCode, bookingAlertEmail, ...bookingObject } = JSON.parse(

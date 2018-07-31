@@ -7,7 +7,6 @@ if (typeof window !== 'undefined') {
 }
 
 const CartComponent = ({
-  client,
   payment,
   onAuthorize,
   onCancel,
@@ -22,7 +21,6 @@ const CartComponent = ({
         You are booking <strong>{purchase}</strong>
       </p>
       <PayPalButton
-        client={client}
         payment={payment}
         commit
         onAuthorize={data => onAuthorize(data)}
