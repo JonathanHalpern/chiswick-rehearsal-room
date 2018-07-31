@@ -4,6 +4,8 @@ import ContactDetails from '../components/ContactDetails';
 
 const { API } = process.env;
 
+console.log(process.env);
+
 class ContactFormContainer extends Component {
   constructor(props) {
     super(props);
