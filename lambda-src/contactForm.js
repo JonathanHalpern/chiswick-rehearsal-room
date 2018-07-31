@@ -1,19 +1,17 @@
 import sgMail from '@sendgrid/mail';
 
 const emailTo = 'jonnyhalpern@gmail.com';
-const SENDGRID_API_KEY =
-  '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';
 
 export function handler(event, context, callback) {
   const data = event.body;
-  const { from, name, message, phoneNumber } = JSON.parse(data);
+  const { to, from, name, message, phoneNumber } = JSON.parse(data);
 
-  sgMail.setApiKey(SENDGRID_API_KEY);
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
   console.log(from, name, message, emailTo);
 
   const msg = {
-    to: emailTo,
+    to,
     from,
     subject: `Message from: ${name}`,
     text: message,

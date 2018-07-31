@@ -10,6 +10,7 @@ export default ({ data }) => (
     }>
     <ContactFormContainer
       onEmailSendMessage={data.markdownRemark.frontmatter.onEmailSendMessage}
+      contactEmail={data.markdownRemark.frontmatter.contactEmail}
     />
     <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
   </PageWrapper>
@@ -29,6 +30,7 @@ export const contactPageQuery = graphql`
             }
           }
         }
+        contactEmail
         onEmailSendMessage
       }
     }

@@ -24,6 +24,7 @@ class ContactFormContainer extends Component {
 
   onSubmit() {
     const { name, email, phoneNumber, message } = this.state;
+    const { contactEmail } = this.props;
     this.setState({
       isSubmitting: true,
     });
@@ -31,6 +32,7 @@ class ContactFormContainer extends Component {
       method: 'post',
       body: JSON.stringify({
         name,
+        to: contactEmail,
         from: email,
         phoneNumber,
         message,
