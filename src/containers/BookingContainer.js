@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import CartComponent from '../components/CartComponent';
 import CalendarContainer from './CalendarContainer';
-import CalendarBooker from '../components/CalendarBooker';
 import BookingDetails from '../components/BookingDetails';
 import CouponComponent from '../components/CouponComponent';
 import BookingConfirmed from '../components/BookingConfirmed';
@@ -233,6 +232,7 @@ class BookingContainer extends Component {
   }
 
   render() {
+    const { timeSlots } = this.props;
     const {
       isConfirmed,
       isProcessing,
@@ -246,13 +246,11 @@ class BookingContainer extends Component {
       errorMessage,
       couponMessage,
     } = this.state;
-    const { timeSlots } = this.props;
     return (
       <div>
         {isConfirmed && <BookingConfirmed onClick={this.onNewBooking} />}
         <Container isVisible={!isConfirmed}>
-          <CalendarContainer />
-          <CalendarBooker
+          <CalendarContainer
             onSlotSelect={this.onSlotSelect}
             timeSlots={timeSlots}
           />

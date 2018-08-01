@@ -1,19 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import Calendar from 'react-calendar';
+import CalendarBooker from '../components/CalendarBooker';
 
 const { API } = process.env;
-
-const slots = [
-  {
-    startTime: '10:00',
-    endTime: '12:00',
-  },
-  {
-    startTime: '14:00',
-    endTime: '16:00',
-  },
-];
 
 class CalendarContainer extends Component {
   static contextTypes = {
@@ -26,8 +17,13 @@ class CalendarContainer extends Component {
       loading: false,
       bookings: [],
       updatedList: [],
+      date: new Date(),
+      slotList: [],
+      fullyBookedDayStrings: [],
     };
     this.handleChange = this.handleChange.bind(this);
+    this.onDateChange = this.onDateChange.bind(this);
+    this.getFullyBookedDays = this.getFullyBookedDays.bind(this);
   }
 
   componentDidMount() {
@@ -57,6 +53,7 @@ class CalendarContainer extends Component {
     );
 
     this.bookings.get().then(querySnapshot => {
+      const { timeSlots } = this.props;
       const dateObject = {};
       querySnapshot.docs.forEach(doc => {
         const a = doc.data();
@@ -66,20 +63,19 @@ class CalendarContainer extends Component {
           dateObject[a.bookingDate] = [a];
         }
       });
-      console.log(dateObject);
 
       const updatedList = datesList.map(dateKey => {
         const bookings = dateObject[dateKey];
         if (bookings) {
           return {
             date: dateKey,
-            slots: slots.filter(
+            timeSlots: timeSlots.filter(
               slot =>
                 !bookings.some(booking => {
                   const bookingStartTime = moment(booking.startTime, 'HH:mm');
                   const bookingEndTime = moment(booking.endTime, 'HH:mm');
-                  const slotEndTime = moment(slot.startTime, 'HH:mm');
-                  const slotStartTime = moment(slot.endTime, 'HH:mm');
+                  const slotStartTime = moment(slot.startTime, 'HH:mm');
+                  const slotEndTime = moment(slot.endTime, 'HH:mm');
                   return !(
                     bookingEndTime.isSameOrBefore(slotStartTime) ||
                     bookingStartTime.isSameOrAfter(slotEndTime)
@@ -90,18 +86,34 @@ class CalendarContainer extends Component {
         }
         return {
           date: dateKey,
-          slots,
+          timeSlots,
         };
       });
 
-      console.log(updatedList);
+      const fullyBookedDaysObjects = updatedList.filter(
+        listElement => !listElement.timeSlots.length,
+      );
+      const fullyBookedDayStrings = fullyBookedDaysObjects.map(
+        element => element.date,
+      );
 
       this.setState({
         bookings: querySnapshot.docs.map(doc => doc.data()),
         loading: false,
         updatedList,
+        fullyBookedDayStrings,
       });
     });
+  }
+
+  onDateChange(date) {
+    const { updatedList } = this.state;
+    const dateString = moment(date).format('DD/MM/YYYY');
+    const slotListObject = updatedList.find(
+      element => element.date === dateString,
+    );
+    const slotList = slotListObject ? slotListObject.timeSlots : [];
+    this.setState({ date, dateString, slotList });
   }
 
   get bookings() {
@@ -115,12 +127,33 @@ class CalendarContainer extends Component {
     });
   };
 
+  getFullyBookedDays({ date }) {
+    const momentDate = moment(date);
+    const yesterday = moment().subtract(1, 'day');
+    if (momentDate.isBefore(yesterday)) {
+      return true;
+    }
+    const dateString = moment(date).format('DD/MM/YYYY');
+    const { fullyBookedDayStrings } = this.state;
+    return fullyBookedDayStrings.includes(dateString);
+  }
+
   render() {
-    const { bookings, loading } = this.state;
+    const { onSlotSelect } = this.props;
+    const { bookings, loading, date, slotList, updatedList } = this.state;
     return (
       <div>
         <h1>Current bookings</h1>
-        {/* {console.log(bookings)} */}
+        {updatedList.length > 0 && (
+          <div>
+            <Calendar
+              onChange={this.onDateChange}
+              value={date}
+              tileDisabled={this.getFullyBookedDays}
+            />
+            <CalendarBooker onSlotSelect={onSlotSelect} timeSlots={slotList} />
+          </div>
+        )}
       </div>
     );
   }
