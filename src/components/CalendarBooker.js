@@ -7,7 +7,7 @@ const CalendarBooker = ({ onSlotSelect, timeSlots }) => (
         type="button"
         key={index}
         onClick={() => {
-          onSlotSelect(index);
+          onSlotSelect(timeSlot);
         }}>
         <p>{timeSlot.startTime}</p>
         <p>{timeSlot.endTime}</p>

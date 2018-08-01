@@ -15,15 +15,15 @@ class CalendarContainer extends Component {
     super(props);
     this.state = {
       loading: false,
-      bookings: [],
       updatedList: [],
       date: new Date(),
       slotList: [],
       fullyBookedDayStrings: [],
+      dateString: '',
     };
-    this.handleChange = this.handleChange.bind(this);
     this.onDateChange = this.onDateChange.bind(this);
-    this.getFullyBookedDays = this.getFullyBookedDays.bind(this);
+    this.disableTile = this.disableTile.bind(this);
+    this.onSlotSelect = this.onSlotSelect.bind(this);
   }
 
   componentDidMount() {
@@ -98,7 +98,6 @@ class CalendarContainer extends Component {
       );
 
       this.setState({
-        bookings: querySnapshot.docs.map(doc => doc.data()),
         loading: false,
         updatedList,
         fullyBookedDayStrings,
@@ -116,18 +115,21 @@ class CalendarContainer extends Component {
     this.setState({ date, dateString, slotList });
   }
 
+  onSlotSelect(slot) {
+    const { onSlotSelect } = this.props;
+    const { dateString } = this.state;
+    onSlotSelect({
+      ...slot,
+      bookingDate: dateString,
+    });
+  }
+
   get bookings() {
     const { firebase } = this.context;
     return firebase.bookings;
   }
 
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value,
-    });
-  };
-
-  getFullyBookedDays({ date }) {
+  disableTile({ date }) {
     const momentDate = moment(date);
     const yesterday = moment().subtract(1, 'day');
     if (momentDate.isBefore(yesterday)) {
@@ -139,19 +141,21 @@ class CalendarContainer extends Component {
   }
 
   render() {
-    const { onSlotSelect } = this.props;
-    const { bookings, loading, date, slotList, updatedList } = this.state;
+    const { loading, date, slotList } = this.state;
     return (
       <div>
         <h1>Current bookings</h1>
-        {updatedList.length > 0 && (
+        {!loading && (
           <div>
             <Calendar
               onChange={this.onDateChange}
               value={date}
-              tileDisabled={this.getFullyBookedDays}
+              tileDisabled={this.disableTile}
             />
-            <CalendarBooker onSlotSelect={onSlotSelect} timeSlots={slotList} />
+            <CalendarBooker
+              onSlotSelect={this.onSlotSelect}
+              timeSlots={slotList}
+            />
           </div>
         )}
       </div>

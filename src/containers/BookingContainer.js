@@ -47,10 +47,10 @@ class BookingContainer extends Component {
     this.state = {
       isProcessing: false,
       isConfirmed: false,
-      bookingDate: 'date',
-      startTime: 'start',
-      endTime: 'end',
-      price: 30,
+      bookingDate: '',
+      startTime: '',
+      endTime: '',
+      price: '',
       name: '',
       email: '',
       phoneNumber: '',
@@ -73,6 +73,7 @@ class BookingContainer extends Component {
     const { bookingAlertEmail } = this.props;
     const {
       price,
+      bookingDate,
       startTime,
       endTime,
       name,
@@ -89,7 +90,7 @@ class BookingContainer extends Component {
         name,
         email,
         phoneNumber,
-        bookingDate: '31/07/2018',
+        bookingDate,
         startTime,
         endTime,
         message,
@@ -182,10 +183,12 @@ class BookingContainer extends Component {
     });
   }
 
-  onSlotSelect(slot) {
-    const { timeSlots } = this.props;
+  onSlotSelect({ startTime, endTime, bookingDate, price }) {
     this.setState({
-      price: timeSlots[slot].price,
+      startTime,
+      endTime,
+      bookingDate,
+      price,
     });
   }
 
