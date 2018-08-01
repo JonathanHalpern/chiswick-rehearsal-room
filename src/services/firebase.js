@@ -18,22 +18,10 @@ class Firebase {
     const settings = { /* your settings... */ timestampsInSnapshots: true };
     this.store.settings(settings);
     this.storage = firebase.storage;
-    this.auth = firebase.auth;
-    this._messaging = firebase.messaging;
   }
 
   get bookings() {
     return this.store.collection('bookings');
-  }
-
-  get messaging() {
-    return this._messaging();
-  }
-
-  get images() {
-    return this.storage()
-      .ref()
-      .child('images');
   }
 }
 

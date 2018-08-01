@@ -28,6 +28,7 @@
     "gatsby-transformer-remark": "^1.7.40",
     "gatsby-transformer-sharp": "^1.6.22",
     "http-proxy-middleware": "^0.18.0",
+    "moment": "^2.22.2",
     "netlify-cms": "^1.7.0",
     "npm": "^6.1.0",
     "paypal-checkout": "^4.0.209",

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import CartComponent from '../components/CartComponent';
+import CalendarContainer from './CalendarContainer';
 import CalendarBooker from '../components/CalendarBooker';
 import BookingDetails from '../components/BookingDetails';
 import CouponComponent from '../components/CouponComponent';
@@ -250,6 +251,7 @@ class BookingContainer extends Component {
       <div>
         {isConfirmed && <BookingConfirmed onClick={this.onNewBooking} />}
         <Container isVisible={!isConfirmed}>
+          <CalendarContainer />
           <CalendarBooker
             onSlotSelect={this.onSlotSelect}
             timeSlots={timeSlots}
