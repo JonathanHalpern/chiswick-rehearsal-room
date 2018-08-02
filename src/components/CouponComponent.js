@@ -7,6 +7,10 @@ const StyledButton = styled(Button)`
   margin-left: 30px !important;
 `;
 
+const StyledTextField = styled(TextField)`
+  margin-top: 0 !important;
+`;
+
 const CouponComponent = ({
   className,
   discountCode,
@@ -17,7 +21,7 @@ const CouponComponent = ({
   handleChange,
 }) => (
   <form className={`${className || ''}`}>
-    <TextField
+    <StyledTextField
       required
       id="discountCode"
       label="DiscountCode"

@@ -8,11 +8,11 @@ export default ({ data }) => (
     backgroundImage={
       data.markdownRemark.frontmatter.headerImage.childImageSharp
     }>
+    <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
     <ContactFormContainer
       onEmailSendMessage={data.markdownRemark.frontmatter.onEmailSendMessage}
       contactEmail={data.markdownRemark.frontmatter.contactEmail}
     />
-    <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
   </PageWrapper>
 );
 

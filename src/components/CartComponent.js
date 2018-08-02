@@ -17,9 +17,6 @@ const CartComponent = ({
   const PayPalButton = paypal.Button.driver('react', { React, ReactDOM });
   return (
     <div className={`shoppingCart ${className || ''}`}>
-      <p>
-        You are booking <strong>{purchase}</strong>
-      </p>
       <PayPalButton
         payment={payment}
         commit
