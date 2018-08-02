@@ -17,7 +17,7 @@ const Container = styled.div`
 `;
 
 const StyledCalendar = styled(Calendar)`
-  margin-right: 30px;
+  margin: 0 30px 20px 0;
   .react-calendar__month-view__days__day--weekend {
     color: initial;
     font-weight: bold;
