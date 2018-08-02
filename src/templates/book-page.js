@@ -13,6 +13,7 @@ export default ({ data }) => (
       <BookingContainer
         timeSlots={data.markdownRemark.frontmatter.timeSlots}
         bookingAlertEmail={data.markdownRemark.frontmatter.bookingAlertEmail}
+        maxDaysAhead={data.markdownRemark.frontmatter.maxDaysAhead}
       />
     )}
   </PageWrapper>
@@ -25,7 +26,7 @@ export const bookPageQuery = graphql`
       frontmatter {
         headerImage {
           childImageSharp {
-            resolutions(width: 500) {
+            resolutions(width: 1280) {
               ...GatsbyImageSharpResolutions
             }
           }
@@ -33,6 +34,7 @@ export const bookPageQuery = graphql`
         path
         title
         bookingAlertEmail
+        maxDaysAhead
         timeSlots {
           endTime
           price

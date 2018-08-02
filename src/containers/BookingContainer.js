@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import CartComponent from '../components/CartComponent';
-import CalendarBooker from '../components/CalendarBooker';
+import CalendarContainer from './CalendarContainer';
 import BookingDetails from '../components/BookingDetails';
 import CouponComponent from '../components/CouponComponent';
 import BookingConfirmed from '../components/BookingConfirmed';
@@ -47,10 +47,10 @@ class BookingContainer extends Component {
     this.state = {
       isProcessing: false,
       isConfirmed: false,
-      bookingDate: 'date',
-      startTime: 'start',
-      endTime: 'end',
-      price: 30,
+      bookingDate: '',
+      startTime: '',
+      endTime: '',
+      price: '',
       name: '',
       email: '',
       phoneNumber: '',
@@ -73,6 +73,7 @@ class BookingContainer extends Component {
     const { bookingAlertEmail } = this.props;
     const {
       price,
+      bookingDate,
       startTime,
       endTime,
       name,
@@ -89,7 +90,7 @@ class BookingContainer extends Component {
         name,
         email,
         phoneNumber,
-        bookingDate: '31/07/2018',
+        bookingDate,
         startTime,
         endTime,
         message,
@@ -182,10 +183,12 @@ class BookingContainer extends Component {
     });
   }
 
-  onSlotSelect(slot) {
-    const { timeSlots } = this.props;
+  onSlotSelect({ startTime, endTime, bookingDate, price }) {
     this.setState({
-      price: timeSlots[slot].price,
+      startTime,
+      endTime,
+      bookingDate,
+      price,
     });
   }
 
@@ -232,6 +235,7 @@ class BookingContainer extends Component {
   }
 
   render() {
+    const { timeSlots, maxDaysAhead } = this.props;
     const {
       isConfirmed,
       isProcessing,
@@ -245,14 +249,14 @@ class BookingContainer extends Component {
       errorMessage,
       couponMessage,
     } = this.state;
-    const { timeSlots } = this.props;
     return (
       <div>
         {isConfirmed && <BookingConfirmed onClick={this.onNewBooking} />}
         <Container isVisible={!isConfirmed}>
-          <CalendarBooker
+          <CalendarContainer
             onSlotSelect={this.onSlotSelect}
             timeSlots={timeSlots}
+            maxDaysAhead={maxDaysAhead}
           />
           <BookingDetails
             name={name}

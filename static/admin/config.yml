@@ -83,6 +83,7 @@ collections:
             rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
             required: true
           - {label: "Email address for booking alerts", name: "bookingAlertEmail", widget: "string"}
+          - {label: "How many days in advance can you book", name: "maxDaysAhead", widget: "number", valueType: "int", min: 1}
           - label: "Time Slots"
             name: "timeSlots"
             widget: "list"
@@ -94,4 +95,4 @@ collections:
                 widget: "number"
                 valueType: "int"
                 min: 0
-          - {label: "Body", name: "body", widget: "markdown"}
+          - {label: "Body", name: "body", widget: "markdown", required: "false"}

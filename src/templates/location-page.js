@@ -25,7 +25,7 @@ export const locationPageQuery = graphql`
         title
         headerImage {
           childImageSharp {
-            resolutions(width: 500) {
+            resolutions(width: 1280) {
               ...GatsbyImageSharpResolutions
             }
           }

@@ -16,8 +16,9 @@ const Layout = ({ children, data }) => (
       meta={[
         { name: 'description', content: 'Sample' },
         { name: 'keywords', content: 'sample, something' },
-      ]}
-    />
+      ]}>
+      <meta name="robots" content="noindex" />
+    </Helmet>
     <Header>
       <NavBar
         pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
