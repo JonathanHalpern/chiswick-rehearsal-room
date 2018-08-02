@@ -2,9 +2,27 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import Calendar from 'react-calendar';
+import styled from 'styled-components';
 import CalendarBooker from '../components/CalendarBooker';
+import {
+  enumerateDaysBetweenDates,
+  createDateObject,
+  getFreeSlots,
+  getFullyBookedDays,
+} from '../services/calendar';
 
-const { API } = process.env;
+const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const StyledCalendar = styled(Calendar)`
+  margin-right: 30px;
+  .react-calendar__month-view__days__day--weekend {
+    color: initial;
+    font-weight: bold;
+  }
+`;
 
 class CalendarContainer extends Component {
   static contextTypes = {
@@ -20,6 +38,7 @@ class CalendarContainer extends Component {
       slotList: [],
       fullyBookedDayStrings: [],
       dateString: '',
+      slotIndex: 0,
     };
     this.onDateChange = this.onDateChange.bind(this);
     this.disableTile = this.disableTile.bind(this);
@@ -32,21 +51,8 @@ class CalendarContainer extends Component {
     });
 
     const now = moment();
-    const twoMonthsLater = moment().add(10, 'days');
+    const twoMonthsLater = moment().add(60, 'days');
 
-    const enumerateDaysBetweenDates = (startDate, endDate) => {
-      const dates = [];
-
-      const currDate = moment(startDate).startOf('day');
-      const lastDate = moment(endDate).startOf('day');
-
-      while (currDate.add(1, 'days').diff(lastDate) < 0) {
-        const currentDate = currDate.format('DD/MM/YYYY');
-        dates.push(currentDate);
-      }
-
-      return dates;
-    };
     const datesList = enumerateDaysBetweenDates(
       now.toDate(),
       twoMonthsLater.toDate(),
@@ -54,53 +60,17 @@ class CalendarContainer extends Component {
 
     this.bookings.get().then(querySnapshot => {
       const { timeSlots } = this.props;
-      const dateObject = {};
-      querySnapshot.docs.forEach(doc => {
-        const a = doc.data();
-        if (dateObject[a.bookingDate]) {
-          dateObject[a.bookingDate] = [...dateObject[a.bookingDate], a];
-        } else {
-          dateObject[a.bookingDate] = [a];
-        }
-      });
+      const dateObject = createDateObject(querySnapshot.docs);
 
-      const updatedList = datesList.map(dateKey => {
-        const bookings = dateObject[dateKey];
-        if (bookings) {
-          return {
-            date: dateKey,
-            timeSlots: timeSlots.filter(
-              slot =>
-                !bookings.some(booking => {
-                  const bookingStartTime = moment(booking.startTime, 'HH:mm');
-                  const bookingEndTime = moment(booking.endTime, 'HH:mm');
-                  const slotStartTime = moment(slot.startTime, 'HH:mm');
-                  const slotEndTime = moment(slot.endTime, 'HH:mm');
-                  return !(
-                    bookingEndTime.isSameOrBefore(slotStartTime) ||
-                    bookingStartTime.isSameOrAfter(slotEndTime)
-                  );
-                }),
-            ),
-          };
-        }
-        return {
-          date: dateKey,
-          timeSlots,
-        };
-      });
+      const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
 
-      const fullyBookedDaysObjects = updatedList.filter(
-        listElement => !listElement.timeSlots.length,
-      );
-      const fullyBookedDayStrings = fullyBookedDaysObjects.map(
-        element => element.date,
-      );
+      const fullyBookedDayStrings = getFullyBookedDays(updatedList);
 
       this.setState({
         loading: false,
         updatedList,
         fullyBookedDayStrings,
+        slotList: updatedList[0].timeSlots,
       });
     });
   }
@@ -115,9 +85,11 @@ class CalendarContainer extends Component {
     this.setState({ date, dateString, slotList });
   }
 
-  onSlotSelect(slot) {
+  onSlotSelect(slotIndex) {
+    this.setState({ slotIndex });
     const { onSlotSelect } = this.props;
-    const { dateString } = this.state;
+    const { dateString, slotList } = this.state;
+    const slot = slotList[slotIndex];
     onSlotSelect({
       ...slot,
       bookingDate: dateString,
@@ -141,22 +113,23 @@ class CalendarContainer extends Component {
   }
 
   render() {
-    const { loading, date, slotList } = this.state;
+    const { loading, date, slotList, slotIndex } = this.state;
     return (
       <div>
-        <h1>Current bookings</h1>
         {!loading && (
-          <div>
-            <Calendar
+          <Container>
+            <StyledCalendar
               onChange={this.onDateChange}
               value={date}
               tileDisabled={this.disableTile}
+              minDetail="month"
             />
             <CalendarBooker
               onSlotSelect={this.onSlotSelect}
               timeSlots={slotList}
+              slotIndex={slotIndex}
             />
-          </div>
+          </Container>
         )}
       </div>
     );
