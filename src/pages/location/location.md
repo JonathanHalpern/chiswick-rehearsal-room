@@ -2,7 +2,7 @@
 templateKey: location-page
 path: /location
 title: How to find us
-headerImage: ../../../static/img/piano-keys.jpg
+headerImage: ../../../static/img/violin.jpg
 mapLocations:
   - address: 'Maggie and Rose Nursery, 1 Essex Place Square, London W4 5UJ'
     legend: Collect the keys here

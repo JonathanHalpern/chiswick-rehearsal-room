@@ -26,7 +26,7 @@ export const bookPageQuery = graphql`
       frontmatter {
         headerImage {
           childImageSharp {
-            resolutions(width: 500) {
+            resolutions(width: 1280) {
               ...GatsbyImageSharpResolutions
             }
           }
