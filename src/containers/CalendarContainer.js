@@ -46,19 +46,20 @@ class CalendarContainer extends Component {
   }
 
   componentDidMount() {
+    const { maxDaysAhead } = this.props;
     this.setState({
       loading: true,
     });
 
     const now = moment();
-    const twoMonthsLater = moment().add(60, 'days');
+    const twoMonthsLater = moment().add(maxDaysAhead, 'days');
 
     const datesList = enumerateDaysBetweenDates(
       now.toDate(),
       twoMonthsLater.toDate(),
     );
 
-    this.bookings.get().then(querySnapshot => {
+    this.bookings.onSnapshot(querySnapshot => {
       const { timeSlots } = this.props;
       const dateObject = createDateObject(querySnapshot.docs);
 

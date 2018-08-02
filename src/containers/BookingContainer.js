@@ -235,7 +235,7 @@ class BookingContainer extends Component {
   }
 
   render() {
-    const { timeSlots } = this.props;
+    const { timeSlots, maxDaysAhead } = this.props;
     const {
       isConfirmed,
       isProcessing,
@@ -256,6 +256,7 @@ class BookingContainer extends Component {
           <CalendarContainer
             onSlotSelect={this.onSlotSelect}
             timeSlots={timeSlots}
+            maxDaysAhead={maxDaysAhead}
           />
           <BookingDetails
             name={name}

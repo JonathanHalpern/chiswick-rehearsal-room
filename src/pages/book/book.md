@@ -4,6 +4,7 @@ path: /book
 title: Book the room
 headerImage: ../../../static/img/piano-keys.jpg
 bookingAlertEmail: jonnyhalpern@gmail.com
+maxDaysAhead: 60
 timeSlots:
   - endTime: '11:00'
     price: 24
@@ -27,4 +28,5 @@ timeSlots:
     price: 90
     startTime: '09:00'
 ---
+
 e
