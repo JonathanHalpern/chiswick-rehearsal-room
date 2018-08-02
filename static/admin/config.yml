@@ -24,7 +24,7 @@ collections:
             required: true
           - {label: "Email address for contact messages", name: "contactEmail", widget: "string"}
           - {label: "Message shown after contact message sent", name: "onEmailSendMessage", widget: "string"}
-          - {label: "Body", name: "body", widget: "markdown"}
+          - {label: "Body", name: "body", widget: "markdown", required: false}
 
       - file: "src/pages/about/about.md"
         label: "About"
@@ -39,7 +39,7 @@ collections:
             customMediaPath: "../../../static/img/"
             rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
             required: true
-          - {label: "Body", name: "body", widget: "markdown"}
+          - {label: "Body", name: "body", widget: "markdown", required: false}
 
       - file: "src/pages/location/location.md"
         label: "Location"
@@ -67,7 +67,7 @@ collections:
             valueType: "int"
             min: 1
             max: 20
-          - {label: "Body", name: "body", widget: "markdown"}
+          - {label: "Body", name: "body", widget: "markdown", required: false}
 
       - file: "src/pages/book/book.md"
         label: "Book"
@@ -95,4 +95,4 @@ collections:
                 widget: "number"
                 valueType: "int"
                 min: 0
-          - {label: "Body", name: "body", widget: "markdown", required: "false"}
+          - {label: "Body", name: "body", widget: "markdown", required: false}

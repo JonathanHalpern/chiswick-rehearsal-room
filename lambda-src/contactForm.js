@@ -31,7 +31,7 @@ export function handler(event, context, callback) {
         statusCode: 404,
         body: JSON.stringify({
           errorMessage:
-            'Your email could not be sent. Try emailing directly, using the address above',
+            'The contact form is not working. Try emailing directly',
         }),
       });
     });

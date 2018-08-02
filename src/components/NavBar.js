@@ -46,9 +46,14 @@ const StyledLink = styled(Link)`
   background-image: none;
   :hover {
     text-decoration: none;
-    color: grey;
+    color: #dddddd;
     text-shadow: none;
     background-image: none;
+  }
+  &.active {
+    p::first-letter {
+      border-bottom: 1px solid;
+    }
   }
 `;
 
@@ -110,7 +115,7 @@ const NavBar = compose(
       maxHeight={80}>
       {pageList.map(pageItem => (
         <StyledListItem key={pageItem.path}>
-          <StyledLink to={pageItem.path}>
+          <StyledLink to={pageItem.path} activeClassName="active">
             <p>{pageItem.title}</p>
           </StyledLink>
         </StyledListItem>

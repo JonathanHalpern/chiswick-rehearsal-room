@@ -15,6 +15,10 @@ const StyledTextField = styled(TextField)`
   margin-right: 20px !important;
 `;
 
+const StyledRadioGroup = styled(RadioGroup)`
+  flex-direction: row !important;
+`;
+
 const BookingDetails = ({
   name,
   email,
@@ -55,14 +59,14 @@ const BookingDetails = ({
       margin="normal"
       fullWidth
     />
-    <RadioGroup
-      aria-label="Gender"
-      name="gender1"
+    <StyledRadioGroup
+      aria-label="PaymentMethod"
+      name="paymentMethod"
       value={paymentMethod}
       onChange={handleChange('paymentMethod')}>
       <FormControlLabel value="paypal" control={<Radio />} label="PayPal" />
       <FormControlLabel value="coupon" control={<Radio />} label="Coupon" />
-    </RadioGroup>
+    </StyledRadioGroup>
   </StlyedForm>
 );
 

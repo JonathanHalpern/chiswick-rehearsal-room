@@ -63,7 +63,7 @@ export const query = graphql`
       }
     }
     backgroundImage: imageSharp(id: { regex: "/room-piano/" }) {
-      resolutions(width: 2000) {
+      resolutions(width: 1280) {
         ...GatsbyImageSharpResolutions
       }
     }

@@ -12,6 +12,8 @@ const Container = styled.div`
 
 const ContentContainer = styled.div`
   padding: 30px;
+  max-width: 800px;
+  margin: auto;
 `;
 
 const Title = styled.h1`
@@ -22,6 +24,9 @@ const Title = styled.h1`
   color: white;
   @media (max-width: 700px) {
     font-size: 14vw;
+  }
+  &::first-letter {
+    border-bottom: 1px solid;
   }
 `;
 
