@@ -32,7 +32,7 @@ const handlers = withStateHandlers(
   },
 );
 
-const BookingDetails = compose(handlers)(
+const TermsAndConditions = compose(handlers)(
   ({
     termsAndCondtionsHTML,
     hasAgreedTerms,
@@ -50,7 +50,7 @@ const BookingDetails = compose(handlers)(
               value="Terms"
             />
           }
-          label="I agree to the T&Cs"
+          label="I have read and agree to the terms and conditions"
         />
         <StyledButton onClick={toggleDialog}>Read T&Cs</StyledButton>
       </TermsContainer>
@@ -59,17 +59,16 @@ const BookingDetails = compose(handlers)(
         onClose={toggleDialog}
         aria-labelledby="responsive-dialog-title">
         <DialogTitle id="responsive-dialog-title">
-          {"Use Google's location service?"}
+          Terms And Conditions
         </DialogTitle>
         <DialogContent>
           <DialogContentText
-            dangerouslySetInnerHTML={{ __html: termsAndCondtionsHTML }}>
-            {/* <div  /> */}
-          </DialogContentText>
+            dangerouslySetInnerHTML={{ __html: termsAndCondtionsHTML }}
+          />
         </DialogContent>
       </Dialog>
     </StlyedForm>
   ),
 );
 
-export default BookingDetails;
+export default TermsAndConditions;

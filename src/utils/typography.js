@@ -9,7 +9,6 @@ oceanBeachTheme.overrideThemeStyles = ({ rhythm }, options) => ({
   h2: {
     textAlign: 'center',
     fontSize: '1.3em',
-    fontStyle: 'italic',
   },
   body: {
     padding: '0!important',

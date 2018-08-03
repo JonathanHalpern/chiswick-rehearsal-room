@@ -5,7 +5,7 @@ import CalendarContainer from './CalendarContainer';
 import BookingDetails from '../components/BookingDetails';
 import CouponComponent from '../components/CouponComponent';
 import BookingConfirmed from '../components/BookingConfirmed';
-import TermsAndConditionsContainer from '../components/TermsAndConditionsContainer';
+import TermsAndConditions from '../components/TermsAndConditions';
 
 let paypal;
 if (typeof window !== 'undefined') {
@@ -294,7 +294,7 @@ class BookingContainer extends Component {
             handleChange={this.handleChange}
             updateTermAgreement={this.updateTermAgreement}
           />
-          <TermsAndConditionsContainer
+          <TermsAndConditions
             hasAgreedTerms={hasAgreedTerms}
             updateTermAgreement={this.updateTermAgreement}
             termsAndCondtionsHTML={termsAndCondtionsHTML}

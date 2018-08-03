@@ -8,7 +8,6 @@ export default ({ data }) => (
     backgroundImage={
       data.markdownRemark.frontmatter.headerImage.childImageSharp
     }>
-    {/* <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} /> */}
     {typeof window !== 'undefined' && (
       <BookingContainer
         timeSlots={data.markdownRemark.frontmatter.timeSlots}
@@ -40,6 +39,7 @@ export const bookPageQuery = graphql`
           endTime
           price
           startTime
+          title
         }
       }
     }

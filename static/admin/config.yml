@@ -90,6 +90,7 @@ collections:
             fields:
               - {label: "Start Time", name: "startTime", widget: "time"}
               - {label: "End Time", name: "endTime", widget: "time"}
+              - {label: "Title", name: "title", widget: "string"}
               - label: "Price (£)"
                 name: "price"
                 widget: "number"
