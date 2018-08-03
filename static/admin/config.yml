@@ -20,7 +20,7 @@ collections:
             name: "headerImage"
             widget: "custompathimage"
             customMediaPath: "../../../static/img/"
-            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
+            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/develop/static/img/"
             required: true
           - {label: "Email address for contact messages", name: "contactEmail", widget: "string"}
           - {label: "Message shown after contact message sent", name: "onEmailSendMessage", widget: "string"}
