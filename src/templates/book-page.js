@@ -8,12 +8,13 @@ export default ({ data }) => (
     backgroundImage={
       data.markdownRemark.frontmatter.headerImage.childImageSharp
     }>
-    <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
+    {/* <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} /> */}
     {typeof window !== 'undefined' && (
       <BookingContainer
         timeSlots={data.markdownRemark.frontmatter.timeSlots}
         bookingAlertEmail={data.markdownRemark.frontmatter.bookingAlertEmail}
         maxDaysAhead={data.markdownRemark.frontmatter.maxDaysAhead}
+        termsAndCondtionsHTML={data.markdownRemark.html}
       />
     )}
   </PageWrapper>

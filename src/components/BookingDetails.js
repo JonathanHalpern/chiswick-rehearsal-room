@@ -25,7 +25,10 @@ const BookingDetails = ({
   phoneNumber,
   message,
   paymentMethod,
+  hasAgreedTerms,
   handleChange,
+  updateTermAgreement,
+  showTerms,
 }) => (
   <StlyedForm>
     <StyledTextField
@@ -50,6 +53,7 @@ const BookingDetails = ({
       value={phoneNumber}
       onChange={handleChange('phoneNumber')}
       margin="normal"
+      required
     />
     <StyledTextField
       id="message"

@@ -95,4 +95,4 @@ collections:
                 widget: "number"
                 valueType: "int"
                 min: 0
-          - {label: "Body", name: "body", widget: "markdown", required: false}
+          - {label: "Terms And Conditions", name: "body", widget: "markdown", required: false}
