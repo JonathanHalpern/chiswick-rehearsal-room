@@ -9,35 +9,55 @@ const Container = styled.div`
 `;
 
 const Header = styled.p`
+  margin: 0 0 10px 0;
+`;
+
+const SlotTitle = styled.p`
   margin: 0;
 `;
 
-const CalendarBooker = ({ onSlotSelect, timeSlots, slotIndex, className }) => (
-  <Container className={className || ''}>
-    <Header>
-      {timeSlots.length > 0
-        ? 'When would you like to book the room?'
-        : 'No available slots on this day'}
-    </Header>
-    <RadioGroup
-      aria-label="TimeSlot"
-      name="timeSlot"
-      value={`${slotIndex}`}
-      onChange={(event, index) => {
-        onSlotSelect(index);
-      }}>
-      {timeSlots.map((timeSlot, index) => (
-        <FormControlLabel
-          key={index}
-          value={`${index}`}
-          control={<Radio />}
-          label={`${timeSlot.startTime} to ${timeSlot.endTime} - £${
-            timeSlot.price
-          }`}
-        />
+const getTitlesFromSlots = timeSlots =>
+  Array.from(new Set(timeSlots.map(timeSlots => timeSlots.title)));
+
+const CalendarBooker = ({ onSlotSelect, timeSlots, slotIndex, className }) => {
+  let index = -1;
+  return (
+    <Container className={className || ''}>
+      <Header>
+        {timeSlots.length > 0
+          ? 'When would you like to book the room?'
+          : 'No available slots on this day'}
+      </Header>
+      {getTitlesFromSlots(timeSlots).map(titleObject => (
+        <div key={titleObject}>
+          <SlotTitle>{titleObject}</SlotTitle>
+          <RadioGroup
+            aria-label="TimeSlot"
+            name="timeSlot"
+            value={`${slotIndex}`}
+            onChange={(event, index) => {
+              onSlotSelect(index);
+            }}>
+            {timeSlots
+              .filter(timeSlot => timeSlot.title === titleObject)
+              .map(timeSlot => {
+                index += 1;
+                return (
+                  <FormControlLabel
+                    key={`${timeSlot.title}-${timeSlot.startTime}`}
+                    value={`${index}`}
+                    control={<Radio />}
+                    label={`${timeSlot.startTime} to ${timeSlot.endTime} - £${
+                      timeSlot.price
+                    }`}
+                  />
+                );
+              })}
+          </RadioGroup>
+        </div>
       ))}
-    </RadioGroup>
-  </Container>
-);
+    </Container>
+  );
+};
 
 export default CalendarBooker;

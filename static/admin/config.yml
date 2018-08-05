@@ -1,6 +1,6 @@
 backend:
   name: git-gateway
-  branch: master
+  branch: develop
 
 media_folder: static/img
 public_folder: img
@@ -20,7 +20,7 @@ collections:
             name: "headerImage"
             widget: "custompathimage"
             customMediaPath: "../../../static/img/"
-            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
+            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/develop/static/img/"
             required: true
           - {label: "Email address for contact messages", name: "contactEmail", widget: "string"}
           - {label: "Message shown after contact message sent", name: "onEmailSendMessage", widget: "string"}
@@ -37,7 +37,7 @@ collections:
             name: "headerImage"
             widget: "custompathimage"
             customMediaPath: "../../../static/img/"
-            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
+            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/develop/static/img/"
             required: true
           - {label: "Body", name: "body", widget: "markdown", required: false}
 
@@ -52,7 +52,7 @@ collections:
             name: "headerImage"
             widget: "custompathimage"
             customMediaPath: "../../../static/img/"
-            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
+            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/develop/static/img/"
             required: true
           - label: "Map Locations"
             name: "mapLocations"
@@ -80,7 +80,7 @@ collections:
             name: "headerImage"
             widget: "custompathimage"
             customMediaPath: "../../../static/img/"
-            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
+            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/develop/static/img/"
             required: true
           - {label: "Email address for booking alerts", name: "bookingAlertEmail", widget: "string"}
           - {label: "How many days in advance can you book", name: "maxDaysAhead", widget: "number", valueType: "int", min: 1}
@@ -90,9 +90,10 @@ collections:
             fields:
               - {label: "Start Time", name: "startTime", widget: "time"}
               - {label: "End Time", name: "endTime", widget: "time"}
+              - {label: "Title", name: "title", widget: "string"}
               - label: "Price (£)"
                 name: "price"
                 widget: "number"
                 valueType: "int"
                 min: 0
-          - {label: "Body", name: "body", widget: "markdown", required: false}
+          - {label: "Terms And Conditions", name: "body", widget: "markdown", required: false}

@@ -5,6 +5,7 @@ import CalendarContainer from './CalendarContainer';
 import BookingDetails from '../components/BookingDetails';
 import CouponComponent from '../components/CouponComponent';
 import BookingConfirmed from '../components/BookingConfirmed';
+import TermsAndConditions from '../components/TermsAndConditions';
 
 let paypal;
 if (typeof window !== 'undefined') {
@@ -16,8 +17,23 @@ let onChangeForm = () => {};
 const { API } = process.env;
 
 const isValid = state => {
-  const { name, email, price, startTime, endTime } = state;
-  const isValid = name && email && price && startTime && endTime;
+  const {
+    name,
+    email,
+    phoneNumber,
+    price,
+    startTime,
+    endTime,
+    hasAgreedTerms,
+  } = state;
+  const isValid =
+    name &&
+    email &&
+    phoneNumber &&
+    price &&
+    startTime &&
+    endTime &&
+    hasAgreedTerms;
   return isValid;
 };
 
@@ -44,6 +60,7 @@ class BookingContainer extends Component {
     this.onCouponPurchase = this.onCouponPurchase.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.onNewBooking = this.onNewBooking.bind(this);
+    this.updateTermAgreement = this.updateTermAgreement.bind(this);
     this.state = {
       isProcessing: false,
       isConfirmed: false,
@@ -56,6 +73,7 @@ class BookingContainer extends Component {
       phoneNumber: '',
       message: '',
       discountCode: '',
+      hasAgreedTerms: false,
       paymentMethod: 'paypal',
       couponMessage: '',
       errorMessage: '',
@@ -225,6 +243,12 @@ class BookingContainer extends Component {
     });
   }
 
+  updateTermAgreement(event) {
+    this.setState({
+      hasAgreedTerms: event.target.checked,
+    });
+  }
+
   validate(actions) {
     // necessary because the paypal button creates an iFrame so we cannot get a ref to it
     const initialState = this.state;
@@ -235,7 +259,7 @@ class BookingContainer extends Component {
   }
 
   render() {
-    const { timeSlots, maxDaysAhead } = this.props;
+    const { timeSlots, maxDaysAhead, termsAndCondtionsHTML } = this.props;
     const {
       isConfirmed,
       isProcessing,
@@ -248,6 +272,7 @@ class BookingContainer extends Component {
       paymentMethod,
       errorMessage,
       couponMessage,
+      hasAgreedTerms,
     } = this.state;
     return (
       <div>
@@ -265,7 +290,14 @@ class BookingContainer extends Component {
             message={message}
             discountCode={discountCode}
             paymentMethod={paymentMethod}
+            hasAgreedTerms={hasAgreedTerms}
             handleChange={this.handleChange}
+            updateTermAgreement={this.updateTermAgreement}
+          />
+          <TermsAndConditions
+            hasAgreedTerms={hasAgreedTerms}
+            updateTermAgreement={this.updateTermAgreement}
+            termsAndCondtionsHTML={termsAndCondtionsHTML}
           />
           {errorMessage && <p>{errorMessage}</p>}
           {isProcessing && <p>Processing...</p>}
@@ -284,7 +316,7 @@ class BookingContainer extends Component {
             discountCode={discountCode}
             errorMessage={couponMessage}
             isProcessing={isProcessing}
-            isFormComplete={!!(name && email)}
+            isFormComplete={!!(name && email && phoneNumber && hasAgreedTerms)}
             isVisible={paymentMethod === 'coupon'}
           />
         </Container>
