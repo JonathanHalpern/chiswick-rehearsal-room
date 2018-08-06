@@ -18,6 +18,7 @@ class Firebase {
     const settings = { /* your settings... */ timestampsInSnapshots: true };
     this.store.settings(settings);
     this.storage = firebase.storage;
+    this.auth = firebase.auth;
   }
 
   get bookings() {
