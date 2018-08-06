@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
+import Moment from 'moment';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -9,7 +9,6 @@ import AdjustBookingForm from '../components/AdjustBookingForm';
 class AdjustBooking extends Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
     const {
       name,
       email,
@@ -25,7 +24,7 @@ class AdjustBooking extends Component {
       phoneNumber,
       startTime,
       endTime,
-      bookingDate,
+      bookingDate: Moment(bookingDate).format('YYYY-MM-DD'),
       bookingId,
     };
     this.handleChange = this.handleChange.bind(this);
@@ -33,20 +32,13 @@ class AdjustBooking extends Component {
     this.onDelete = this.onDelete.bind(this);
   }
 
-  componentDidMount() {
-    const { firebase } = this.context;
-    console.log(firebase);
-  }
-
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value,
-    });
-  };
-
   onConfirm() {
     const { toggleDialog, onConfirm } = this.props;
-    onConfirm(this.state);
+    const { bookingDate, ...otherDetails } = this.state;
+    onConfirm({
+      ...otherDetails,
+      bookingDate: Moment(bookingDate).format('DD/MM/YYYY'),
+    });
     toggleDialog();
   }
 
@@ -55,6 +47,12 @@ class AdjustBooking extends Component {
     onDelete(bookingId);
     toggleDialog();
   }
+
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
+  };
 
   render() {
     const { toggleDialog } = this.props;

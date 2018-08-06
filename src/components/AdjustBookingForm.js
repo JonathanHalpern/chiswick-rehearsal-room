@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 
 const StlyedForm = styled.form`
   display: flex;
@@ -13,10 +12,6 @@ const StyledTextField = styled(TextField)`
   margin-right: 20px !important;
 `;
 
-const StyledButton = styled(Button)`
-  margin: 10px 0 !important;
-`;
-
 const AdjustBookingForm = ({
   name,
   email,
@@ -25,8 +20,6 @@ const AdjustBookingForm = ({
   endTime,
   bookingDate,
   handleChange,
-  onSubmit,
-  isSubmitting,
 }) => (
   <StlyedForm>
     <StyledTextField
@@ -51,13 +44,30 @@ const AdjustBookingForm = ({
       onChange={handleChange('phoneNumber')}
       margin="normal"
     />
-    <StyledButton
-      variant="contained"
-      color="primary"
-      onClick={onSubmit}
-      disabled={isSubmitting || !email}>
-      {isSubmitting ? 'Sending' : 'Send'} message
-    </StyledButton>
+    <StyledTextField
+      id="startTime"
+      label="Start"
+      value={startTime}
+      onChange={handleChange('startTime')}
+      margin="normal"
+      type="time"
+    />
+    <StyledTextField
+      id="endTime"
+      label="End"
+      value={endTime}
+      onChange={handleChange('endTime')}
+      margin="normal"
+      type="time"
+    />
+    <StyledTextField
+      id="bookingDate"
+      label="Booking Date"
+      value={bookingDate}
+      onChange={handleChange('bookingDate')}
+      margin="normal"
+      type="date"
+    />
   </StlyedForm>
 );
 
