@@ -4,7 +4,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import styled from 'styled-components';
 import { compose, withStateHandlers } from 'recompose';
-import AdjustBooking from './AdjustBooking';
+import AdjustBooking from '../containers/AdjustBooking';
 
 const Container = styled.div`
   ${'' /* padding: 15px; */};
@@ -43,9 +43,10 @@ const BookedSlots = compose(handlers)(
     isDialogOpen,
     slotToEdit,
     editSlot,
-    className,
+    onConfirm,
+    onDelete,
   }) => (
-    <Container className={className || ''}>
+    <Container>
       {bookedList &&
         bookedList.bookings.map((bookedSlot, index) => (
           <div
@@ -56,12 +57,14 @@ const BookedSlots = compose(handlers)(
             <p>{bookedSlot.name}</p>
           </div>
         ))}
-
-      <AdjustBooking
-        isDialogOpen={isDialogOpen}
-        toggleDialog={toggleDialog}
-        slotToEdit={slotToEdit}
-      />
+      {isDialogOpen && (
+        <AdjustBooking
+          toggleDialog={toggleDialog}
+          {...slotToEdit}
+          onConfirm={onConfirm}
+          onDelete={onDelete}
+        />
+      )}
     </Container>
   ),
 );

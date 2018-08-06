@@ -46,6 +46,8 @@ class CalendarContainer extends Component {
     this.onDateChange = this.onDateChange.bind(this);
     this.disableTile = this.disableTile.bind(this);
     this.onSlotSelect = this.onSlotSelect.bind(this);
+    this.onConfirm = this.onConfirm.bind(this);
+    this.onDelete = this.onDelete.bind(this);
   }
 
   componentDidMount() {
@@ -83,7 +85,6 @@ class CalendarContainer extends Component {
     this.bookings.onSnapshot(querySnapshot => {
       const { timeSlots } = this.props;
       const dateObject = createDateObject(querySnapshot.docs);
-
       const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
       const bookedList = getBookedSlots(datesList, dateObject, timeSlots);
 
@@ -98,6 +99,19 @@ class CalendarContainer extends Component {
         bookedSlot: bookedList[0],
       });
     });
+  }
+
+  onConfirm(edittedBooking) {
+    const { firebase } = this.context;
+    const { bookingId, ...newDetails } = edittedBooking;
+    firebase.bookings.doc(bookingId).update({
+      ...newDetails,
+    });
+  }
+
+  onDelete(bookingId) {
+    const { firebase } = this.context;
+    firebase.bookings.doc(bookingId).delete();
   }
 
   onDateChange(date) {
@@ -159,7 +173,11 @@ class CalendarContainer extends Component {
                   minDetail="month"
                 />
                 {isViewingExisting ? (
-                  <BookedSlots bookedList={bookedSlot} />
+                  <BookedSlots
+                    bookedList={bookedSlot}
+                    onConfirm={this.onConfirm}
+                    onDelete={this.onDelete}
+                  />
                 ) : (
                   <CalendarBooker
                     onSlotSelect={this.onSlotSelect}
