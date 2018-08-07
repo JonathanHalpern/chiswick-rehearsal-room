@@ -3,7 +3,7 @@ templateKey: book-page
 path: /book
 title: Book the room
 headerImage: ../../../static/img/piano-keys.jpg
-bookingAlertEmail: louisenaomikaye@gmail.com
+bookingAlertEmail: jonnyhalpern@gmail.com
 maxDaysAhead: 60
 slotTitles: 'Whole day'
 timeSlots:

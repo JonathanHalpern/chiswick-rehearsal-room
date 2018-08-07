@@ -106,25 +106,22 @@ const StyledListItem = styled.li`
 const NavBar = compose(
   handlers,
   withData,
-)(
-  ({ pageList, scrollTop, toggleMenu, isMenuOpen }) =>
-    console.log(pageList) || (
-      <Wrapper scrollTop={scrollTop}>
-        <StyledHamburger isActive={isMenuOpen} onClick={toggleMenu} />
-        <StyledList
-          isMenuOpen={isMenuOpen}
-          listLength={pageList.length}
-          maxHeight={80}>
-          {pageList.map(pageItem => (
-            <StyledListItem key={pageItem.path}>
-              <StyledLink to={pageItem.path} activeClassName="active">
-                <p>{pageItem.title}</p>
-              </StyledLink>
-            </StyledListItem>
-          ))}
-        </StyledList>
-      </Wrapper>
-    ),
-);
+)(({ pageList, scrollTop, toggleMenu, isMenuOpen }) => (
+  <Wrapper scrollTop={scrollTop}>
+    <StyledHamburger isActive={isMenuOpen} onClick={toggleMenu} />
+    <StyledList
+      isMenuOpen={isMenuOpen}
+      listLength={pageList.length}
+      maxHeight={80}>
+      {pageList.map(pageItem => (
+        <StyledListItem key={pageItem.path}>
+          <StyledLink to={pageItem.path} activeClassName="active">
+            <p>{pageItem.title}</p>
+          </StyledLink>
+        </StyledListItem>
+      ))}
+    </StyledList>
+  </Wrapper>
+));
 
 export default NavBar;

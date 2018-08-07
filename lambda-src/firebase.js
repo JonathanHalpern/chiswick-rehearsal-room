@@ -4,7 +4,7 @@ import { sendMail } from './email';
 require('dotenv').config();
 
 const instance = axios.create({
-  baseURL: 'https://us-central1-chiswick-rehearsal-room.cloudfunctions.net',
+  baseURL: process.env.FIREBASE_BASE_URL,
   headers: { key: process.env.FIREBASE_FUNCTIONS_KEY },
 });
 

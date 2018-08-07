@@ -31,6 +31,7 @@ class CalendarContainer extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       loading: false,
       updatedList: [],
@@ -60,29 +61,40 @@ class CalendarContainer extends Component {
     );
 
     this.bookings.onSnapshot(querySnapshot => {
-      const { timeSlots } = this.props;
+      const { timeSlots, onSlotSelect } = this.props;
       const dateObject = createDateObject(querySnapshot.docs);
 
       const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
 
       const fullyBookedDayStrings = getFullyBookedDays(updatedList);
-
+      const slotList = updatedList[0].timeSlots;
+      const initialSlot = slotList[0];
+      onSlotSelect({
+        ...initialSlot,
+        bookingDate: now.format('DD/MM/YYYY'),
+      });
       this.setState({
         loading: false,
         updatedList,
         fullyBookedDayStrings,
-        slotList: updatedList[0].timeSlots,
+        slotList,
       });
     });
   }
 
   onDateChange(date) {
     const { updatedList } = this.state;
+    const { onSlotSelect } = this.props;
     const dateString = moment(date).format('DD/MM/YYYY');
     const slotListObject = updatedList.find(
       element => element.date === dateString,
     );
     const slotList = slotListObject ? slotListObject.timeSlots : [];
+    const initialSlot = slotList[0];
+    onSlotSelect({
+      ...initialSlot,
+      bookingDate: dateString,
+    });
     this.setState({ date, dateString, slotList });
   }
 
