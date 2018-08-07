@@ -1,54 +1,19 @@
 import React from 'react';
-import Link from 'gatsby-link';
 import styled from 'styled-components';
-import Img from 'gatsby-image';
 import PageWrapper from '../containers/PageWrapper';
 import Auth from '../containers/Auth';
 import SignIn from '../components/SignIn';
 import GoogleIcon from '../components/Google';
 import EditContainer from '../containers/EditContainer';
 
-const Container = styled.div`
-  position: relative;
-`;
-
 const StyledGoogleIcon = styled(GoogleIcon)`
   margin-right: 5px;
 `;
 
-const Title = styled.h1`
-  position: absolute;
-  top: 80px;
-  left: 30px;
-  font-size: 6vw;
-  @media (max-width: 700px) {
-    font-size: 14vw;
-  }
-  span {
-    display: block;
-  }
-`;
-
-const StyledLink = styled(Link)`
-  text-decoration: none;
-  color: white;
-  text-shadow: none;
-  background-image: none;
-  :hover {
-    text-decoration: none;
-    color: grey;
-    text-shadow: none;
-    background-image: none;
-  }
-`;
-
-const StyledImg = styled(Img)`
-  width: 100%;
-  height: 100vh;
-`;
-
-const AdminPage = ({ data, history }) => (
-  <PageWrapper title="Calendar" backgroundImage={data.backgroundImage}>
+const EditPage = ({ data, history }) => (
+  <PageWrapper
+    title="Calendar"
+    backgroundImage={data.bookingInfo.frontmatter.headerImage.childImageSharp}>
     <Auth>
       {auth => {
         return (
@@ -75,22 +40,24 @@ const AdminPage = ({ data, history }) => (
   </PageWrapper>
 );
 
-export default AdminPage;
+export default EditPage;
 
 export const query = graphql`
-  query AdminPageQuery {
+  query EditPageQuery {
     site {
       siteMetadata {
         title
       }
     }
-    backgroundImage: imageSharp(id: { regex: "/room-piano/" }) {
-      resolutions(width: 1280) {
-        ...GatsbyImageSharpResolutions
-      }
-    }
     bookingInfo: markdownRemark(frontmatter: { path: { eq: "/book" } }) {
       frontmatter {
+        headerImage {
+          childImageSharp {
+            resolutions(width: 1280) {
+              ...GatsbyImageSharpResolutions
+            }
+          }
+        }
         maxDaysAhead
         timeSlots {
           endTime

@@ -40,9 +40,11 @@ const StyledImg = styled(Img)`
 
 const IndexPage = ({ data }) => (
   <Container>
-    {data.backgroundImage && (
-      <StyledImg sizes={data.backgroundImage.resolutions} />
-    )}
+    <StyledImg
+      sizes={
+        data.markdownRemark.frontmatter.headerImage.childImageSharp.resolutions
+      }
+    />
     <Title>
       <StyledLink to="/">
         <span>Chiswick</span>
@@ -55,16 +57,20 @@ const IndexPage = ({ data }) => (
 
 export default IndexPage;
 
-export const query = graphql`
-  query IndexPageQuery {
-    site {
-      siteMetadata {
+export const homePageQuery = graphql`
+  query HomePage($path: String!) {
+    markdownRemark(frontmatter: { path: { eq: $path } }) {
+      html
+      frontmatter {
+        path
         title
-      }
-    }
-    backgroundImage: imageSharp(id: { regex: "/room-piano/" }) {
-      resolutions(width: 1280) {
-        ...GatsbyImageSharpResolutions
+        headerImage {
+          childImageSharp {
+            resolutions(width: 1280) {
+              ...GatsbyImageSharpResolutions
+            }
+          }
+        }
       }
     }
   }

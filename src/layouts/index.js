@@ -21,7 +21,9 @@ const Layout = ({ children, data }) => (
     </Helmet>
     <Header>
       <NavBar
-        pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
+        pageList={data.pageList.edges
+          .map(edge => edge.node.frontmatter)
+          .filter(page => page.path !== '/')}
       />
     </Header>
     <div>{children()}</div>
