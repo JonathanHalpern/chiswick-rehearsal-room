@@ -14,8 +14,11 @@ const Layout = ({ children, data }) => (
     <Helmet
       title={data.site.siteMetadata.title}
       meta={[
-        { name: 'description', content: 'Sample' },
-        { name: 'keywords', content: 'sample, something' },
+        {
+          name: 'Chiswick Rehearsal Room',
+          content:
+            'Chamber music practice studio with Bösendorfer grand piano in Chiswick, West London',
+        },
       ]}>
       <meta name="robots" content="noindex" />
     </Helmet>
