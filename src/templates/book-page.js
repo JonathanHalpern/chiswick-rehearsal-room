@@ -1,5 +1,5 @@
 import React from 'react';
-import PageWrapper from '../components/PageWrapper';
+import PageWrapper from '../containers/PageWrapper';
 import BookingContainer from '../containers/BookingContainer';
 
 export default ({ data }) => (

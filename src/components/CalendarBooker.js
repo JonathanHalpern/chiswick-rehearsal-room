@@ -4,9 +4,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import styled from 'styled-components';
 
-const Container = styled.div`
-  ${'' /* padding: 15px; */};
-`;
+const Container = styled.div``;
 
 const Header = styled.p`
   margin: 0 0 10px 0;
