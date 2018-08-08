@@ -5,45 +5,43 @@ title: Book the room
 headerImage: ../../../static/img/piano-keys.jpg
 bookingAlertEmail: louisenaomikaye@gmail.com
 maxDaysAhead: 60
-slotTitles: 'Whole day'
 timeSlots:
   - endTime: '18:00'
     price: 90
     startTime: '09:00'
-    title: 'Whole day'
+    title: Whole day
   - endTime: '13:00'
     price: 44
     startTime: '09:00'
-    title: 'Half day'
+    title: Half day
   - endTime: '18:00'
     price: 44
     startTime: '14:00'
-    title: 'Half day'
+    title: Half day
   - endTime: '11:00'
     price: 24
     startTime: '09:00'
-    title: 'Two hours'
+    title: Two hours
   - endTime: '13:15'
     price: 24
     startTime: '11:15'
-    title: 'Two hours'
+    title: Two hours
   - endTime: '15:45'
     price: 24
     startTime: '13:45'
-    title: 'Two hours'
+    title: Two hours
   - endTime: '18:00'
     price: 24
     startTime: '16:00'
-    title: 'Two hours'
+    title: Two hours
 ---
-
 ## BOOKINGS
 
 A booking is only confirmed once it is paid for.
 
 If a booking is cancelled more than 48 hours in advance there will be a refund (via PayPal) of what has been paid minus a £3:00 administration fee.
 
-Cancellations made within 48 hours will receive a 50% refund.
+Cancellations made within 48 hours will receive a 50% refund unless another date is booked instead.
 
 We reserve the right to cancel a booking, in which case a full refund will be given.
 
