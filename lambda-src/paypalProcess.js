@@ -1,4 +1,5 @@
 import { deleteTempBooking, confirmBooking } from './firebase';
+import { sendBookingAlertMail, sendConfirmationMail } from './email';
 import { executePayment } from './paypal';
 
 export function handler(event, context, callback) {
@@ -33,12 +34,10 @@ export function handler(event, context, callback) {
     ],
   };
 
-  console.log(paymentID, executePaymentJson, bookingId, price);
-
   executePayment(paymentID, executePaymentJson, (error, payment) => {
     if (error) {
       console.warn('execute payment failed');
-      // console.error(error);
+      console.error(error);
       deleteTempBooking({ bookingId });
       callback(null, {
         statusCode: 404,
@@ -50,9 +49,32 @@ export function handler(event, context, callback) {
         payment.transactions[0].description,
       );
 
-      confirmBooking({ bookingId, bookingAlertEmail, callback });
-
-      // confirmBooking({ bookingId });
+      confirmBooking({ bookingId }).then(() => {
+        const bookingObject = {
+          ...bookingDetails,
+          price,
+        };
+        sendBookingAlertMail({ ...bookingObject, bookingAlertEmail });
+        sendConfirmationMail(bookingObject)
+          .then(response => {
+            console.log('mail sent');
+            callback(null, {
+              statusCode: 201,
+              body: JSON.stringify({ data: response.data }),
+            });
+          })
+          .catch(error => {
+            console.log('Problem with confirmation email');
+            console.log(error);
+            callback(null, {
+              statusCode: 404,
+              body: JSON.stringify({
+                errorMessage:
+                  'Confirmation email not sent, please contact us to check your booking has been made',
+              }),
+            });
+          });
+      });
     } else {
       console.warn('payment.state: not approved');
       deleteTempBooking({ bookingId });
