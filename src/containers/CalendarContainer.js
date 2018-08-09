@@ -35,7 +35,7 @@ class CalendarContainer extends Component {
     this.state = {
       loading: false,
       updatedList: [],
-      date: new Date(),
+      date: undefined,
       slotList: [],
       fullyBookedDayStrings: [],
       dateString: '',
@@ -132,11 +132,15 @@ class CalendarContainer extends Component {
               tileDisabled={this.disableTile}
               minDetail="month"
             />
-            <CalendarBooker
-              onSlotSelect={this.onSlotSelect}
-              timeSlots={slotList}
-              slotIndex={slotIndex}
-            />
+            {date ? (
+              <CalendarBooker
+                onSlotSelect={this.onSlotSelect}
+                timeSlots={slotList}
+                slotIndex={slotIndex}
+              />
+            ) : (
+              <p>Select a date</p>
+            )}
           </Container>
         )}
       </div>
