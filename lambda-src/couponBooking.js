@@ -27,27 +27,38 @@ export function handler(event, context, callback) {
       }),
     });
   } else {
-    createBooking({ bookingObject }).then(() => {
-      sendBookingAlertMail({ ...bookingObject, bookingAlertEmail });
-      sendConfirmationMail(bookingObject)
-        .then(response => {
-          console.log('mail sent');
-          callback(null, {
-            statusCode: 201,
-            body: JSON.stringify({ data: response.data }),
+    createBooking({ ...bookingObject, isConfirmed: true })
+      .then(() => {
+        sendBookingAlertMail({ ...bookingObject, bookingAlertEmail });
+        sendConfirmationMail(bookingObject)
+          .then(response => {
+            console.log('mail sent');
+            callback(null, {
+              statusCode: 201,
+              body: JSON.stringify({ data: response.data }),
+            });
+          })
+          .catch(error => {
+            console.log('Problem with confirmation email');
+            console.log(error);
+            callback(null, {
+              statusCode: 404,
+              body: JSON.stringify({
+                errorMessage:
+                  'Confirmation email not sent, please contact us to check your booking has been made',
+              }),
+            });
           });
-        })
-        .catch(error => {
-          console.log('Problem with confirmation email');
-          console.log(error);
-          callback(null, {
-            statusCode: 404,
-            body: JSON.stringify({
-              errorMessage:
-                'Confirmation email not sent, please contact us to check your booking has been made',
-            }),
-          });
+      })
+      .catch(error => {
+        console.log('Problem booking slot');
+        console.log(error, error.data);
+        callback(null, {
+          statusCode: 404,
+          body: JSON.stringify({
+            errorMessage: 'Slot is taken',
+          }),
         });
-    });
+      });
   }
 }

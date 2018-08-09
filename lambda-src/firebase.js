@@ -7,19 +7,8 @@ const instance = axios.create({
   headers: { key: process.env.FIREBASE_FUNCTIONS_KEY },
 });
 
-export const createBooking = ({ bookingObject }) => {
-  return instance
-    .post('/createBooking', bookingObject)
-    .then(response => {
-      console.log('booking created');
-      return response.data;
-    })
-    .catch(error => {
-      console.log(error);
-      console.log('The booking could not be created, !!!send email');
-      return error;
-    });
-};
+export const createBooking = ({ bookingObject }) =>
+  instance.post('/createBooking', bookingObject);
 
 export const createTempBooking = bookingObject =>
   instance

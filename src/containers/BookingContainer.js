@@ -162,6 +162,8 @@ class BookingContainer extends Component {
       discountCode,
       paymentMethod,
     } = this.state;
+    // TODO: why are value changing?
+    console.log(startTime, endTime, bookingDate);
     fetch(`${API}/couponBooking`, {
       method: 'post',
       body: JSON.stringify({
@@ -260,7 +262,13 @@ class BookingContainer extends Component {
           bookingAlertEmail,
         }),
       })
-        .then(response => response.json())
+        .then(response => {
+          console.log(response.status, response.ok);
+          if (!response.ok) {
+            throw response;
+          }
+          return response.json();
+        })
         .then(response => {
           this.setState({
             bookingId: response.bookingId,
@@ -268,8 +276,13 @@ class BookingContainer extends Component {
           resolve(response.payment.id);
         })
         .catch(error => {
-          console.log('error');
-          reject(error);
+          console.log('error', error);
+          this.setState({
+            isProcessing: false,
+            errorMessage: 'slot not available',
+          });
+          // TODO: error handling
+          reject(new Error(error));
         });
     });
   }
