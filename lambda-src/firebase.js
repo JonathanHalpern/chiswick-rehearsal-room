@@ -106,22 +106,18 @@ export const deleteTempBooking = bookingId =>
     .post('/deleteTempBooking', bookingId)
     .then(response => {
       console.log('booking deleted');
-      console.log(response, response.data);
-      // return response.data;
+      console.log(response.data);
     })
     .catch(error => {
       console.log(error);
       console.log('The booking could not be deleted, !!!send email');
     });
 
-export const confirmBooking = ({ bookingId, bookingAlertEmail, callback }) => {
-  console.log(bookingId);
-  return instance
+export const confirmBooking = ({ bookingId, bookingAlertEmail, callback }) =>
+  instance
     .post('/confirmTempBooking', { bookingId })
     .then(response => {
-      console.log('temp booking created');
-      console.log(bookingAlertEmail);
-      console.log(response.data, response.data.bookingId);
+      console.log('booking confirmed');
       callback(null, {
         statusCode: 201,
         body: JSON.stringify({ data: response.data }),
@@ -129,7 +125,7 @@ export const confirmBooking = ({ bookingId, bookingAlertEmail, callback }) => {
     })
     .catch(error => {
       console.log(error);
-      console.log('The booking could not be created, !!!send email');
+      console.log('The booking could not be confirmed, !!!send email');
       callback(null, {
         statusCode: 404,
         body: JSON.stringify({
@@ -138,4 +134,3 @@ export const confirmBooking = ({ bookingId, bookingAlertEmail, callback }) => {
         }),
       });
     });
-};

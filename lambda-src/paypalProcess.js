@@ -18,6 +18,7 @@ export function handler(event, context, callback) {
     price,
     bookingAlertEmail,
     bookingId,
+    ...bookingDetails
   } = JSON.parse(data);
 
   const executePaymentJson = {

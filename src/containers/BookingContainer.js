@@ -132,7 +132,13 @@ class BookingContainer extends Component {
   }
 
   onCancel() {
-    console.log('cancel');
+    const { bookingId } = this.state;
+    fetch(`${API}/paypalCancel`, {
+      method: 'post',
+      body: JSON.stringify({
+        bookingId,
+      }),
+    });
     this.setState({
       isProcessing: false,
     });
@@ -256,7 +262,6 @@ class BookingContainer extends Component {
       })
         .then(response => response.json())
         .then(response => {
-          console.log(response);
           this.setState({
             bookingId: response.bookingId,
           });
