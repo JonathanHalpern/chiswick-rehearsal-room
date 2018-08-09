@@ -1,3 +1,4 @@
+import { createTempBooking, deleteTempBooking } from './firebase';
 import { createProfile, createPayment } from './paypal';
 
 export function handler(event, context, callback) {
@@ -12,64 +13,73 @@ export function handler(event, context, callback) {
   }
 
   const data = event.body;
-  const { price } = JSON.parse(data);
+  const { price, bookingAlertEmail, ...otherDetails } = JSON.parse(data);
 
-  const createPaymentJson = {
-    intent: 'sale',
-    payer: {
-      payment_method: 'paypal',
-    },
-    redirect_urls: {
-      return_url: 'http://return.url',
-      cancel_url: 'http://cancel.url',
-    },
-    transactions: [
-      {
-        item_list: {
-          items: [
-            {
-              name: 'item',
-              sku: 'item',
-              price,
-              currency: 'GBP',
-              quantity: 1,
-            },
-          ],
-        },
-        amount: {
-          currency: 'GBP',
-          total: price,
-        },
-        description: 'This is the payment description.',
-      },
-    ],
+  const bookingObject = {
+    ...otherDetails,
+    price,
   };
 
-  createProfile((error, webProfile) => {
-    if (error) {
-      console.log('create profile failed');
-      callback(null, {
-        statusCode: 404,
-        body: JSON.stringify(error),
-      });
-    } else {
-      createPaymentJson.experience_profile_id = webProfile.id;
-      createPayment(createPaymentJson, (error, payment) => {
-        if (error) {
-          console.log('create payment failed');
-          callback(null, {
-            statusCode: 404,
-            body: JSON.stringify(error),
-          });
-        } else {
-          console.log('create payment successful');
-          console.log(payment);
-          callback(null, {
-            statusCode: 200,
-            body: JSON.stringify(payment),
-          });
-        }
-      });
-    }
+  createTempBooking(bookingObject).then(bookingId => {
+    console.log(bookingId);
+    const createPaymentJson = {
+      intent: 'sale',
+      payer: {
+        payment_method: 'paypal',
+      },
+      redirect_urls: {
+        return_url: 'http://return.url',
+        cancel_url: 'http://cancel.url',
+      },
+      transactions: [
+        {
+          item_list: {
+            items: [
+              {
+                name: 'item',
+                sku: 'item',
+                price,
+                currency: 'GBP',
+                quantity: 1,
+              },
+            ],
+          },
+          amount: {
+            currency: 'GBP',
+            total: price,
+          },
+          description: 'This is the payment description.',
+        },
+      ],
+    };
+
+    createProfile((error, webProfile) => {
+      if (error) {
+        console.log('create profile failed');
+        deleteTempBooking({ bookingId });
+        callback(null, {
+          statusCode: 404,
+          body: JSON.stringify(error),
+        });
+      } else {
+        createPaymentJson.experience_profile_id = webProfile.id;
+        createPayment(createPaymentJson, (error, payment) => {
+          if (error) {
+            console.log('create payment failed');
+            deleteTempBooking({ bookingId });
+            callback(null, {
+              statusCode: 404,
+              body: JSON.stringify(error),
+            });
+          } else {
+            console.log('create payment successful');
+            callback(null, {
+              statusCode: 200,
+              body: JSON.stringify({ payment, bookingId }),
+            });
+          }
+        });
+      }
+    });
   });
 }

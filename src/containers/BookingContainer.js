@@ -98,6 +98,7 @@ class BookingContainer extends Component {
       email,
       phoneNumber,
       message,
+      bookingId,
     } = this.state;
     fetch(`${API}/paypalProcess`, {
       method: 'post',
@@ -116,6 +117,7 @@ class BookingContainer extends Component {
         method: 'PayPal',
         couponUsed: false,
         bookingAlertEmail,
+        bookingId,
       }),
     })
       .then(() => {
@@ -130,6 +132,7 @@ class BookingContainer extends Component {
   }
 
   onCancel() {
+    console.log('cancel');
     this.setState({
       isProcessing: false,
     });
@@ -220,7 +223,18 @@ class BookingContainer extends Component {
     this.setState({
       isProcessing: true,
     });
-    const { bookingDate, startTime, endTime, price, discountCode } = this.state;
+    const { bookingAlertEmail } = this.props;
+    const {
+      bookingDate,
+      startTime,
+      endTime,
+      price,
+      discountCode,
+      name,
+      email,
+      phoneNumber,
+      message,
+    } = this.state;
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
         method: 'post',
@@ -230,11 +244,23 @@ class BookingContainer extends Component {
           endTime,
           price,
           discountCode,
+          name,
+          email,
+          phoneNumber,
+          message,
+          currency: 'GBP',
+          method: 'PayPal',
+          couponUsed: false,
+          bookingAlertEmail,
         }),
       })
         .then(response => response.json())
         .then(response => {
-          resolve(response.id);
+          console.log(response);
+          this.setState({
+            bookingId: response.bookingId,
+          });
+          resolve(response.payment.id);
         })
         .catch(error => {
           console.log('error');
@@ -277,14 +303,16 @@ class BookingContainer extends Component {
     return (
       <div>
         {isConfirmed && <BookingConfirmed onClick={this.onNewBooking} />}
+
         <Container isVisible={!isConfirmed}>
-          {!isConfirmed && (
-            <CalendarContainer
-              onSlotSelect={this.onSlotSelect}
-              timeSlots={timeSlots}
-              maxDaysAhead={maxDaysAhead}
-            />
-          )}
+          <p>{price}</p>
+          (
+          <CalendarContainer
+            onSlotSelect={this.onSlotSelect}
+            timeSlots={timeSlots}
+            maxDaysAhead={maxDaysAhead}
+          />
+          )
           <BookingDetails
             name={name}
             email={email}

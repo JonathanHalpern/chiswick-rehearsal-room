@@ -39,7 +39,7 @@ class CalendarContainer extends Component {
       slotList: [],
       fullyBookedDayStrings: [],
       dateString: '',
-      slotIndex: 0,
+      slotIndex: undefined,
     };
     this.onDateChange = this.onDateChange.bind(this);
     this.disableTile = this.disableTile.bind(this);
@@ -61,18 +61,13 @@ class CalendarContainer extends Component {
     );
 
     this.bookings.onSnapshot(querySnapshot => {
-      const { timeSlots, onSlotSelect } = this.props;
+      const { timeSlots } = this.props;
       const dateObject = createDateObject(querySnapshot.docs);
 
       const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
 
       const fullyBookedDayStrings = getFullyBookedDays(updatedList);
       const slotList = updatedList[0].timeSlots;
-      const initialSlot = slotList[0];
-      onSlotSelect({
-        ...initialSlot,
-        bookingDate: now.format('DD/MM/YYYY'),
-      });
       this.setState({
         loading: false,
         updatedList,

@@ -88,3 +88,54 @@ export const createBooking = ({
       });
     });
 };
+
+export const createTempBooking = bookingObject =>
+  instance
+    .post('/createTempBooking', bookingObject)
+    .then(response => {
+      console.log('temp booking created');
+      return response.data;
+    })
+    .catch(error => {
+      // console.log(error);
+      console.log('The booking could not be created, !!!send email');
+    });
+
+export const deleteTempBooking = bookingId =>
+  instance
+    .post('/deleteTempBooking', bookingId)
+    .then(response => {
+      console.log('booking deleted');
+      console.log(response, response.data);
+      // return response.data;
+    })
+    .catch(error => {
+      console.log(error);
+      console.log('The booking could not be deleted, !!!send email');
+    });
+
+export const confirmBooking = ({ bookingId, bookingAlertEmail, callback }) => {
+  console.log(bookingId);
+  return instance
+    .post('/confirmTempBooking', { bookingId })
+    .then(response => {
+      console.log('temp booking created');
+      console.log(bookingAlertEmail);
+      console.log(response.data, response.data.bookingId);
+      callback(null, {
+        statusCode: 201,
+        body: JSON.stringify({ data: response.data }),
+      });
+    })
+    .catch(error => {
+      console.log(error);
+      console.log('The booking could not be created, !!!send email');
+      callback(null, {
+        statusCode: 404,
+        body: JSON.stringify({
+          errorMessage:
+            'Confirmation email not sent, please contact us to check your booking has been made',
+        }),
+      });
+    });
+};

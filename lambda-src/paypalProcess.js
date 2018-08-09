@@ -1,4 +1,4 @@
-import { createBooking } from './firebase';
+import { deleteTempBooking, confirmBooking } from './firebase';
 import { executePayment } from './paypal';
 
 export function handler(event, context, callback) {
@@ -17,7 +17,7 @@ export function handler(event, context, callback) {
     payerID,
     price,
     bookingAlertEmail,
-    ...otherDetails
+    bookingId,
   } = JSON.parse(data);
 
   const executePaymentJson = {
@@ -32,10 +32,13 @@ export function handler(event, context, callback) {
     ],
   };
 
+  console.log(paymentID, executePaymentJson, bookingId, price);
+
   executePayment(paymentID, executePaymentJson, (error, payment) => {
     if (error) {
       console.warn('execute payment failed');
-      console.error(error);
+      // console.error(error);
+      deleteTempBooking({ bookingId });
       callback(null, {
         statusCode: 404,
         body: JSON.stringify(error),
@@ -45,14 +48,13 @@ export function handler(event, context, callback) {
         'payment completed successfully, description: ',
         payment.transactions[0].description,
       );
-      const bookingObject = {
-        ...otherDetails,
-        price,
-      };
 
-      createBooking({ bookingObject, bookingAlertEmail, callback });
+      confirmBooking({ bookingId, bookingAlertEmail, callback });
+
+      // confirmBooking({ bookingId });
     } else {
       console.warn('payment.state: not approved');
+      deleteTempBooking({ bookingId });
       callback(null, {
         statusCode: 404,
         body: JSON.stringify({
