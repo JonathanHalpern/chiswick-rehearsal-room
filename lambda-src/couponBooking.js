@@ -29,6 +29,7 @@ export function handler(event, context, callback) {
   } else {
     createBooking({ ...bookingObject, isConfirmed: true })
       .then(() => {
+        console.log('booking created');
         sendBookingAlertMail({ ...bookingObject, bookingAlertEmail });
         sendConfirmationMail(bookingObject)
           .then(response => {

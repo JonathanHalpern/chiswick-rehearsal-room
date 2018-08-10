@@ -1,10 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
 import { compose, withStateHandlers } from 'recompose';
+import Button from '@material-ui/core/Button';
 import AdjustBooking from '../containers/AdjustBooking';
 
-const Container = styled.div`
-  ${'' /* padding: 15px; */};
+const Header = styled.p`
+  margin: 5px 0;
+`;
+
+const StyledButton = styled(Button)`
+  display: block !important;
+  margin-bottom: 5px !important;
 `;
 
 const handlers = withStateHandlers(
@@ -32,19 +38,21 @@ const BookedSlots = compose(handlers)(
     editSlot,
     onConfirm,
     onDelete,
+    isProcessing,
   }) => (
-    <Container>
+    <div>
+      <Header>Click on a booking to edit</Header>
       {bookedList &&
         bookedList.bookings.map((bookedSlot, index) => (
-          <div
-            key={index}
+          <StyledButton
+            variant="outlined"
             onClick={() => {
               editSlot(bookedSlot);
-            }}>
-            <p>
-              {bookedSlot.name} at {bookedSlot.startTime}
-            </p>
-          </div>
+            }}
+            key={index}
+            disabled={isProcessing}>
+            {bookedSlot.name}: {bookedSlot.startTime}-{bookedSlot.endTime}
+          </StyledButton>
         ))}
       {isDialogOpen && (
         <AdjustBooking
@@ -54,7 +62,7 @@ const BookedSlots = compose(handlers)(
           onDelete={onDelete}
         />
       )}
-    </Container>
+    </div>
   ),
 );
 

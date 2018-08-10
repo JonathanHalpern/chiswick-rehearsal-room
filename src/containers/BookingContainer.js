@@ -321,13 +321,14 @@ class BookingContainer extends Component {
     return (
       <div>
         {isConfirmed && <BookingConfirmed onClick={this.onNewBooking} />}
-
         <Container isVisible={!isConfirmed}>
-          <CalendarContainer
-            onSlotSelect={this.onSlotSelect}
-            timeSlots={timeSlots}
-            maxDaysAhead={maxDaysAhead}
-          />
+          {!isConfirmed && (
+            <CalendarContainer
+              onSlotSelect={this.onSlotSelect}
+              timeSlots={timeSlots}
+              maxDaysAhead={maxDaysAhead}
+            />
+          )}
           <BookingDetails
             name={name}
             email={email}

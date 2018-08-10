@@ -21,9 +21,8 @@ export function handler(event, context, callback) {
     isConfirmed: false,
   };
 
-  createBooking({ bookingObject })
-    .then(response => {
-      const bookingId = response.data;
+  createBooking(bookingObject)
+    .then(({ bookingId }) => {
       console.log(bookingId);
       const createPaymentJson = {
         intent: 'sale',

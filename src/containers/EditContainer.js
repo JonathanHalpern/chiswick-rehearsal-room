@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import Calendar from 'react-calendar';
 import styled from 'styled-components';
+import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
+
 import CalendarBooker from '../components/CalendarBooker';
 import BookedSlots from '../components/BookedSlots';
 import {
@@ -10,8 +13,9 @@ import {
   createDateObject,
   getFreeSlots,
   getBookedSlots,
-  getFullyBookedDays,
 } from '../services/calendar';
+
+const { API } = process.env;
 
 const Container = styled.div`
   display: flex;
@@ -38,16 +42,19 @@ class CalendarContainer extends Component {
       updatedList: [],
       date: new Date(),
       slotList: [],
-      fullyBookedDayStrings: [],
       dateString: '',
-      slotIndex: 0,
-      isViewingExisting: true,
+      slotIndex: undefined,
+      bookedSlot: {
+        bookings: [],
+      },
     };
     this.onDateChange = this.onDateChange.bind(this);
+    this.setNewDate = this.setNewDate.bind(this);
     this.disableTile = this.disableTile.bind(this);
     this.onSlotSelect = this.onSlotSelect.bind(this);
     this.onConfirm = this.onConfirm.bind(this);
     this.onDelete = this.onDelete.bind(this);
+    this.onCreateAdminBooking = this.onCreateAdminBooking.bind(this);
   }
 
   componentDidMount() {
@@ -83,20 +90,19 @@ class CalendarContainer extends Component {
     );
 
     this.bookings.onSnapshot(querySnapshot => {
+      console.log('new snapshot');
       const { timeSlots } = this.props;
+      const { date } = this.state;
       const dateObject = createDateObject(querySnapshot.docs);
       const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
       const bookedList = getBookedSlots(datesList, dateObject, timeSlots);
 
-      const fullyBookedDayStrings = getFullyBookedDays(updatedList);
+      this.setNewDate({ date, updatedList, bookedList });
 
       this.setState({
         loading: false,
         updatedList,
         bookedList,
-        fullyBookedDayStrings,
-        slotList: updatedList[0].timeSlots,
-        bookedSlot: bookedList[0],
       });
     });
   }
@@ -109,6 +115,51 @@ class CalendarContainer extends Component {
     });
   }
 
+  onCreateAdminBooking() {
+    const { firebase } = this.context;
+    this.setState({
+      isProcessing: true,
+      errorMessage: '',
+    });
+    const { startTime, endTime, dateString } = this.state;
+    firebase
+      .auth()
+      .currentUser.getIdToken(true)
+      .then(token => {
+        fetch(`${API}/adminBooking`, {
+          method: 'post',
+          body: JSON.stringify({
+            startTime,
+            endTime,
+            bookingDate: dateString,
+            token,
+          }),
+        })
+          .then(response => {
+            console.log('done!');
+            this.setState({
+              isProcessing: false,
+              slotIndex: undefined,
+            });
+            if (!response.ok) {
+              throw response;
+            }
+          })
+          .catch(err => {
+            err.text().then(errorObject => {
+              const { errorMessage } = JSON.parse(errorObject);
+              this.setState({
+                errorMessage,
+              });
+            });
+          });
+      })
+      .catch(err => {
+        // TODO: do we need this?
+        console.error('whats going on');
+      });
+  }
+
   onDelete(bookingId) {
     const { firebase } = this.context;
     firebase.bookings.doc(bookingId).delete();
@@ -116,6 +167,22 @@ class CalendarContainer extends Component {
 
   onDateChange(date) {
     const { updatedList, bookedList } = this.state;
+    this.setNewDate({ date, updatedList, bookedList });
+  }
+
+  onSlotSelect(slotIndex) {
+    const { slotList } = this.state;
+    const slot = slotList[slotIndex];
+    const { startTime, endTime } = slot;
+    this.setState({ slotIndex, startTime, endTime });
+  }
+
+  get bookings() {
+    const { firebase } = this.context;
+    return firebase.bookings;
+  }
+
+  setNewDate({ date, updatedList, bookedList }) {
     const dateString = moment(date).format('DD/MM/YYYY');
     const slotListObject = updatedList.find(
       element => element.date === dateString,
@@ -123,22 +190,6 @@ class CalendarContainer extends Component {
     const bookedSlot = bookedList.find(element => element.date === dateString);
     const slotList = slotListObject ? slotListObject.timeSlots : [];
     this.setState({ date, dateString, slotList, bookedSlot });
-  }
-
-  onSlotSelect(slotIndex) {
-    this.setState({ slotIndex });
-    const { onSlotSelect } = this.props;
-    const { dateString, slotList } = this.state;
-    const slot = slotList[slotIndex];
-    onSlotSelect({
-      ...slot,
-      bookingDate: dateString,
-    });
-  }
-
-  get bookings() {
-    const { firebase } = this.context;
-    return firebase.bookings;
   }
 
   disableTile({ date }) {
@@ -157,8 +208,9 @@ class CalendarContainer extends Component {
       slotList,
       slotIndex,
       isAuthed,
-      isViewingExisting,
       bookedSlot,
+      isProcessing,
+      errorMessage,
     } = this.state;
     return (
       <div>
@@ -172,20 +224,33 @@ class CalendarContainer extends Component {
                   tileDisabled={this.disableTile}
                   minDetail="month"
                 />
-                {isViewingExisting ? (
-                  <BookedSlots
-                    bookedList={bookedSlot}
-                    onConfirm={this.onConfirm}
-                    onDelete={this.onDelete}
-                  />
-                ) : (
+                <div>
                   <CalendarBooker
                     onSlotSelect={this.onSlotSelect}
                     timeSlots={slotList}
                     slotIndex={slotIndex}
+                    isProcessing={isProcessing}
                   />
-                )}
+                  {bookedSlot.bookings.length > 0 && <Divider />}
+                  {bookedSlot.bookings.length > 0 && (
+                    <BookedSlots
+                      bookedList={bookedSlot}
+                      onConfirm={this.onConfirm}
+                      onDelete={this.onDelete}
+                      isProcessing={isProcessing}
+                    />
+                  )}
+                </div>
               </Container>
+            )}
+            {errorMessage && <p>{errorMessage}</p>}
+            {slotList.length > 0 && (
+              <Button
+                variant="raised"
+                onClick={this.onCreateAdminBooking}
+                disabled={isProcessing}>
+                {isProcessing ? 'Booking...' : 'Create booking'}
+              </Button>
             )}
           </div>
         ) : (

@@ -17,7 +17,13 @@ const SlotTitle = styled.p`
 const getTitlesFromSlots = timeSlots =>
   Array.from(new Set(timeSlots.map(timeSlots => timeSlots.title)));
 
-const CalendarBooker = ({ onSlotSelect, timeSlots, slotIndex, className }) => {
+const CalendarBooker = ({
+  onSlotSelect,
+  timeSlots,
+  slotIndex,
+  className,
+  isProcessing,
+}) => {
   let index = -1;
   return (
     <Container className={className || ''}>
@@ -45,6 +51,7 @@ const CalendarBooker = ({ onSlotSelect, timeSlots, slotIndex, className }) => {
                     key={`${timeSlot.title}-${timeSlot.startTime}`}
                     value={`${index}`}
                     control={<Radio />}
+                    disabled={isProcessing}
                     label={`${timeSlot.startTime} to ${timeSlot.endTime} - £${
                       timeSlot.price
                     }`}

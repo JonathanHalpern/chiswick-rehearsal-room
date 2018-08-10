@@ -115,7 +115,6 @@ class CalendarContainer extends Component {
     if (momentDate.isBefore(yesterday)) {
       return true;
     }
-    return false; // remove
     const dateString = moment(date).format('DD/MM/YYYY');
     const { fullyBookedDayStrings } = this.state;
     return fullyBookedDayStrings.includes(dateString);
