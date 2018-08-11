@@ -15,6 +15,9 @@ export const createBooking = bookingObject => {
 export const createAdminBooking = bookingObject =>
   instance.post('/createAdminBooking', bookingObject);
 
+export const editAdminBooking = bookingObject =>
+  instance.post('/editAdminBooking', bookingObject);
+
 export const deleteTempBooking = bookingId =>
   instance
     .post('/deleteTempBooking', bookingId)

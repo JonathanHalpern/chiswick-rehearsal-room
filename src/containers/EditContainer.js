@@ -22,6 +22,10 @@ const Container = styled.div`
   flex-wrap: wrap;
 `;
 
+const ErrorMessage = styled.p`
+  color: red;
+`;
+
 const StyledCalendar = styled(Calendar)`
   margin: 0 30px 30px 0;
   .react-calendar__month-view__days__day--weekend {
@@ -55,6 +59,7 @@ class CalendarContainer extends Component {
     this.onConfirm = this.onConfirm.bind(this);
     this.onDelete = this.onDelete.bind(this);
     this.onCreateAdminBooking = this.onCreateAdminBooking.bind(this);
+    this.getToken = this.getToken.bind(this);
   }
 
   componentDidMount() {
@@ -90,7 +95,6 @@ class CalendarContainer extends Component {
     );
 
     this.bookings.onSnapshot(querySnapshot => {
-      console.log('new snapshot');
       const { timeSlots } = this.props;
       const { date } = this.state;
       const dateObject = createDateObject(querySnapshot.docs);
@@ -107,57 +111,70 @@ class CalendarContainer extends Component {
     });
   }
 
-  onConfirm(edittedBooking) {
-    const { firebase } = this.context;
-    const { bookingId, ...newDetails } = edittedBooking;
-    firebase.bookings.doc(bookingId).update({
-      ...newDetails,
+  onConfirm(editedBooking) {
+    this.setState({
+      isProcessing: true,
+      errorMessage: '',
+    });
+    this.getToken().then(token => {
+      fetch(`${API}/adminEditBooking`, {
+        method: 'post',
+        body: JSON.stringify({ ...editedBooking, token }),
+      })
+        .then(response => {
+          this.setState({
+            isProcessing: false,
+            slotIndex: undefined,
+          });
+          if (!response.ok) {
+            throw response;
+          }
+        })
+        .catch(err => {
+          err.text().then(errorObject => {
+            const { errorMessage } = JSON.parse(errorObject);
+            this.setState({
+              errorMessage,
+            });
+          });
+        });
     });
   }
 
   onCreateAdminBooking() {
-    const { firebase } = this.context;
     this.setState({
       isProcessing: true,
       errorMessage: '',
     });
     const { startTime, endTime, dateString } = this.state;
-    firebase
-      .auth()
-      .currentUser.getIdToken(true)
-      .then(token => {
-        fetch(`${API}/adminBooking`, {
-          method: 'post',
-          body: JSON.stringify({
-            startTime,
-            endTime,
-            bookingDate: dateString,
-            token,
-          }),
+    this.getToken().then(token => {
+      fetch(`${API}/adminBooking`, {
+        method: 'post',
+        body: JSON.stringify({
+          startTime,
+          endTime,
+          bookingDate: dateString,
+          token,
+        }),
+      })
+        .then(response => {
+          this.setState({
+            isProcessing: false,
+            slotIndex: undefined,
+          });
+          if (!response.ok) {
+            throw response;
+          }
         })
-          .then(response => {
-            console.log('done!');
+        .catch(err => {
+          err.text().then(errorObject => {
+            const { errorMessage } = JSON.parse(errorObject);
             this.setState({
-              isProcessing: false,
-              slotIndex: undefined,
-            });
-            if (!response.ok) {
-              throw response;
-            }
-          })
-          .catch(err => {
-            err.text().then(errorObject => {
-              const { errorMessage } = JSON.parse(errorObject);
-              this.setState({
-                errorMessage,
-              });
+              errorMessage,
             });
           });
-      })
-      .catch(err => {
-        // TODO: do we need this?
-        console.error('whats going on');
-      });
+        });
+    });
   }
 
   onDelete(bookingId) {
@@ -190,6 +207,11 @@ class CalendarContainer extends Component {
     const bookedSlot = bookedList.find(element => element.date === dateString);
     const slotList = slotListObject ? slotListObject.timeSlots : [];
     this.setState({ date, dateString, slotList, bookedSlot });
+  }
+
+  getToken() {
+    const { firebase } = this.context;
+    return firebase.auth().currentUser.getIdToken(true);
   }
 
   disableTile({ date }) {
@@ -243,7 +265,7 @@ class CalendarContainer extends Component {
                 </div>
               </Container>
             )}
-            {errorMessage && <p>{errorMessage}</p>}
+            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
             {slotList.length > 0 && (
               <Button
                 variant="raised"

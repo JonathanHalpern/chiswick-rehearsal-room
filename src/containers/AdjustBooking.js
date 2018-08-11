@@ -24,7 +24,7 @@ class AdjustBooking extends Component {
       phoneNumber,
       startTime,
       endTime,
-      bookingDate: Moment(bookingDate).format('YYYY-MM-DD'),
+      bookingDate: Moment(bookingDate, 'DD/MM/YYYY').format('YYYY-MM-DD'),
       bookingId,
     };
     this.handleChange = this.handleChange.bind(this);
