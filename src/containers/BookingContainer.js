@@ -49,6 +49,10 @@ const Container = styled.div`
   display: ${({ isVisible }) => (isVisible ? 'initial' : 'none')};
 `;
 
+const ErrorMessage = styled.p`
+  color: red;
+`;
+
 class BookingContainer extends Component {
   constructor(props) {
     super(props);
@@ -136,7 +140,7 @@ class BookingContainer extends Component {
       })
       .catch(error => {
         error.text().then(errorObject => {
-          const { errorMessage } = errorObject;
+          const { errorMessage } = JSON.parse(errorObject);
           this.setState({
             errorMessage,
           });
@@ -358,7 +362,7 @@ class BookingContainer extends Component {
             updateTermAgreement={this.updateTermAgreement}
             termsAndCondtionsHTML={termsAndCondtionsHTML}
           />
-          {errorMessage && <p>{errorMessage}</p>}
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           {isProcessing && <p>Processing...</p>}
           <StyledCartComponent
             payment={this.payment}

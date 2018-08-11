@@ -66,6 +66,7 @@ class CalendarContainer extends Component {
       const { timeSlots } = this.props;
       const { date } = this.state;
       const dateObject = createDateObject(querySnapshot.docs);
+      console.log(dateObject);
 
       const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
 
@@ -89,7 +90,6 @@ class CalendarContainer extends Component {
   onSlotSelect(slotIndex) {
     this.setState({ slotIndex });
     const { dateString, slotList } = this.state;
-    // this.selectSlot(slotIndex, dateString, slotList);
     const { onSlotSelect } = this.props;
     const slot = slotList[slotIndex];
     onSlotSelect({
@@ -134,6 +134,7 @@ class CalendarContainer extends Component {
   }
 
   render() {
+    const { isProcessing } = this.props;
     const { loading, date, slotList, slotIndex } = this.state;
     return (
       <div>
@@ -150,6 +151,7 @@ class CalendarContainer extends Component {
                 onSlotSelect={this.onSlotSelect}
                 timeSlots={slotList}
                 slotIndex={slotIndex}
+                isProcessing={isProcessing}
               />
             ) : (
               <p>Select a date</p>
