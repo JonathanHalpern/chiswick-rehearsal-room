@@ -4,7 +4,12 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import styled from 'styled-components';
 import AdjustBookingForm from '../components/AdjustBookingForm';
+
+const StyledButton = styled(Button)`
+  margin-right: 5px !important;
+`;
 
 class AdjustBooking extends Component {
   constructor(props) {
@@ -65,9 +70,21 @@ class AdjustBooking extends Component {
         <DialogTitle id="responsive-dialog-title">{name}</DialogTitle>
         <DialogContent>
           <AdjustBookingForm {...this.state} handleChange={this.handleChange} />
-          <Button onClick={toggleDialog}>Cancel changes</Button>
-          <Button onClick={this.onConfirm}>Confirm changes</Button>
-          <Button onClick={this.onDelete}>Delete booking</Button>
+          <StyledButton variant="outlined" onClick={toggleDialog}>
+            Cancel
+          </StyledButton>
+          <StyledButton
+            color="primary"
+            variant="outlined"
+            onClick={this.onConfirm}>
+            Confirm
+          </StyledButton>
+          <StyledButton
+            color="secondary"
+            variant="outlined"
+            onClick={this.onDelete}>
+            Delete
+          </StyledButton>
         </DialogContent>
       </Dialog>
     );

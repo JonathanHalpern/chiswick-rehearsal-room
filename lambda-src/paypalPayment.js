@@ -22,8 +22,9 @@ export function handler(event, context, callback) {
   };
 
   createBooking(bookingObject)
-    .then(({ bookingId }) => {
-      console.log(bookingId);
+    .then(response => {
+      const bookingId = response.data;
+      console.log(bookingId, response);
       const createPaymentJson = {
         intent: 'sale',
         payer: {

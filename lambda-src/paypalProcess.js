@@ -22,6 +22,8 @@ export function handler(event, context, callback) {
     ...bookingDetails
   } = JSON.parse(data);
 
+  console.info('id', bookingId);
+
   const executePaymentJson = {
     payer_id: payerID,
     transactions: [
