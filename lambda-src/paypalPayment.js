@@ -23,8 +23,8 @@ export function handler(event, context, callback) {
 
   createBooking(bookingObject)
     .then(response => {
-      const bookingId = response.data;
-      console.log(bookingId, response);
+      const { bookingId, bookingCreationTime } = response.data;
+      console.log(bookingId, bookingCreationTime, price);
       const createPaymentJson = {
         intent: 'sale',
         payer: {
@@ -57,8 +57,10 @@ export function handler(event, context, callback) {
       };
 
       createProfile((error, webProfile) => {
+        console.log('creating...');
         if (error) {
           console.log('create profile failed');
+          console.log(error);
           deleteTempBooking({ bookingId });
           callback(null, {
             statusCode: 404,
@@ -66,7 +68,9 @@ export function handler(event, context, callback) {
           });
         } else {
           createPaymentJson.experience_profile_id = webProfile.id;
+          // console.log(createPaymentJson);
           createPayment(createPaymentJson, (error, payment) => {
+            console.log(createPaymentJson);
             if (error) {
               console.log('create payment failed');
               deleteTempBooking({ bookingId });
@@ -78,7 +82,11 @@ export function handler(event, context, callback) {
               console.log('create payment successful');
               callback(null, {
                 statusCode: 200,
-                body: JSON.stringify({ payment, bookingId }),
+                body: JSON.stringify({
+                  payment,
+                  bookingId,
+                  bookingCreationTime,
+                }),
               });
             }
           });

@@ -24,9 +24,8 @@ const Layout = ({ children, data }) => (
     </Helmet>
     <Header>
       <NavBar
-        pageList={data.pageList.edges
-          .map(edge => edge.node.frontmatter)
-          .filter(page => page.path !== '/')}
+        pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
+        // TODO: stop it selcting / in the underline
       />
     </Header>
     <div>{children()}</div>

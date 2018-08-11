@@ -99,6 +99,7 @@ class BookingContainer extends Component {
       phoneNumber,
       message,
       bookingId,
+      bookingCreationTime,
     } = this.state;
     fetch(`${API}/paypalProcess`, {
       method: 'post',
@@ -118,16 +119,28 @@ class BookingContainer extends Component {
         couponUsed: false,
         bookingAlertEmail,
         bookingId,
+        bookingCreationTime,
       }),
     })
-      .then(() => {
+      .then(response => {
+        this.setState({
+          isProcessing: false,
+        });
+
+        if (!response.ok) {
+          throw response;
+        }
         this.setState({
           isConfirmed: true,
-          isProcessing: false,
         });
       })
       .catch(error => {
-        console.log(error);
+        error.text().then(errorObject => {
+          const { errorMessage } = errorObject;
+          this.setState({
+            errorMessage,
+          });
+        });
       });
   }
 
@@ -162,8 +175,6 @@ class BookingContainer extends Component {
       discountCode,
       paymentMethod,
     } = this.state;
-    // TODO: why are value changing?
-    console.log(startTime, endTime, bookingDate);
     fetch(`${API}/couponBooking`, {
       method: 'post',
       body: JSON.stringify({
@@ -263,7 +274,6 @@ class BookingContainer extends Component {
         }),
       })
         .then(response => {
-          console.log(response.status, response.ok);
           if (!response.ok) {
             throw response;
           }
@@ -272,17 +282,19 @@ class BookingContainer extends Component {
         .then(response => {
           this.setState({
             bookingId: response.bookingId,
+            bookingCreationTime: response.bookingCreationTime,
           });
           resolve(response.payment.id);
         })
         .catch(error => {
-          console.log('error', error);
-          this.setState({
-            isProcessing: false,
-            errorMessage: 'slot not available',
+          error.text().then(errorObject => {
+            const { errorMessage } = errorObject;
+            this.setState({
+              isProcessing: false,
+              errorMessage,
+            });
           });
-          // TODO: error handling
-          reject(new Error(error));
+          reject('error');
         });
     });
   }
@@ -327,6 +339,7 @@ class BookingContainer extends Component {
               onSlotSelect={this.onSlotSelect}
               timeSlots={timeSlots}
               maxDaysAhead={maxDaysAhead}
+              isProcessing={isProcessing}
             />
           )}
           <BookingDetails
