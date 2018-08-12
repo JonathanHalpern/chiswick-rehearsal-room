@@ -4,7 +4,12 @@ backend:
 
 media_folder: static/img
 public_folder: img
-
+            name: "defaultZoom"
+            widget: "number"
+            default: 18
+            valueType: "int"
+            min: 1
+            max: 20
 collections:
   - name: "pages"
     label: "Pages"
@@ -16,6 +21,7 @@ collections:
           - {label: "Template Key", name: "templateKey", widget: "hidden", default: "contact-page"}
           - {label: "Path", name: "path", widget: "hidden", default: "/contact"}
           - {label: "Title", name: "title", widget: "string"}
+          - {label: "Nav Bar order", name: "navOrder", widget: "number", valueType: "int"}
           - label: "Header image"
             name: "headerImage"
             widget: "custompathimage"
@@ -33,6 +39,7 @@ collections:
           - {label: "Template Key", name: "templateKey", widget: "hidden", default: "about-page"}
           - {label: "Path", name: "path", widget: "hidden", default: "/about"}
           - {label: "Title", name: "title", widget: "string"}
+          - {label: "Nav Bar order", name: "navOrder", widget: "number", valueType: "int"}
           - label: "Header image"
             name: "headerImage"
             widget: "custompathimage"
@@ -48,6 +55,7 @@ collections:
           - {label: "Template Key", name: "templateKey", widget: "hidden", default: "location-page"}
           - {label: "Path", name: "path", widget: "hidden", default: "/location"}
           - {label: "Title", name: "title", widget: "string"}
+          - {label: "Nav Bar order", name: "navOrder", widget: "number", valueType: "int"}
           - label: "Header image"
             name: "headerImage"
             widget: "custompathimage"
@@ -76,6 +84,7 @@ collections:
           - {label: "Template Key", name: "templateKey", widget: "hidden", default: "book-page"}
           - {label: "Path", name: "path", widget: "hidden", default: "/book"}
           - {label: "Title", name: "title", widget: "string"}
+          - {label: "Nav Bar order", name: "navOrder", widget: "number", valueType: "int"}
           - label: "Header image"
             name: "headerImage"
             widget: "custompathimage"

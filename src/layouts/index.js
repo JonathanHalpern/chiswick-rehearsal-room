@@ -23,10 +23,11 @@ const Layout = ({ children, data }) => (
       <meta name="robots" content="noindex" />
     </Helmet>
     <Header>
+      {console.log(data.pageList.edges)}
       <NavBar
         pageList={data.pageList.edges
           .map(edge => edge.node.frontmatter)
-          .sort(page => page.title)}
+          .sort((a, b) => a.navOrder - b.navOrder)}
       />
     </Header>
     <div>{children()}</div>
@@ -52,6 +53,7 @@ export const query = graphql`
           frontmatter {
             title
             path
+            navOrder
           }
         }
       }

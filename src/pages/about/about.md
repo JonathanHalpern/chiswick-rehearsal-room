@@ -3,6 +3,7 @@ templateKey: about-page
 path: /
 title: About
 headerImage: ../../../static/img/violin-head.jpg
+navOrder: 1
 ---
 
 ## The Chiswick Rehearsal Room is for use exclusively by chamber musicians
