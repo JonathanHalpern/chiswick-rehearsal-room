@@ -3,7 +3,7 @@ import paypal from 'paypal-rest-sdk';
 require('dotenv').config();
 
 paypal.configure({
-  mode: process.env.PAYPAL_SANDBOX_CLIENT_ID, // sandbox or live
+  mode: process.env.PAYPAL_ENVIRONMENT, // sandbox or live
   client_id: process.env.PAYPAL_SANDBOX_CLIENT_ID, // run: firebase functions:config:set paypal.client_id="yourPaypalClientID"
   client_secret: process.env.PAYPAL_SECRET, // run: firebase functions:config:set paypal.client_secret="yourPaypalClientSecret"
 });

@@ -97,7 +97,7 @@ export function handler(event, context, callback) {
       statusCode: 404,
       body: JSON.stringify({
         errorMessage:
-          'You took to long to book. No payment was token. Please try again',
+          'You took to long to book. No payment was taken. Please try again',
       }),
     });
   }
