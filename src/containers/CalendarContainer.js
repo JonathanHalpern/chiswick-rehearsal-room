@@ -66,7 +66,6 @@ class CalendarContainer extends Component {
       const { timeSlots } = this.props;
       const { date } = this.state;
       const dateObject = createDateObject(querySnapshot.docs);
-      console.log(dateObject);
 
       const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
 
