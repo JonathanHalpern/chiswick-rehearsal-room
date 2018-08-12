@@ -7,5 +7,6 @@
 
 [context.develop] # 'develop' is a branch name
   VARIABLE = "value"
+  NODE_ENV = "staging"
   # command = "echo 'develop'"
 #   NODE_ENV = "staging"
