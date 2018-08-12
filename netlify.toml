@@ -5,6 +5,7 @@
   publish = "public"
   functions = "lambda"
 
-[context.develope] # 'develop' is a branch name
-  command = "echo 'develop'"
+[context.develop] # 'develop' is a branch name
+  VARIABLE = "value"
+  # command = "echo 'develop'"
 #   NODE_ENV = "staging"
