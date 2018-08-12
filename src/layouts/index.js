@@ -14,14 +14,19 @@ const Layout = ({ children, data }) => (
     <Helmet
       title={data.site.siteMetadata.title}
       meta={[
-        { name: 'description', content: 'Sample' },
-        { name: 'keywords', content: 'sample, something' },
+        {
+          name: 'Chiswick Rehearsal Room',
+          content:
+            'Chamber music practice studio with Bösendorfer grand piano in Chiswick, West London',
+        },
       ]}>
       <meta name="robots" content="noindex" />
     </Helmet>
     <Header>
       <NavBar
-        pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
+        pageList={data.pageList.edges
+          .map(edge => edge.node.frontmatter)
+          .sort((a, b) => a.navOrder - b.navOrder)}
       />
     </Header>
     <div>{children()}</div>
@@ -47,6 +52,7 @@ export const query = graphql`
           frontmatter {
             title
             path
+            navOrder
           }
         }
       }

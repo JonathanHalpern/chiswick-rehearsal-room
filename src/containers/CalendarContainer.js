@@ -31,18 +31,21 @@ class CalendarContainer extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       loading: false,
       updatedList: [],
-      date: new Date(),
+      date: undefined,
       slotList: [],
       fullyBookedDayStrings: [],
       dateString: '',
-      slotIndex: 0,
+      slotIndex: undefined,
     };
     this.onDateChange = this.onDateChange.bind(this);
     this.disableTile = this.disableTile.bind(this);
     this.onSlotSelect = this.onSlotSelect.bind(this);
+    this.setNewDate = this.setNewDate.bind(this);
+    this.selectSlot = this.selectSlot.bind(this);
   }
 
   componentDidMount() {
@@ -61,35 +64,32 @@ class CalendarContainer extends Component {
 
     this.bookings.onSnapshot(querySnapshot => {
       const { timeSlots } = this.props;
+      const { date } = this.state;
       const dateObject = createDateObject(querySnapshot.docs);
 
       const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
 
       const fullyBookedDayStrings = getFullyBookedDays(updatedList);
 
+      this.setNewDate({ date, updatedList });
+
       this.setState({
         loading: false,
         updatedList,
         fullyBookedDayStrings,
-        slotList: updatedList[0].timeSlots,
       });
     });
   }
 
   onDateChange(date) {
     const { updatedList } = this.state;
-    const dateString = moment(date).format('DD/MM/YYYY');
-    const slotListObject = updatedList.find(
-      element => element.date === dateString,
-    );
-    const slotList = slotListObject ? slotListObject.timeSlots : [];
-    this.setState({ date, dateString, slotList });
+    this.setNewDate({ date, updatedList });
   }
 
   onSlotSelect(slotIndex) {
     this.setState({ slotIndex });
-    const { onSlotSelect } = this.props;
     const { dateString, slotList } = this.state;
+    const { onSlotSelect } = this.props;
     const slot = slotList[slotIndex];
     onSlotSelect({
       ...slot,
@@ -100,6 +100,25 @@ class CalendarContainer extends Component {
   get bookings() {
     const { firebase } = this.context;
     return firebase.bookings;
+  }
+
+  setNewDate({ date, updatedList }) {
+    const slotIndex = undefined;
+    const dateString = moment(date).format('DD/MM/YYYY');
+    const slotListObject = updatedList.find(
+      element => element.date === dateString,
+    );
+    const slotList = slotListObject ? slotListObject.timeSlots : [];
+    this.setState({ date, dateString, slotList, slotIndex });
+  }
+
+  selectSlot(slotIndex, dateString, slotList) {
+    const { onSlotSelect } = this.props;
+    const slot = slotList[slotIndex];
+    onSlotSelect({
+      ...slot,
+      bookingDate: dateString,
+    });
   }
 
   disableTile({ date }) {
@@ -114,6 +133,7 @@ class CalendarContainer extends Component {
   }
 
   render() {
+    const { isProcessing } = this.props;
     const { loading, date, slotList, slotIndex } = this.state;
     return (
       <div>
@@ -125,11 +145,16 @@ class CalendarContainer extends Component {
               tileDisabled={this.disableTile}
               minDetail="month"
             />
-            <CalendarBooker
-              onSlotSelect={this.onSlotSelect}
-              timeSlots={slotList}
-              slotIndex={slotIndex}
-            />
+            {date ? (
+              <CalendarBooker
+                onSlotSelect={this.onSlotSelect}
+                timeSlots={slotList}
+                slotIndex={slotIndex}
+                isProcessing={isProcessing}
+              />
+            ) : (
+              <p>Select a date</p>
+            )}
           </Container>
         )}
       </div>

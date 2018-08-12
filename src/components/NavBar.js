@@ -115,7 +115,7 @@ const NavBar = compose(
       maxHeight={80}>
       {pageList.map(pageItem => (
         <StyledListItem key={pageItem.path}>
-          <StyledLink to={pageItem.path} activeClassName="active">
+          <StyledLink exact to={pageItem.path} activeClassName="active">
             <p>{pageItem.title}</p>
           </StyledLink>
         </StyledListItem>

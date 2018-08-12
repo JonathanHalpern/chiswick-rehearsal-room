@@ -6,6 +6,8 @@ if (typeof window !== 'undefined') {
   paypal = require('paypal-checkout');
 }
 
+const paypalEnvironment = process.env.PAYPAL_ENVIRONMENT;
+
 const CartComponent = ({
   payment,
   onAuthorize,
@@ -23,7 +25,7 @@ const CartComponent = ({
         onAuthorize={data => onAuthorize(data)}
         onCancel={onCancel}
         validate={validate}
-        env="sandbox"
+        env={paypalEnvironment}
       />
     </div>
   );

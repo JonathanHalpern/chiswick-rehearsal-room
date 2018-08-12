@@ -4,9 +4,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import styled from 'styled-components';
 
-const Container = styled.div`
-  ${'' /* padding: 15px; */};
-`;
+const Container = styled.div``;
 
 const Header = styled.p`
   margin: 0 0 10px 0;
@@ -19,7 +17,13 @@ const SlotTitle = styled.p`
 const getTitlesFromSlots = timeSlots =>
   Array.from(new Set(timeSlots.map(timeSlots => timeSlots.title)));
 
-const CalendarBooker = ({ onSlotSelect, timeSlots, slotIndex, className }) => {
+const CalendarBooker = ({
+  onSlotSelect,
+  timeSlots,
+  slotIndex,
+  className,
+  isProcessing,
+}) => {
   let index = -1;
   return (
     <Container className={className || ''}>
@@ -47,6 +51,7 @@ const CalendarBooker = ({ onSlotSelect, timeSlots, slotIndex, className }) => {
                     key={`${timeSlot.title}-${timeSlot.startTime}`}
                     value={`${index}`}
                     control={<Radio />}
+                    disabled={isProcessing}
                     label={`${timeSlot.startTime} to ${timeSlot.endTime} - £${
                       timeSlot.price
                     }`}

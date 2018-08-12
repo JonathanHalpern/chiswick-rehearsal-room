@@ -49,6 +49,10 @@ const Container = styled.div`
   display: ${({ isVisible }) => (isVisible ? 'initial' : 'none')};
 `;
 
+const ErrorMessage = styled.p`
+  color: red;
+`;
+
 class BookingContainer extends Component {
   constructor(props) {
     super(props);
@@ -98,6 +102,8 @@ class BookingContainer extends Component {
       email,
       phoneNumber,
       message,
+      bookingId,
+      bookingCreationTime,
     } = this.state;
     fetch(`${API}/paypalProcess`, {
       method: 'post',
@@ -116,20 +122,40 @@ class BookingContainer extends Component {
         method: 'PayPal',
         couponUsed: false,
         bookingAlertEmail,
+        bookingId,
+        bookingCreationTime,
       }),
     })
-      .then(() => {
+      .then(response => {
+        this.setState({
+          isProcessing: false,
+        });
+
+        if (!response.ok) {
+          throw response;
+        }
         this.setState({
           isConfirmed: true,
-          isProcessing: false,
         });
       })
       .catch(error => {
-        console.log(error);
+        error.text().then(errorObject => {
+          const { errorMessage } = JSON.parse(errorObject);
+          this.setState({
+            errorMessage,
+          });
+        });
       });
   }
 
   onCancel() {
+    const { bookingId } = this.state;
+    fetch(`${API}/paypalCancel`, {
+      method: 'post',
+      body: JSON.stringify({
+        bookingId,
+      }),
+    });
     this.setState({
       isProcessing: false,
     });
@@ -220,7 +246,18 @@ class BookingContainer extends Component {
     this.setState({
       isProcessing: true,
     });
-    const { bookingDate, startTime, endTime, price, discountCode } = this.state;
+    const { bookingAlertEmail } = this.props;
+    const {
+      bookingDate,
+      startTime,
+      endTime,
+      price,
+      discountCode,
+      name,
+      email,
+      phoneNumber,
+      message,
+    } = this.state;
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
         method: 'post',
@@ -230,15 +267,38 @@ class BookingContainer extends Component {
           endTime,
           price,
           discountCode,
+          name,
+          email,
+          phoneNumber,
+          message,
+          currency: 'GBP',
+          method: 'PayPal',
+          couponUsed: false,
+          bookingAlertEmail,
         }),
       })
-        .then(response => response.json())
         .then(response => {
-          resolve(response.id);
+          if (!response.ok) {
+            throw response;
+          }
+          return response.json();
+        })
+        .then(response => {
+          this.setState({
+            bookingId: response.bookingId,
+            bookingCreationTime: response.bookingCreationTime,
+          });
+          resolve(response.payment.id);
         })
         .catch(error => {
-          console.log('error');
-          reject(error);
+          error.text().then(errorObject => {
+            const { errorMessage } = errorObject;
+            this.setState({
+              isProcessing: false,
+              errorMessage,
+            });
+          });
+          reject('error');
         });
     });
   }
@@ -278,11 +338,14 @@ class BookingContainer extends Component {
       <div>
         {isConfirmed && <BookingConfirmed onClick={this.onNewBooking} />}
         <Container isVisible={!isConfirmed}>
-          <CalendarContainer
-            onSlotSelect={this.onSlotSelect}
-            timeSlots={timeSlots}
-            maxDaysAhead={maxDaysAhead}
-          />
+          {!isConfirmed && (
+            <CalendarContainer
+              onSlotSelect={this.onSlotSelect}
+              timeSlots={timeSlots}
+              maxDaysAhead={maxDaysAhead}
+              isProcessing={isProcessing}
+            />
+          )}
           <BookingDetails
             name={name}
             email={email}
@@ -299,7 +362,7 @@ class BookingContainer extends Component {
             updateTermAgreement={this.updateTermAgreement}
             termsAndCondtionsHTML={termsAndCondtionsHTML}
           />
-          {errorMessage && <p>{errorMessage}</p>}
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
           {isProcessing && <p>Processing...</p>}
           <StyledCartComponent
             payment={this.payment}

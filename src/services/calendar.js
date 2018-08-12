@@ -17,7 +17,10 @@ export const enumerateDaysBetweenDates = (startDate, endDate) => {
 export const createDateObject = docs => {
   const dateObject = {};
   docs.forEach(doc => {
-    const a = doc.data();
+    const a = {
+      ...doc.data(),
+      bookingId: doc.id,
+    };
     if (dateObject[a.bookingDate]) {
       dateObject[a.bookingDate] = [...dateObject[a.bookingDate], a];
     } else {
@@ -26,6 +29,15 @@ export const createDateObject = docs => {
   });
   return dateObject;
 };
+
+export const getBookedSlots = (datesList, dateObject) =>
+  datesList.map(dateKey => {
+    const bookings = dateObject[dateKey] || [];
+    return {
+      date: dateKey,
+      bookings,
+    };
+  });
 
 export const getFreeSlots = (datesList, dateObject, timeSlots) =>
   datesList.map(dateKey => {

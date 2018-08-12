@@ -58,8 +58,8 @@ module.exports = {
         name: 'Chiswick Rehearsal Room',
         short_name: 'Chiswick Rehearsal Room',
         start_url: '/',
-        background_color: '#08AEEA',
-        theme_color: '#2AF598',
+        background_color: '#000000',
+        theme_color: '#ffffff',
         display: 'minimal-ui',
         icons: [
           {
