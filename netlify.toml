@@ -4,7 +4,3 @@
   command = "npm run build"
   publish = "public"
   functions = "lambda"
-
-[context.develop] # 'develop' is a branch name
-  GATSBY_VARIABLE = "value"
-  NODE_ENV = "staging"
