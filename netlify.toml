@@ -6,7 +6,5 @@
   functions = "lambda"
 
 [context.develop] # 'develop' is a branch name
-  VARIABLE = "value"
+  GATSBY_VARIABLE = "value"
   NODE_ENV = "staging"
-  # command = "echo 'develop'"
-#   NODE_ENV = "staging"
