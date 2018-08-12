@@ -4,3 +4,8 @@
   command = "npm run build"
   publish = "public"
   functions = "lambda"
+
+[context.develop] # 'develop' is a branch name
+  command = "echo 'develop'"
+  NODE_ENV = "staging"
+# For contexts of bran
