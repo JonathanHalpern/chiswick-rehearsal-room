@@ -24,8 +24,9 @@ const Layout = ({ children, data }) => (
     </Helmet>
     <Header>
       <NavBar
-        pageList={data.pageList.edges.map(edge => edge.node.frontmatter)}
-        // TODO: stop it selcting / in the underline
+        pageList={data.pageList.edges
+          .map(edge => edge.node.frontmatter)
+          .sort(page => page.title)}
       />
     </Header>
     <div>{children()}</div>
