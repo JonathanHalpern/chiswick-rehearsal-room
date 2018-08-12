@@ -16,8 +16,6 @@ let onChangeForm = () => {};
 
 const { API } = process.env;
 
-console.log(process.env);
-
 const isValid = state => {
   const {
     name,
