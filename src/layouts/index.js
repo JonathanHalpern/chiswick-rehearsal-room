@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import styled from 'styled-components';
+import { withPrefix } from 'gatsby-link';
 
 import NavBar from '../components/NavBar';
 
@@ -20,7 +21,23 @@ const Layout = ({ children, data }) => (
             'Chamber music practice studio with Bösendorfer grand piano in Chiswick, West London',
         },
       ]}>
-      <meta name="robots" content="noindex" />
+      <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href={withPrefix('/favicons/apple-touch-icon.png')}
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href={withPrefix('/favicons/favicon-32x32.png')}
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href={withPrefix('/favicons/favicon-16x16.png')}
+      />
     </Helmet>
     <Header>
       <NavBar
