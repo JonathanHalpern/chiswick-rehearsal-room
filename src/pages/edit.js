@@ -12,7 +12,7 @@ const StyledGoogleIcon = styled(GoogleIcon)`
 
 const EditPage = ({ data, history }) => (
   <PageWrapper
-    title="Calendar"
+    title="Edit"
     backgroundImage={data.bookingInfo.frontmatter.headerImage.childImageSharp}>
     <Auth>
       {auth => {
