@@ -102,9 +102,11 @@ class BookingContainer extends Component {
       email,
       phoneNumber,
       message,
-      bookingId,
+      bookingIds,
       bookingCreationTime,
     } = this.state;
+
+    const selectedSlots = [{ startTime, endTime, bookingDate }];
     fetch(`${API}/paypalProcess`, {
       method: 'post',
       body: JSON.stringify({
@@ -114,16 +116,17 @@ class BookingContainer extends Component {
         name,
         email,
         phoneNumber,
-        bookingDate,
-        startTime,
-        endTime,
+        // bookingDate,
+        // startTime,
+        // endTime,
         message,
         currency: 'GBP',
         method: 'PayPal',
         couponUsed: false,
         bookingAlertEmail,
-        bookingId,
+        bookingIds,
         bookingCreationTime,
+        selectedSlots,
       }),
     })
       .then(response => {
@@ -149,11 +152,11 @@ class BookingContainer extends Component {
   }
 
   onCancel() {
-    const { bookingId } = this.state;
+    const { bookingIds } = this.state;
     fetch(`${API}/paypalCancel`, {
       method: 'post',
       body: JSON.stringify({
-        bookingId,
+        bookingIds,
       }),
     });
     this.setState({
@@ -178,17 +181,20 @@ class BookingContainer extends Component {
       message,
       discountCode,
       paymentMethod,
+      // selectedSlots,
     } = this.state;
+    const selectedSlots = [{ startTime, endTime, bookingDate }];
     fetch(`${API}/couponBooking`, {
       method: 'post',
       body: JSON.stringify({
-        price: 0,
+        selectedSlots,
+        // price: 0,
         name,
         email,
         phoneNumber,
-        bookingDate,
-        startTime,
-        endTime,
+        // bookingDate,
+        // startTime,
+        // endTime,
         message,
         method: paymentMethod,
         discountCode,
@@ -258,13 +264,15 @@ class BookingContainer extends Component {
       phoneNumber,
       message,
     } = this.state;
+    const selectedSlots = [{ startTime, endTime, bookingDate }];
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
         method: 'post',
         body: JSON.stringify({
-          bookingDate,
-          startTime,
-          endTime,
+          // bookingDate,
+          // startTime,
+          // endTime,
+          selectedSlots,
           price,
           discountCode,
           name,
@@ -284,8 +292,9 @@ class BookingContainer extends Component {
           return response.json();
         })
         .then(response => {
+          console.log(response);
           this.setState({
-            bookingId: response.bookingId,
+            bookingIds: response.bookingIds,
             bookingCreationTime: response.bookingCreationTime,
           });
           resolve(response.payment.id);
