@@ -2,6 +2,8 @@ import React from 'react';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Button from '@material-ui/core/Button';
+
 import styled from 'styled-components';
 
 const Container = styled.div``;
@@ -11,7 +13,18 @@ const Header = styled.p`
 `;
 
 const SlotTitle = styled.p`
+  margin: 10px 0 0 0;
+`;
+
+const Slot = styled.p`
   margin: 0;
+  cursor: pointer;
+  padding: 0 9px;
+  border-radius: 14px;
+  display: table;
+  :hover {
+    background: #ffb8d1;
+  }
 `;
 
 const getTitlesFromSlots = timeSlots =>
@@ -35,7 +48,21 @@ const CalendarBooker = ({
       {getTitlesFromSlots(timeSlots).map(titleObject => (
         <div key={titleObject}>
           <SlotTitle>{titleObject}</SlotTitle>
-          <RadioGroup
+          {timeSlots
+            .filter(timeSlot => timeSlot.title === titleObject)
+            .map(timeSlot => {
+              index += 1;
+              return (
+                <Slot
+                  key={timeSlot.key}
+                  onClick={() => {
+                    onSlotSelect(timeSlot);
+                  }}>
+                  {timeSlot.startTime} to {timeSlot.endTime} - £{timeSlot.price}
+                </Slot>
+              );
+            })}
+          {/* <RadioGroup
             aria-label="TimeSlot"
             name="timeSlot"
             value={`${slotIndex}`}
@@ -58,7 +85,7 @@ const CalendarBooker = ({
                   />
                 );
               })}
-          </RadioGroup>
+          </RadioGroup> */}
         </div>
       ))}
     </Container>

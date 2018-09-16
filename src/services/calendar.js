@@ -39,6 +39,15 @@ export const getBookedSlots = (datesList, dateObject) =>
     };
   });
 
+export const addKeyToSlots = slotList =>
+  slotList.map(slotObject => ({
+    ...slotObject,
+    timeSlots: slotObject.timeSlots.map(timeSlot => ({
+      ...timeSlot,
+      key: `${slotObject.date}-${timeSlot.startTime}-${timeSlot.endTime}`,
+    })),
+  }));
+
 export const getFreeSlots = (datesList, dateObject, timeSlots) =>
   datesList.map(dateKey => {
     const bookings = dateObject[dateKey];

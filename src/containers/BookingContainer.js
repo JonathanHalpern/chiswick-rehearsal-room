@@ -6,6 +6,7 @@ import BookingDetails from '../components/BookingDetails';
 import CouponComponent from '../components/CouponComponent';
 import BookingConfirmed from '../components/BookingConfirmed';
 import TermsAndConditions from '../components/TermsAndConditions';
+import SelectedSlots from '../components/SelectedSlots';
 
 let paypal;
 if (typeof window !== 'undefined') {
@@ -25,14 +26,16 @@ const isValid = state => {
     startTime,
     endTime,
     hasAgreedTerms,
+    selectedSlots,
   } = state;
   const isValid =
     name &&
     email &&
     phoneNumber &&
     price &&
-    startTime &&
-    endTime &&
+    selectedSlots.length > 0 &&
+    // startTime &&
+    // endTime &&
     hasAgreedTerms;
   return isValid;
 };
@@ -64,6 +67,7 @@ class BookingContainer extends Component {
     this.onCouponPurchase = this.onCouponPurchase.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.onNewBooking = this.onNewBooking.bind(this);
+    this.onRemoveSlot = this.onRemoveSlot.bind(this);
     this.updateTermAgreement = this.updateTermAgreement.bind(this);
     this.state = {
       isProcessing: false,
@@ -81,6 +85,7 @@ class BookingContainer extends Component {
       paymentMethod: 'paypal',
       couponMessage: '',
       errorMessage: '',
+      selectedSlots: [],
     };
   }
 
@@ -104,9 +109,25 @@ class BookingContainer extends Component {
       message,
       bookingIds,
       bookingCreationTime,
+      selectedSlots,
     } = this.state;
 
-    const selectedSlots = [{ startTime, endTime, bookingDate }];
+    console.log(
+      data,
+      price,
+      bookingDate,
+      startTime,
+      endTime,
+      name,
+      email,
+      phoneNumber,
+      message,
+      bookingIds,
+      bookingCreationTime,
+      selectedSlots,
+    );
+
+    // const selectedSlots = [{ startTime, endTime, bookingDate }];
     fetch(`${API}/paypalProcess`, {
       method: 'post',
       body: JSON.stringify({
@@ -181,9 +202,10 @@ class BookingContainer extends Component {
       message,
       discountCode,
       paymentMethod,
-      // selectedSlots,
+      selectedSlots,
     } = this.state;
-    const selectedSlots = [{ startTime, endTime, bookingDate }];
+    console.log(selectedSlots);
+    // const selectedSlots = [{ startTime, endTime, bookingDate }];
     fetch(`${API}/couponBooking`, {
       method: 'post',
       body: JSON.stringify({
@@ -230,15 +252,37 @@ class BookingContainer extends Component {
   onNewBooking() {
     this.setState({
       isConfirmed: false,
+      selectedSlots: [],
     });
   }
 
-  onSlotSelect({ startTime, endTime, bookingDate, price }) {
+  onSlotSelect(selectedSlot) {
+    console.log(selectedSlot);
+    const { selectedSlots } = this.state;
+    // const newSlot = {
+    //   startTime,
+    //   endTime,
+    //   bookingDate,
+    //   price,
+    // };
+    // console.log(selectedSlots);
+    const newSelectedSlots = [...selectedSlots, selectedSlot];
     this.setState({
-      startTime,
-      endTime,
-      bookingDate,
-      price,
+      selectedSlots: newSelectedSlots,
+      price: newSelectedSlots.reduce((acc, p) => acc + p.price, 0),
+    });
+  }
+
+  onRemoveSlot(slotKey) {
+    console.log('remove', slotKey);
+    const { selectedSlots } = this.state;
+    const newSelectedSlots = selectedSlots.filter(
+      slots => slots.key !== slotKey,
+    );
+    // const newSelectedSlots = [...selectedSlots, selectedSlot];
+    this.setState({
+      selectedSlots: newSelectedSlots,
+      price: newSelectedSlots.reduce((acc, p) => acc + p.price, 0),
     });
   }
 
@@ -263,8 +307,10 @@ class BookingContainer extends Component {
       email,
       phoneNumber,
       message,
+      selectedSlots,
     } = this.state;
-    const selectedSlots = [{ startTime, endTime, bookingDate }];
+    console.warn(price);
+    // const selectedSlots = [{ startTime, endTime, bookingDate }];
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
         method: 'post',
@@ -342,6 +388,7 @@ class BookingContainer extends Component {
       errorMessage,
       couponMessage,
       hasAgreedTerms,
+      selectedSlots,
     } = this.state;
     return (
       <div>
@@ -353,6 +400,14 @@ class BookingContainer extends Component {
               timeSlots={timeSlots}
               maxDaysAhead={maxDaysAhead}
               isProcessing={isProcessing}
+              selectedSlots={selectedSlots}
+            />
+          )}
+          {selectedSlots.length > 0 && (
+            <SelectedSlots
+              slots={selectedSlots}
+              onRemoveSlot={this.onRemoveSlot}
+              totalPrice={price}
             />
           )}
           <BookingDetails
@@ -388,7 +443,15 @@ class BookingContainer extends Component {
             discountCode={discountCode}
             errorMessage={couponMessage}
             isProcessing={isProcessing}
-            isFormComplete={!!(name && email && phoneNumber && hasAgreedTerms)}
+            isFormComplete={
+              !!(
+                name &&
+                email &&
+                phoneNumber &&
+                hasAgreedTerms &&
+                selectedSlots.length > 0
+              )
+            }
             isVisible={paymentMethod === 'coupon'}
           />
         </Container>
