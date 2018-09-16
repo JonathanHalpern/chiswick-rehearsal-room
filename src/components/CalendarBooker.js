@@ -1,8 +1,4 @@
 import React from 'react';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Button from '@material-ui/core/Button';
 
 import styled from 'styled-components';
 
@@ -23,8 +19,9 @@ const Slot = styled.p`
   border-radius: 14px;
   display: table;
   :hover {
-    background: #ffb8d1;
+    background: ${({ disabled }) => (disabled ? '#f0f0f0' : '#ffb8d1')};
   }
+  background: ${({ disabled }) => (disabled ? '#f0f0f0' : 'none')};
 `;
 
 const getTitlesFromSlots = timeSlots =>
@@ -33,11 +30,9 @@ const getTitlesFromSlots = timeSlots =>
 const CalendarBooker = ({
   onSlotSelect,
   timeSlots,
-  slotIndex,
   className,
   isProcessing,
 }) => {
-  let index = -1;
   return (
     <Container className={className || ''}>
       <Header>
@@ -51,41 +46,19 @@ const CalendarBooker = ({
           {timeSlots
             .filter(timeSlot => timeSlot.title === titleObject)
             .map(timeSlot => {
-              index += 1;
               return (
                 <Slot
                   key={timeSlot.key}
+                  disabled={isProcessing}
                   onClick={() => {
-                    onSlotSelect(timeSlot);
+                    if (!isProcessing) {
+                      onSlotSelect(timeSlot);
+                    }
                   }}>
                   {timeSlot.startTime} to {timeSlot.endTime} - £{timeSlot.price}
                 </Slot>
               );
             })}
-          {/* <RadioGroup
-            aria-label="TimeSlot"
-            name="timeSlot"
-            value={`${slotIndex}`}
-            onChange={(event, index) => {
-              onSlotSelect(index);
-            }}>
-            {timeSlots
-              .filter(timeSlot => timeSlot.title === titleObject)
-              .map(timeSlot => {
-                index += 1;
-                return (
-                  <FormControlLabel
-                    key={`${timeSlot.title}-${timeSlot.startTime}`}
-                    value={`${index}`}
-                    control={<Radio />}
-                    disabled={isProcessing}
-                    label={`${timeSlot.startTime} to ${timeSlot.endTime} - £${
-                      timeSlot.price
-                    }`}
-                  />
-                );
-              })}
-          </RadioGroup> */}
         </div>
       ))}
     </Container>

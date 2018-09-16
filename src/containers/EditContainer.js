@@ -4,7 +4,6 @@ import moment from 'moment';
 import Calendar from 'react-calendar';
 import styled from 'styled-components';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
 
 import CalendarBooker from '../components/CalendarBooker';
 import BookedSlots from '../components/BookedSlots';
@@ -12,6 +11,7 @@ import {
   enumerateDaysBetweenDates,
   createDateObject,
   getFreeSlots,
+  addKeyToSlots,
   getBookedSlots,
 } from '../services/calendar';
 
@@ -98,7 +98,9 @@ class CalendarContainer extends Component {
       const { timeSlots } = this.props;
       const { date } = this.state;
       const dateObject = createDateObject(querySnapshot.docs);
-      const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
+      const updatedList = addKeyToSlots(
+        getFreeSlots(datesList, dateObject, timeSlots),
+      );
       const bookedList = getBookedSlots(datesList, dateObject, timeSlots);
 
       this.setNewDate({ date, updatedList, bookedList });
@@ -141,12 +143,11 @@ class CalendarContainer extends Component {
     });
   }
 
-  onCreateAdminBooking() {
+  onCreateAdminBooking(startTime, endTime, dateString) {
     this.setState({
       isProcessing: true,
       errorMessage: '',
     });
-    const { startTime, endTime, dateString } = this.state;
     this.getToken().then(token => {
       fetch(`${API}/adminBooking`, {
         method: 'post',
@@ -187,11 +188,10 @@ class CalendarContainer extends Component {
     this.setNewDate({ date, updatedList, bookedList });
   }
 
-  onSlotSelect(slotIndex) {
-    const { slotList } = this.state;
-    const slot = slotList[slotIndex];
-    const { startTime, endTime } = slot;
-    this.setState({ slotIndex, startTime, endTime });
+  onSlotSelect(selectedSlot) {
+    const { dateString } = this.state;
+    const { startTime, endTime } = selectedSlot;
+    this.onCreateAdminBooking(startTime, endTime, dateString);
   }
 
   get bookings() {
@@ -266,14 +266,6 @@ class CalendarContainer extends Component {
               </Container>
             )}
             {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-            {slotList.length > 0 && (
-              <Button
-                variant="raised"
-                onClick={this.onCreateAdminBooking}
-                disabled={isProcessing}>
-                {isProcessing ? 'Booking...' : 'Create booking'}
-              </Button>
-            )}
           </div>
         ) : (
           <p>This page is only for admins</p>

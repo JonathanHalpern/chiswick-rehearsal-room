@@ -46,7 +46,6 @@ class CalendarContainer extends Component {
     this.disableTile = this.disableTile.bind(this);
     this.onSlotSelect = this.onSlotSelect.bind(this);
     this.setNewDate = this.setNewDate.bind(this);
-    // this.selectSlot = this.selectSlot.bind(this);
   }
 
   componentDidMount() {
@@ -68,16 +67,6 @@ class CalendarContainer extends Component {
 
       this.createFreeSlots(datesList, dateObject);
 
-      // console.log(dateObject);
-      // const updatedList = addKeyToSlots(
-      //   getFreeSlots(datesList, dateObject, timeSlots),
-      // );
-      // console.log(updatedList);
-      //
-      // const fullyBookedDayStrings = getFullyBookedDays(updatedList);
-      //
-      // this.setNewDate({ date, updatedList });
-      //
       this.setState({
         datesList,
         dateObject,
@@ -91,13 +80,11 @@ class CalendarContainer extends Component {
     if (selectedSlots.length !== nextProps.selectedSlots.length) {
       const newDateObject = { ...dateObject };
       nextProps.selectedSlots.forEach(slot => {
-        console.log(slot);
         newDateObject[slot.bookingDate] = [
           ...(newDateObject[slot.bookingDate] || []),
           slot,
         ];
       });
-      console.log(dateObject, newDateObject);
       this.createFreeSlots(datesList, newDateObject);
     }
   }
@@ -115,17 +102,6 @@ class CalendarContainer extends Component {
       bookingDate: dateString,
     });
   }
-
-  // onSlotSelect(slotIndex) {
-  //   this.setState({ slotIndex });
-  //   const { dateString, slotList } = this.state;
-  //   const { onSlotSelect } = this.props;
-  //   const slot = slotList[slotIndex];
-  //   onSlotSelect({
-  //     ...slot,
-  //     bookingDate: dateString,
-  //   });
-  // }
 
   get bookings() {
     const { firebase } = this.context;
@@ -145,11 +121,9 @@ class CalendarContainer extends Component {
   createFreeSlots(datesList, dateObject) {
     const { timeSlots } = this.props;
     const { date } = this.state;
-    console.log(dateObject);
     const updatedList = addKeyToSlots(
       getFreeSlots(datesList, dateObject, timeSlots),
     );
-    console.log(updatedList);
 
     const fullyBookedDayStrings = getFullyBookedDays(updatedList);
 
@@ -161,14 +135,6 @@ class CalendarContainer extends Component {
       fullyBookedDayStrings,
     });
   }
-  // selectSlot(slotIndex, dateString, slotList) {
-  //   const { onSlotSelect } = this.props;
-  //   const slot = slotList[slotIndex];
-  //   onSlotSelect({
-  //     ...slot,
-  //     bookingDate: dateString,
-  //   });
-  // }
 
   disableTile({ date }) {
     const momentDate = moment(date);

@@ -23,8 +23,6 @@ const isValid = state => {
     email,
     phoneNumber,
     price,
-    startTime,
-    endTime,
     hasAgreedTerms,
     selectedSlots,
   } = state;
@@ -34,8 +32,6 @@ const isValid = state => {
     phoneNumber &&
     price &&
     selectedSlots.length > 0 &&
-    // startTime &&
-    // endTime &&
     hasAgreedTerms;
   return isValid;
 };
@@ -72,9 +68,6 @@ class BookingContainer extends Component {
     this.state = {
       isProcessing: false,
       isConfirmed: false,
-      bookingDate: '',
-      startTime: '',
-      endTime: '',
       price: '',
       name: '',
       email: '',
@@ -100,9 +93,6 @@ class BookingContainer extends Component {
     const { bookingAlertEmail } = this.props;
     const {
       price,
-      bookingDate,
-      startTime,
-      endTime,
       name,
       email,
       phoneNumber,
@@ -112,22 +102,6 @@ class BookingContainer extends Component {
       selectedSlots,
     } = this.state;
 
-    console.log(
-      data,
-      price,
-      bookingDate,
-      startTime,
-      endTime,
-      name,
-      email,
-      phoneNumber,
-      message,
-      bookingIds,
-      bookingCreationTime,
-      selectedSlots,
-    );
-
-    // const selectedSlots = [{ startTime, endTime, bookingDate }];
     fetch(`${API}/paypalProcess`, {
       method: 'post',
       body: JSON.stringify({
@@ -137,9 +111,6 @@ class BookingContainer extends Component {
         name,
         email,
         phoneNumber,
-        // bookingDate,
-        // startTime,
-        // endTime,
         message,
         currency: 'GBP',
         method: 'PayPal',
@@ -193,30 +164,21 @@ class BookingContainer extends Component {
       couponMessage: '',
     });
     const {
-      startTime,
-      endTime,
       name,
       email,
       phoneNumber,
-      bookingDate,
       message,
       discountCode,
       paymentMethod,
       selectedSlots,
     } = this.state;
-    console.log(selectedSlots);
-    // const selectedSlots = [{ startTime, endTime, bookingDate }];
     fetch(`${API}/couponBooking`, {
       method: 'post',
       body: JSON.stringify({
         selectedSlots,
-        // price: 0,
         name,
         email,
         phoneNumber,
-        // bookingDate,
-        // startTime,
-        // endTime,
         message,
         method: paymentMethod,
         discountCode,
@@ -257,15 +219,7 @@ class BookingContainer extends Component {
   }
 
   onSlotSelect(selectedSlot) {
-    console.log(selectedSlot);
     const { selectedSlots } = this.state;
-    // const newSlot = {
-    //   startTime,
-    //   endTime,
-    //   bookingDate,
-    //   price,
-    // };
-    // console.log(selectedSlots);
     const newSelectedSlots = [...selectedSlots, selectedSlot];
     this.setState({
       selectedSlots: newSelectedSlots,
@@ -274,12 +228,8 @@ class BookingContainer extends Component {
   }
 
   onRemoveSlot(slotKey) {
-    console.log('remove', slotKey);
     const { selectedSlots } = this.state;
-    const newSelectedSlots = selectedSlots.filter(
-      slots => slots.key !== slotKey,
-    );
-    // const newSelectedSlots = [...selectedSlots, selectedSlot];
+    const newSelectedSlots = selectedSlots.filter(slot => slot.key !== slotKey);
     this.setState({
       selectedSlots: newSelectedSlots,
       price: newSelectedSlots.reduce((acc, p) => acc + p.price, 0),
@@ -298,9 +248,6 @@ class BookingContainer extends Component {
     });
     const { bookingAlertEmail } = this.props;
     const {
-      bookingDate,
-      startTime,
-      endTime,
       price,
       discountCode,
       name,
@@ -309,15 +256,10 @@ class BookingContainer extends Component {
       message,
       selectedSlots,
     } = this.state;
-    console.warn(price);
-    // const selectedSlots = [{ startTime, endTime, bookingDate }];
     return new paypal.Promise((resolve, reject) => {
       fetch(`${API}/paypalPayment`, {
         method: 'post',
         body: JSON.stringify({
-          // bookingDate,
-          // startTime,
-          // endTime,
           selectedSlots,
           price,
           discountCode,
@@ -338,7 +280,6 @@ class BookingContainer extends Component {
           return response.json();
         })
         .then(response => {
-          console.log(response);
           this.setState({
             bookingIds: response.bookingIds,
             bookingCreationTime: response.bookingCreationTime,
@@ -403,13 +344,12 @@ class BookingContainer extends Component {
               selectedSlots={selectedSlots}
             />
           )}
-          {selectedSlots.length > 0 && (
-            <SelectedSlots
-              slots={selectedSlots}
-              onRemoveSlot={this.onRemoveSlot}
-              totalPrice={price}
-            />
-          )}
+          <SelectedSlots
+            slots={selectedSlots}
+            onRemoveSlot={this.onRemoveSlot}
+            totalPrice={price}
+            isProcessing={isProcessing}
+          />
           <BookingDetails
             name={name}
             email={email}
@@ -433,7 +373,6 @@ class BookingContainer extends Component {
             onAuthorize={this.onAuthorize}
             onCancel={this.onCancel}
             purchase={price}
-            isReadyToBook={name && email}
             validate={this.validate}
             isVisible={paymentMethod === 'paypal'}
           />

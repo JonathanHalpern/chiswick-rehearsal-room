@@ -34,6 +34,7 @@
     "npm": "^6.1.0",
     "paypal-checkout": "^4.0.209",
     "paypal-rest-sdk": "^1.8.1",
+    "react-addons-css-transition-group": "^15.6.2",
     "react-calendar": "^2.16.1",
     "react-dates": "^17.1.1",
     "react-firebase-file-uploader": "^2.4.1",
