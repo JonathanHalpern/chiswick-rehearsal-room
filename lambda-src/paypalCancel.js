@@ -1,4 +1,4 @@
-import { deleteTempBooking } from './firebase';
+import { deleteTempBookings } from './firebase';
 
 export function handler(event, context, callback) {
   if (event.httpMethod !== 'POST' || !event.body) {
@@ -11,9 +11,9 @@ export function handler(event, context, callback) {
   }
 
   const data = event.body;
-  const { bookingId } = JSON.parse(data);
+  const { bookingIds } = JSON.parse(data);
 
-  console.log('cancel', bookingId);
+  console.log('cancel', bookingIds);
 
-  deleteTempBooking({ bookingId });
+  deleteTempBookings({ bookingIds });
 }

@@ -1,16 +1,19 @@
-import { createBooking } from './firebase';
+import { createBookings } from './firebase';
 import { sendBookingAlertMail, sendConfirmationMail } from './email';
 
 require('dotenv').config();
 
 export function handler(event, context, callback) {
   const data = event.body;
-  const { discountCode, bookingAlertEmail, ...bookingObject } = JSON.parse(
-    data,
-  );
-  const { name, email, bookingDate, startTime, endTime } = bookingObject;
-  console.log(bookingObject);
-  if (!(name && email && bookingDate && startTime && endTime)) {
+  const {
+    discountCode,
+    bookingAlertEmail,
+    selectedSlots,
+    ...bookingInfo
+  } = JSON.parse(data);
+  const { name, email, phoneNumber } = bookingInfo;
+  console.log(bookingInfo);
+  if (!(name && email)) {
     callback(null, {
       statusCode: 403,
       body: JSON.stringify({
@@ -27,11 +30,16 @@ export function handler(event, context, callback) {
       }),
     });
   } else {
-    createBooking({ ...bookingObject, isConfirmed: true })
+    createBookings({ selectedSlots, ...bookingInfo, isConfirmed: true })
       .then(() => {
-        console.log('booking created');
-        sendBookingAlertMail({ ...bookingObject, bookingAlertEmail });
-        sendConfirmationMail(bookingObject)
+        sendBookingAlertMail({
+          name,
+          email,
+          phoneNumber,
+          selectedSlots,
+          bookingAlertEmail,
+        });
+        sendConfirmationMail({ name, email, selectedSlots })
           .then(response => {
             console.log('mail sent');
             callback(null, {

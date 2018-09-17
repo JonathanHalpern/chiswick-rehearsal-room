@@ -9,6 +9,7 @@ import {
   createDateObject,
   getFreeSlots,
   getFullyBookedDays,
+  addKeyToSlots,
 } from '../services/calendar';
 
 const Container = styled.div`
@@ -45,7 +46,6 @@ class CalendarContainer extends Component {
     this.disableTile = this.disableTile.bind(this);
     this.onSlotSelect = this.onSlotSelect.bind(this);
     this.setNewDate = this.setNewDate.bind(this);
-    this.selectSlot = this.selectSlot.bind(this);
   }
 
   componentDidMount() {
@@ -63,22 +63,30 @@ class CalendarContainer extends Component {
     );
 
     this.bookings.onSnapshot(querySnapshot => {
-      const { timeSlots } = this.props;
-      const { date } = this.state;
       const dateObject = createDateObject(querySnapshot.docs);
 
-      const updatedList = getFreeSlots(datesList, dateObject, timeSlots);
-
-      const fullyBookedDayStrings = getFullyBookedDays(updatedList);
-
-      this.setNewDate({ date, updatedList });
+      this.createFreeSlots(datesList, dateObject);
 
       this.setState({
-        loading: false,
-        updatedList,
-        fullyBookedDayStrings,
+        datesList,
+        dateObject,
       });
     });
+  }
+
+  componentWillUpdate(nextProps) {
+    const { selectedSlots } = this.props;
+    const { datesList, dateObject } = this.state;
+    if (selectedSlots.length !== nextProps.selectedSlots.length) {
+      const newDateObject = { ...dateObject };
+      nextProps.selectedSlots.forEach(slot => {
+        newDateObject[slot.bookingDate] = [
+          ...(newDateObject[slot.bookingDate] || []),
+          slot,
+        ];
+      });
+      this.createFreeSlots(datesList, newDateObject);
+    }
   }
 
   onDateChange(date) {
@@ -86,11 +94,9 @@ class CalendarContainer extends Component {
     this.setNewDate({ date, updatedList });
   }
 
-  onSlotSelect(slotIndex) {
-    this.setState({ slotIndex });
-    const { dateString, slotList } = this.state;
+  onSlotSelect(slot) {
+    const { dateString } = this.state;
     const { onSlotSelect } = this.props;
-    const slot = slotList[slotIndex];
     onSlotSelect({
       ...slot,
       bookingDate: dateString,
@@ -112,12 +118,21 @@ class CalendarContainer extends Component {
     this.setState({ date, dateString, slotList, slotIndex });
   }
 
-  selectSlot(slotIndex, dateString, slotList) {
-    const { onSlotSelect } = this.props;
-    const slot = slotList[slotIndex];
-    onSlotSelect({
-      ...slot,
-      bookingDate: dateString,
+  createFreeSlots(datesList, dateObject) {
+    const { timeSlots } = this.props;
+    const { date } = this.state;
+    const updatedList = addKeyToSlots(
+      getFreeSlots(datesList, dateObject, timeSlots),
+    );
+
+    const fullyBookedDayStrings = getFullyBookedDays(updatedList);
+
+    this.setNewDate({ date, updatedList });
+
+    this.setState({
+      loading: false,
+      updatedList,
+      fullyBookedDayStrings,
     });
   }
 

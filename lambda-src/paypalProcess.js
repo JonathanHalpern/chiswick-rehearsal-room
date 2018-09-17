@@ -1,4 +1,4 @@
-import { deleteTempBooking, confirmBooking } from './firebase';
+import { deleteTempBookings, confirmBookings } from './firebase';
 import { sendBookingAlertMail, sendConfirmationMail } from './email';
 import { executePayment } from './paypal';
 import { checkIfBookingIsInTime } from './utils';
@@ -19,12 +19,12 @@ export function handler(event, context, callback) {
     payerID,
     price,
     bookingAlertEmail,
-    bookingId,
+    bookingIds,
     bookingCreationTime,
     ...bookingDetails
   } = JSON.parse(data);
 
-  console.info('id', bookingId, bookingCreationTime);
+  console.info('id', bookingIds, bookingCreationTime);
 
   const executePaymentJson = {
     payer_id: payerID,
@@ -42,7 +42,7 @@ export function handler(event, context, callback) {
     executePayment(paymentID, executePaymentJson, (error, payment) => {
       if (error) {
         console.warn('execute payment failed');
-        deleteTempBooking({ bookingId });
+        deleteTempBookings({ bookingIds });
         callback(null, {
           statusCode: 404,
           body: JSON.stringify(error),
@@ -53,7 +53,7 @@ export function handler(event, context, callback) {
           payment.transactions[0].description,
         );
 
-        confirmBooking({ bookingId }).then(() => {
+        confirmBookings({ bookingIds }).then(() => {
           const bookingObject = {
             ...bookingDetails,
             price,
@@ -81,7 +81,7 @@ export function handler(event, context, callback) {
         });
       } else {
         console.warn('payment.state: not approved');
-        deleteTempBooking({ bookingId });
+        deleteTempBookings({ bookingIds });
         callback(null, {
           statusCode: 404,
           body: JSON.stringify({
@@ -92,7 +92,7 @@ export function handler(event, context, callback) {
     });
   } else {
     console.warn('too slow, closing');
-    deleteTempBooking({ bookingId });
+    deleteTempBookings({ bookingIds });
     callback(null, {
       statusCode: 404,
       body: JSON.stringify({

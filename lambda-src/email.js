@@ -6,11 +6,17 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const sendMail = mailOptions => sgMail.send(mailOptions);
 
+const selectedSlotsTempate = selectedSlots =>
+  selectedSlots
+    .map(
+      slot =>
+        `<p>${slot.startTime} to ${slot.endTime} on ${slot.bookingDate}</p>`,
+    )
+    .join('');
+
 export const bookingAlertEmailTemplate = ({
   name,
-  startTime,
-  endTime,
-  bookingDate,
+  selectedSlots,
   email,
   phoneNumber,
   bookingAlertEmail,
@@ -22,20 +28,14 @@ export const bookingAlertEmailTemplate = ({
   html: `
   <div>
     <p>You have received a new booking from ${name}</p>
-    <p>${startTime} to ${endTime} on ${bookingDate}</p>
+    ${selectedSlotsTempate(selectedSlots)}
     <p>If you need to contact them their details are:</p>
     <p>Email: ${email}</p>
     ${phoneNumber && `<p>Phone Number: ${phoneNumber}</p>`}
 </div>`,
 });
 
-export const confirmationEmailTemplate = ({
-  name,
-  startTime,
-  endTime,
-  bookingDate,
-  email,
-}) => ({
+export const confirmationEmailTemplate = ({ name, selectedSlots, email }) => ({
   from: 'no-reply@chiswickrehearsalroom.com',
   to: email,
   subject: `Booking Confirmation for Chiswick Rehearsal Room`,
@@ -44,7 +44,7 @@ export const confirmationEmailTemplate = ({
   <div>
     <p>Hello ${name},</p>
     <p>Your booking details are:</p>
-    <p>${startTime} to ${endTime} on ${bookingDate}</p>
+    ${selectedSlotsTempate(selectedSlots)}
     <p>Please get in touch if you have any questions</p>
     <p>Regards, Louise</p>
 </div>`,

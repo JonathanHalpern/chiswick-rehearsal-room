@@ -7,17 +7,17 @@ const instance = axios.create({
   headers: { key: process.env.FIREBASE_FUNCTIONS_KEY },
 });
 
-export const createBooking = bookingObject =>
-  instance.post('/createNewBooking', bookingObject);
+export const createBookings = bookingObject =>
+  instance.post('/createNewBookings', bookingObject);
+
+export const deleteTempBookings = bookingIds =>
+  instance.post('/deleteTempBookings', bookingIds);
+
+export const confirmBookings = bookingIds =>
+  instance.post('/confirmTempBookings', bookingIds);
 
 export const createAdminBooking = bookingObject =>
   instance.post('/createAdminBooking', bookingObject);
 
 export const editAdminBooking = bookingObject =>
   instance.post('/editAdminBooking', bookingObject);
-
-export const deleteTempBooking = bookingId =>
-  instance.post('/deleteTempBooking', bookingId);
-
-export const confirmBooking = bookingId =>
-  instance.post('/confirmTempBooking', bookingId);

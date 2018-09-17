@@ -1,5 +1,12 @@
-import { createBooking, deleteTempBooking } from './firebase';
+import { createBookings, deleteTempBookings } from './firebase';
 import { createProfile, createPayment } from './paypal';
+
+const getMinTime = data => {
+  return data.reduce(
+    (min, p) => (p.bookingCreationTime < min ? p.bookingCreationTime : min),
+    data[0].bookingCreationTime,
+  );
+};
 
 export function handler(event, context, callback) {
   if (event.httpMethod !== 'POST' || !event.body) {
@@ -13,18 +20,25 @@ export function handler(event, context, callback) {
   }
 
   const data = event.body;
-  const { price, bookingAlertEmail, ...otherDetails } = JSON.parse(data);
+  const {
+    price,
+    bookingAlertEmail,
+    selectedSlots,
+    ...otherDetails
+  } = JSON.parse(data);
 
   const bookingObject = {
     ...otherDetails,
+    selectedSlots,
     price,
     isConfirmed: false,
   };
 
-  createBooking(bookingObject)
+  createBookings(bookingObject)
     .then(response => {
-      const { bookingId, bookingCreationTime } = response.data;
-      console.log(bookingId, bookingCreationTime, price);
+      const bookingCreationTime = getMinTime(response.data);
+      const bookingIds = response.data.map(detail => detail.bookingId);
+      console.log(bookingIds, bookingCreationTime, price);
       const createPaymentJson = {
         intent: 'sale',
         payer: {
@@ -61,19 +75,18 @@ export function handler(event, context, callback) {
         if (error) {
           console.log('create profile failed');
           console.log(error);
-          deleteTempBooking({ bookingId });
+          deleteTempBookings({ bookingIds });
           callback(null, {
             statusCode: 404,
             body: JSON.stringify(error),
           });
         } else {
           createPaymentJson.experience_profile_id = webProfile.id;
-          // console.log(createPaymentJson);
           createPayment(createPaymentJson, (error, payment) => {
             console.log(createPaymentJson);
             if (error) {
               console.log('create payment failed');
-              deleteTempBooking({ bookingId });
+              deleteTempBookings({ bookingIds });
               callback(null, {
                 statusCode: 404,
                 body: JSON.stringify(error),
@@ -84,7 +97,7 @@ export function handler(event, context, callback) {
                 statusCode: 200,
                 body: JSON.stringify({
                   payment,
-                  bookingId,
+                  bookingIds,
                   bookingCreationTime,
                 }),
               });

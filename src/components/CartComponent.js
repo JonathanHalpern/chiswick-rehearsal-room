@@ -12,7 +12,6 @@ const CartComponent = ({
   payment,
   onAuthorize,
   onCancel,
-  purchase,
   validate,
   className,
 }) => {

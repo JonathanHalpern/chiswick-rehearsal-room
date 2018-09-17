@@ -1,7 +1,5 @@
 import React from 'react';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+
 import styled from 'styled-components';
 
 const Container = styled.div``;
@@ -11,7 +9,19 @@ const Header = styled.p`
 `;
 
 const SlotTitle = styled.p`
+  margin: 10px 0 0 0;
+`;
+
+const Slot = styled.p`
   margin: 0;
+  cursor: pointer;
+  padding: 0 9px;
+  border-radius: 14px;
+  display: table;
+  :hover {
+    background: ${({ disabled }) => (disabled ? '#f0f0f0' : '#ffb8d1')};
+  }
+  background: ${({ disabled }) => (disabled ? '#f0f0f0' : 'none')};
 `;
 
 const getTitlesFromSlots = timeSlots =>
@@ -20,11 +30,9 @@ const getTitlesFromSlots = timeSlots =>
 const CalendarBooker = ({
   onSlotSelect,
   timeSlots,
-  slotIndex,
   className,
   isProcessing,
 }) => {
-  let index = -1;
   return (
     <Container className={className || ''}>
       <Header>
@@ -35,30 +43,22 @@ const CalendarBooker = ({
       {getTitlesFromSlots(timeSlots).map(titleObject => (
         <div key={titleObject}>
           <SlotTitle>{titleObject}</SlotTitle>
-          <RadioGroup
-            aria-label="TimeSlot"
-            name="timeSlot"
-            value={`${slotIndex}`}
-            onChange={(event, index) => {
-              onSlotSelect(index);
-            }}>
-            {timeSlots
-              .filter(timeSlot => timeSlot.title === titleObject)
-              .map(timeSlot => {
-                index += 1;
-                return (
-                  <FormControlLabel
-                    key={`${timeSlot.title}-${timeSlot.startTime}`}
-                    value={`${index}`}
-                    control={<Radio />}
-                    disabled={isProcessing}
-                    label={`${timeSlot.startTime} to ${timeSlot.endTime} - £${
-                      timeSlot.price
-                    }`}
-                  />
-                );
-              })}
-          </RadioGroup>
+          {timeSlots
+            .filter(timeSlot => timeSlot.title === titleObject)
+            .map(timeSlot => {
+              return (
+                <Slot
+                  key={timeSlot.key}
+                  disabled={isProcessing}
+                  onClick={() => {
+                    if (!isProcessing) {
+                      onSlotSelect(timeSlot);
+                    }
+                  }}>
+                  {timeSlot.startTime} to {timeSlot.endTime} - £{timeSlot.price}
+                </Slot>
+              );
+            })}
         </div>
       ))}
     </Container>
