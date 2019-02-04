@@ -5,7 +5,7 @@ title: Book the room
 navOrder: 2
 headerImage: ../../../static/img/piano-keys.jpg
 bookingAlertEmail: louisenaomikaye@gmail.com
-maxDaysAhead: 60
+maxDaysAhead: 90
 timeSlots:
   - endTime: '18:00'
     price: 90
