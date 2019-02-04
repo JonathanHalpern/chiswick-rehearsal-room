@@ -31,7 +31,7 @@
     "http-proxy-middleware": "^0.18.0",
     "moment": "^2.22.2",
     "netlify-cms": "^1.7.0",
-    "npm": "^6.1.0",
+    "npm": "^6.4.1",
     "paypal-checkout": "^4.0.209",
     "paypal-rest-sdk": "^1.8.1",
     "react-addons-css-transition-group": "^15.6.2",
@@ -44,8 +44,10 @@
     "react-sortable-hoc": "^0.8.3",
     "recompose": "^0.27.1",
     "styled-components": "^3.3.3",
+    "to": "^0.2.9",
     "typography": "^0.16.17",
-    "typography-theme-ocean-beach": "^0.15.11"
+    "typography-theme-ocean-beach": "^0.15.11",
+    "update": "^0.7.4"
   },
   "keywords": [
     "gatsby"
