@@ -15,26 +15,33 @@ if (typeof window !== 'undefined') {
 
 let onChangeForm = () => {};
 
-const { API } = process.env;
+const isValid = ({
+  name,
+  email,
+  phoneNumber,
+  price,
+  selectedSlots,
+  hasAgreedTerms,
+}) =>
+  name &&
+  email &&
+  phoneNumber &&
+  price &&
+  selectedSlots.length > 0 &&
+  hasAgreedTerms;
 
-const isValid = state => {
-  const {
-    name,
-    email,
-    phoneNumber,
-    price,
-    hasAgreedTerms,
-    selectedSlots,
-  } = state;
-  const isValid =
-    !!name &&
-    !!email &&
-    !!phoneNumber &&
-    !!price &&
-    !!selectedSlots.length > 0 &&
-    !!hasAgreedTerms;
-  return isValid;
+const validate = actions => {
+  // necessary because the paypal button creates an iFrame so we cannot get a ref to it
+  onChangeForm = nextState => {
+    if (isValid(nextState)) {
+      actions.enable();
+    } else {
+      actions.disable();
+    }
+  };
 };
+
+const { API } = process.env;
 
 const StyledCartComponent = styled(CartComponent)`
   display: ${({ isVisible }) => (isVisible ? 'initial' : 'none')};
@@ -59,7 +66,6 @@ class BookingContainer extends Component {
     this.onAuthorize = this.onAuthorize.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onSlotSelect = this.onSlotSelect.bind(this);
-    this.validate = this.validate.bind(this);
     this.onCouponPurchase = this.onCouponPurchase.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.onNewBooking = this.onNewBooking.bind(this);
@@ -305,15 +311,6 @@ class BookingContainer extends Component {
     });
   }
 
-  validate(actions) {
-    // necessary because the paypal button creates an iFrame so we cannot get a ref to it
-    const initialState = this.state;
-    isValid(initialState) ? actions.enable() : actions.disable();
-    onChangeForm = nextState => {
-      isValid(nextState) ? actions.enable() : actions.disable();
-    };
-  }
-
   render() {
     const { timeSlots, maxDaysAhead, termsAndCondtionsHTML } = this.props;
     const {
@@ -373,7 +370,7 @@ class BookingContainer extends Component {
             onAuthorize={this.onAuthorize}
             onCancel={this.onCancel}
             purchase={price}
-            validate={this.validate}
+            validate={validate}
             isVisible={paymentMethod === 'paypal'}
           />
           <StyledCouponComponent
