@@ -27,12 +27,12 @@ const isValid = state => {
     selectedSlots,
   } = state;
   const isValid =
-    name &&
-    email &&
-    phoneNumber &&
-    price &&
-    selectedSlots.length > 0 &&
-    hasAgreedTerms;
+    !!name &&
+    !!email &&
+    !!phoneNumber &&
+    !!price &&
+    !!selectedSlots.length > 0 &&
+    !!hasAgreedTerms;
   return isValid;
 };
 
