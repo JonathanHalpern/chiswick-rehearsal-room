@@ -2,13 +2,12 @@
 templateKey: about-page
 path: /
 title: About
-headerImage: ../../../static/img/violin-head.jpg
 navOrder: 1
+headerImage: ../../../static/img/violin-head.jpg
 ---
-
 ## The Chiswick Rehearsal Room is for use exclusively by chamber musicians
 
-![](/img/bosendorfer.jpg)
+![null](/img/tutti_0031.jpg)
 
 Very spacious at 12 x 5 meters, the room can comfortably accommodate an octet.
 
