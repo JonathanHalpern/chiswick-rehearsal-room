@@ -6,6 +6,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const sendMail = mailOptions => sgMail.send(mailOptions);
 
+const hardCodedAlertEmail = 'jonnyhalpern@gmail.com';
+
 const selectedSlotsTempate = selectedSlots =>
   selectedSlots
     .map(
@@ -19,10 +21,9 @@ export const bookingAlertEmailTemplate = ({
   selectedSlots,
   email,
   phoneNumber,
-  bookingAlertEmail,
 }) => ({
   from: 'no-reply@chiswickrehearsalroom.com',
-  to: bookingAlertEmail,
+  to: hardCodedAlertEmail,
   subject: `Someone booked the room`,
   text: 'Plaintext version of the message',
   html: `
