@@ -6,7 +6,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const sendMail = mailOptions => sgMail.send(mailOptions);
 
-const hardCodedAlertEmail = 'jonnyhalpern@gmail.com';
+const hardCodedAlertEmail = 'louisenaomikaye@gmail.com';
 
 const selectedSlotsTempate = selectedSlots =>
   selectedSlots
