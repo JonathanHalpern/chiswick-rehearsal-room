@@ -4,7 +4,7 @@ path: /book
 title: Book the room
 navOrder: 2
 headerImage: ../../../static/img/piano-keys.jpg
-bookingAlertEmail: jonnyhalpern@gmail.com
+bookingAlertEmail: louisenaomikaye@gmail.com
 maxDaysAhead: 90
 timeSlots:
   - endTime: '18:00'
@@ -36,6 +36,7 @@ timeSlots:
     startTime: '16:00'
     title: Two hours
 ---
+
 ## BOOKINGS
 
 A booking is only confirmed once it is paid for.
