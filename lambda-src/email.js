@@ -52,7 +52,9 @@ export const confirmationEmailTemplate = ({ name, selectedSlots, email }) => ({
 });
 
 export const sendBookingAlertMail = details => {
+  console.log('sending booking alert');
   const mailOptions = bookingAlertEmailTemplate(details);
+  console.log(mailOptions);
   return sendMail(mailOptions);
 };
 

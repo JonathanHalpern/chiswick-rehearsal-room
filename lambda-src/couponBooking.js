@@ -32,6 +32,7 @@ export function handler(event, context, callback) {
   } else {
     createBookings({ selectedSlots, ...bookingInfo, isConfirmed: true })
       .then(() => {
+        console.log('sending emails');
         sendBookingAlertMail({
           name,
           email,
