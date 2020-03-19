@@ -1,5 +1,6 @@
 import React from 'react';
 import PageWrapper from '../containers/PageWrapper';
+import Covid from '../components/Covid';
 
 export default ({ data }) => (
   <PageWrapper
@@ -7,7 +8,8 @@ export default ({ data }) => (
     backgroundImage={
       data.markdownRemark.frontmatter.headerImage.childImageSharp
     }>
-    <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} />
+    <Covid />
+    {/* <div dangerouslySetInnerHTML={{ __html: data.markdownRemark.html }} /> */}
   </PageWrapper>
 );
 
