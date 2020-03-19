@@ -33,7 +33,7 @@
     "moment": "^2.22.2",
     "netlify-cli": "^2.15.0",
     "netlify-cms": "^1.7.0",
-    "npm": "^6.4.1",
+    "npm": "^6.13.4",
     "paypal-checkout": "^4.0.209",
     "paypal-rest-sdk": "^1.8.1",
     "react-addons-css-transition-group": "^15.6.2",
