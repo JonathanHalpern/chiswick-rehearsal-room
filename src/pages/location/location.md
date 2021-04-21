@@ -5,12 +5,10 @@ title: How to find us
 navOrder: 3
 headerImage: ../../../static/img/violin.jpg
 mapLocations:
-  - address: 'Maggie and Rose Nursery, 1 Essex Place Square, London W4 5UJ'
-    legend: Collect the keys here
   - address: >-
       The Chiswick Rehearsal Room, Ground Floor, Wellington Place, Dolman
       Road,     London W4 5PS
-    legend: The rehearsal room
+    legend: Address
 defaultZoom: 18
 ---
 The rehearsal room is on the ground floor at Wellington place. Use this map, as Google Maps does not show the right location.
