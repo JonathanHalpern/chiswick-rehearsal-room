@@ -6,12 +6,15 @@ import FirebaseProvider from './src/containers/FirebaseProvider';
 
 import firebase from './src/services/firebase';
 
-exports.replaceRouterComponent = ({ history }) => {
-  const ConnectedRouterWrapper = ({ children }) => (
-    <FirebaseProvider firebase={firebase}>
-      <Router history={history}>{children}</Router>
-    </FirebaseProvider>
-  );
 
-  return ConnectedRouterWrapper;
-};
+// TODO restore this https://www.gatsbyjs.com/docs/reference/release-notes/migrating-from-v1-to-v2/#browser-api-replaceroutercomponent-was-removed
+
+// export const replaceRouterComponent = ({ history }) => {
+//   const ConnectedRouterWrapper = ({ children }) => (
+//     <FirebaseProvider firebase={firebase}>
+//       <Router history={history}>{children}</Router>
+//     </FirebaseProvider>
+//   );
+
+//   return ConnectedRouterWrapper;
+// };

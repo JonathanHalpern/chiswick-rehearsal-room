@@ -1,8 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import { withPrefix } from 'gatsby-link';
+import { StaticQuery, graphql } from 'gatsby'
 
 import NavBar from '../components/NavBar';
 
@@ -10,8 +10,11 @@ const Header = styled.div`
   position: relative;
 `;
 
-const Layout = ({ children, data }) => (
-  <div>
+const Layout = ({ children }) => (
+  <StaticQuery
+  query={query}
+  render={data =>  (
+    <div>
     <Helmet
       title={data.site.siteMetadata.title}
       meta={[
@@ -46,13 +49,11 @@ const Layout = ({ children, data }) => (
           .sort((a, b) => a.navOrder - b.navOrder)}
       />
     </Header>
-    <div>{children()}</div>
+    <div>{children}</div>
   </div>
+  )}
+/>
 );
-
-Layout.propTypes = {
-  children: PropTypes.func,
-};
 
 export default Layout;
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import Img from 'gatsby-image';
 import styled from 'styled-components';
+import Layout from '../layouts';
 
 const Wrapper = styled.div`
   position: relative;
@@ -35,14 +36,16 @@ const StyledImg = styled(Img)`
   height: 50vh;
 `;
 
-const PageWrapper = ({ backgroundImage, title, children }) => (
-  <Wrapper>
-    <Container>
-      {backgroundImage && <StyledImg sizes={backgroundImage.resolutions} />}
-      <Title>{title}</Title>
-    </Container>
-    <ContentContainer>{children}</ContentContainer>
-  </Wrapper>
+const PageWrapper = ({ backgroundImage, title, children }) =>  (
+  <Layout>
+    <Wrapper>
+      <Container>
+        {backgroundImage && <StyledImg fluid={backgroundImage.fluid} />}
+        <Title>{title}</Title>
+      </Container>
+      <ContentContainer>{children}</ContentContainer>
+    </Wrapper>
+  </Layout>
 );
 
 export default PageWrapper;

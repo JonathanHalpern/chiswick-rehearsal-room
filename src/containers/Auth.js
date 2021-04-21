@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 const INITIAL_STATE = {
@@ -9,6 +9,21 @@ const INITIAL_STATE = {
   displayName: '',
   photoURL: '',
 };
+
+// TODO: refactor, maybe a class component?
+// This might help https://www.gatsbyjs.com/starters/marcomelilli/gatsby-firebase-simple-auth
+
+// const Auth = ({children}) => {
+//   useEffect(()=>{
+
+//   }, [])
+//   return children({
+//     ...this.state,
+//     signIn: this.handleSignIn,
+//     signOut: this.handleSignOut,
+//     isAuthed,
+//   });
+// }
 
 class Auth extends React.Component {
   static propTypes = {

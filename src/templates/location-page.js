@@ -1,4 +1,5 @@
 import React from 'react';
+import { graphql } from 'gatsby'
 import PageWrapper from '../containers/PageWrapper';
 import Map from '../components/Map';
 
@@ -25,8 +26,8 @@ export const locationPageQuery = graphql`
         title
         headerImage {
           childImageSharp {
-            resolutions(width: 1280) {
-              ...GatsbyImageSharpResolutions
+            fluid(maxWidth: 1280) {
+              ...GatsbyImageSharpFluid
             }
           }
         }

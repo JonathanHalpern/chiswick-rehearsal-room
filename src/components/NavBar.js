@@ -78,7 +78,7 @@ const Wrapper = styled.div`
 `;
 
 const StyledList = styled.ul`
-  margin: 0
+  margin: 0;
   float: right;
   display: flex;
   position: relative;

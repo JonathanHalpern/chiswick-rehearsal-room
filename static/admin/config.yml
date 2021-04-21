@@ -74,32 +74,32 @@ collections:
             max: 20
           - {label: "Body", name: "body", widget: "markdown", required: false}
 
-      - file: "src/pages/book/book.md"
-        label: "Book"
-        name: "book"
-        fields:
-          - {label: "Template Key", name: "templateKey", widget: "hidden", default: "book-page"}
-          - {label: "Path", name: "path", widget: "hidden", default: "/book"}
-          - {label: "Title", name: "title", widget: "string"}
-          - {label: "Nav Bar order", name: "navOrder", widget: "number", valueType: "int"}
-          - label: "Header image"
-            name: "headerImage"
-            widget: "custompathimage"
-            customMediaPath: "../../../static/img/"
-            rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
-            required: true
-          - {label: "Email address for booking alerts", name: "bookingAlertEmail", widget: "string"}
-          - {label: "How many days in advance can you book", name: "maxDaysAhead", widget: "number", valueType: "int", min: 1}
-          - label: "Time Slots"
-            name: "timeSlots"
-            widget: "list"
-            fields:
-              - {label: "Start Time", name: "startTime", widget: "time"}
-              - {label: "End Time", name: "endTime", widget: "time"}
-              - {label: "Title", name: "title", widget: "string"}
-              - label: "Price (£)"
-                name: "price"
-                widget: "number"
-                valueType: "int"
-                min: 0
-          - {label: "Terms And Conditions", name: "body", widget: "markdown", required: false}
+      # - file: "src/pages/book/book.md"
+      #   label: "Book"
+      #   name: "book"
+      #   fields:
+      #     - {label: "Template Key", name: "templateKey", widget: "hidden", default: "book-page"}
+      #     - {label: "Path", name: "path", widget: "hidden", default: "/book"}
+      #     - {label: "Title", name: "title", widget: "string"}
+      #     - {label: "Nav Bar order", name: "navOrder", widget: "number", valueType: "int"}
+      #     - label: "Header image"
+      #       name: "headerImage"
+      #       widget: "custompathimage"
+      #       customMediaPath: "../../../static/img/"
+      #       rawMediaPath: "https://raw.githubusercontent.com/JonathanHalpern/chiswick-rehearsal-room/master/static/img/"
+      #       required: true
+      #     - {label: "Email address for booking alerts", name: "bookingAlertEmail", widget: "string"}
+      #     - {label: "How many days in advance can you book", name: "maxDaysAhead", widget: "number", valueType: "int", min: 1}
+      #     - label: "Time Slots"
+      #       name: "timeSlots"
+      #       widget: "list"
+      #       fields:
+      #         - {label: "Start Time", name: "startTime", widget: "time"}
+      #         - {label: "End Time", name: "endTime", widget: "time"}
+      #         - {label: "Title", name: "title", widget: "string"}
+      #         - label: "Price (£)"
+      #           name: "price"
+      #           widget: "number"
+      #           valueType: "int"
+      #           min: 0
+      #     - {label: "Terms And Conditions", name: "body", widget: "markdown", required: false}

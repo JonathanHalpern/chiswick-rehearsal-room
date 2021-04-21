@@ -1,13 +1,7 @@
 const path = require('path');
 
-exports.createLayouts = ({ graphql, boundActionCreators }) => {
-  boundActionCreators.createLayout({
-    component: path.resolve(`src/layouts/index.js`),
-  });
-};
-
-exports.createPages = ({ boundActionCreators, graphql }) => {
-  const { createPage } = boundActionCreators;
+exports.createPages = ({ actions, graphql }) => {
+  const { createPage } = actions;
 
   return graphql(`
     {

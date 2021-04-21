@@ -13,13 +13,8 @@ mapLocations:
     legend: The rehearsal room
 defaultZoom: 18
 ---
-First collect the keys with the teddy bear attached, from Maggie and Rose Nursery.
-
-Then go to the rehearsal room on the ground floor at Wellington place. Use this map, as Google Maps does not show the right location.
+The rehearsal room is on the ground floor at Wellington place. Use this map, as Google Maps does not show the right location.
 
 If you need help finding a parking space, try using:
-<a href="https://www.justpark.com/search/?q=London+W4+5PS%2C+UK&start_date=02+Aug+2018&end_date=02+Aug+2018&start_time=08%3A00%3A00&end_time=10%3A00%3A00" target="_blank">JustPark</a>
 
-or
-
-https://www.yourparkingspace.co.uk
+<a href="https://www.justpark.com/search/?q=London+W4+5PS%2C+UK&start_date=02+Aug+2018&end_date=02+Aug+2018&start_time=08%3A00%3A00&end_time=10%3A00%3A00" target="_blank">JustPark</a> or <a href="https://www.yourparkingspace.co.uk" target="_blank">YourParkingSpace</a>

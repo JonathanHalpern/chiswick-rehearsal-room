@@ -7,10 +7,15 @@ headerImage: ../../../static/img/violin-head.jpg
 ---
 ## The Chiswick Rehearsal Room is for use exclusively by chamber musicians
 
-![null](/img/tutti_0031.jpg)
+![null](./img/tutti_0031.jpg)
 
-Very spacious at 12 x 5 meters, the room can comfortably accommodate an octet.
+The room can no longer be booked via the website. You can still book the room either:
 
-The piano, a 5’7″ Bösendorfer, is in perfect condition.
+All day for £100 <br /> 09:00 - 6:00 
 
-The room is self contained with tea and coffee making facilities and its own W.C.
+
+Half day for £50 <br /> 9:00 - 1:00 or 2:00 - 6:00  
+
+Please contact Louise for how to pay and where to collect the keys. 
+louisenaomikaye@gmail.com 
+07930 365518
