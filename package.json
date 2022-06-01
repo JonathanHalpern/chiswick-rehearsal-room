@@ -44,7 +44,7 @@
     "react-sortable-hoc": "^2.0.0",
     "react-typography": "^0.16.19",
     "recompose": "^0.30.0",
-    "sharp": "^0.28.1",
+    "sharp": "^0.30.5",
     "styled-components": "^5.2.3",
     "to": "^0.2.9",
     "typography": "^0.16.19",
