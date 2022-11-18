@@ -5,7 +5,7 @@ title: About
 navOrder: 1
 headerImage: ../../../static/img/violin-head.jpg
 ---
-## The Chiswick Rehearsal Room is for use exclusively by chamber musicians
+## **The Chiswick Rehearsal Room is for the exclusive use of adult classical musicians.**
 
 ![null](./img/tutti_0031.jpg)
 
